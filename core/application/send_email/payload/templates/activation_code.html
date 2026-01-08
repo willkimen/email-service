@@ -1,0 +1,31 @@
+<body style="font-family: Arial, Helvetica, sans-serif; color: #333; line-height: 1.5;">
+    <p>
+        You're almost done. Use the verification code below to activate your account.
+    </p>
+
+    <p>
+        Enter this code on the activation page:
+    </p>
+
+    <h2 style="letter-spacing: 2px;">{{ .VerificationCode }}</h2>
+
+    <p>
+        To continue, open the activation page using the link below and submit the code.
+    </p>
+
+    <p>
+        <a href="{{ .ActivationLink }}">Go to the activation page</a>
+    </p>
+
+
+	<p>
+	    <strong>Note:</strong> You have up to {{ .ActivationDeadlineDays }} days
+	    to activate your account. The verification code itself is valid for
+	    {{ .CodeExpirationHours }} hours. If it expires, you can request a new one.
+	</p>
+
+
+    <p>
+        If you haven't requested this email, you can safely ignore it.
+    </p>
+</body>
