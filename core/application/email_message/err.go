@@ -5,6 +5,13 @@ import (
 	"strings"
 )
 
+// marker interface
+type FieldValidationError interface {
+	error
+	// marker method
+	isFieldValidationError()
+}
+
 type EmailInvalidFormatError struct {
 	text string
 }
@@ -12,6 +19,8 @@ type EmailInvalidFormatError struct {
 func (e *EmailInvalidFormatError) Error() string {
 	return e.text
 }
+
+func (e *EmailInvalidFormatError) isFieldValidationError() {}
 
 func NewEmailInvalidFormatError() error {
 	return &EmailInvalidFormatError{
@@ -26,6 +35,10 @@ type EmptyFieldError struct {
 
 func (e *EmptyFieldError) Error() string {
 	return e.text
+}
+
+func (e *EmptyFieldError) isFieldValidation() bool {
+	return true
 }
 
 func NewEmptyFieldError(field string) error {
