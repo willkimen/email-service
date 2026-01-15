@@ -1,4 +1,4 @@
-package emailrequest
+package emailmessage
 
 const TemplateChangeEmailCodeID = "change_email_code"
 

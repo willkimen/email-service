@@ -1,49 +1,49 @@
-package emailrequest_test
+package emailmessage_test
 
 import (
-	"emailservice/core/application/email_request"
+	"emailservice/core/application/email_message"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 )
 
-func TestChangePasswordCode_IsCreatedCorrectly(t *testing.T) {
-	actualChange := validChangePasswordCode()
+func TestChangeEmailCode_IsCreatedCorrectly(t *testing.T) {
+	actualChange := validChangeEmailCode()
 
 	assert.Equal(t, to, actualChange.To)
 	assert.Equal(t, subject, actualChange.Subject)
 	assert.Equal(t, verificationCode, actualChange.VerificationCode)
 	assert.Equal(t, codeExpiratinoHours, actualChange.CodeExpirationHours)
-	assert.Equal(t, emailrequest.TemplateChangePasswordCodeID, actualChange.TemplateID())
+	assert.Equal(t, emailmessage.TemplateChangeEmailCodeID, actualChange.TemplateID())
 	assert.Nil(t, actualChange.ValidateData())
 }
 
-func TestChangePasswordCode_EmptyField_ReturnError(t *testing.T) {
+func TestChangeEmailCode_EmptyField_ReturnError(t *testing.T) {
 	tests := []struct {
 		name  string
-		setup func(p *emailrequest.ChangePasswordCode)
+		setup func(p *emailmessage.ChangeEmailCode)
 	}{
 		{
 			name: "empty To",
-			setup: func(p *emailrequest.ChangePasswordCode) {
+			setup: func(p *emailmessage.ChangeEmailCode) {
 				p.To = ""
 			},
 		},
 		{
 			name: "empty Subject",
-			setup: func(p *emailrequest.ChangePasswordCode) {
+			setup: func(p *emailmessage.ChangeEmailCode) {
 				p.Subject = ""
 			},
 		},
 		{
 			name: "empty VerificationCode",
-			setup: func(p *emailrequest.ChangePasswordCode) {
+			setup: func(p *emailmessage.ChangeEmailCode) {
 				p.VerificationCode = ""
 			},
 		},
 		{
 			name: "empty CodeExpirationHours",
-			setup: func(p *emailrequest.ChangePasswordCode) {
+			setup: func(p *emailmessage.ChangeEmailCode) {
 				p.CodeExpirationHours = ""
 			},
 		},
@@ -51,7 +51,7 @@ func TestChangePasswordCode_EmptyField_ReturnError(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			actualChange := validChangePasswordCode()
+			actualChange := validChangeEmailCode()
 			tt.setup(actualChange)
 
 			err := actualChange.ValidateData()

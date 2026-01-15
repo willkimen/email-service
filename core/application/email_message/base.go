@@ -1,6 +1,6 @@
-package emailrequest
+package emailmessage
 
-type EmailRequest interface {
+type EmailMessage interface {
 	ValidateData() error
 }
 

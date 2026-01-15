@@ -1,7 +1,7 @@
 package inputport
 
-import "emailservice/core/application/email_request"
+import "emailservice/core/application/email_message"
 
 type ExecuteEmailSendUseCase interface {
-	ExecuteSend(request emailrequest.EmailRequest) error
+	ExecuteSend(message emailmessage.EmailMessage) error
 }

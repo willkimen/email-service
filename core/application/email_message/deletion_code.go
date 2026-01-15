@@ -1,4 +1,4 @@
-package emailrequest
+package emailmessage
 
 const TemplateDeletionCodeID = "deletion_code"
 

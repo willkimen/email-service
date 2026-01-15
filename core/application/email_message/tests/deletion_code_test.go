@@ -1,7 +1,7 @@
-package emailrequest_test
+package emailmessage_test
 
 import (
-	"emailservice/core/application/email_request"
+	"emailservice/core/application/email_message"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -14,36 +14,36 @@ func TestDeletionCode_IsCreatedCorrectly(t *testing.T) {
 	assert.Equal(t, subject, actualDeletion.Subject)
 	assert.Equal(t, verificationCode, actualDeletion.VerificationCode)
 	assert.Equal(t, codeExpiratinoHours, actualDeletion.CodeExpirationHours)
-	assert.Equal(t, emailrequest.TemplateDeletionCodeID, actualDeletion.TemplateID())
+	assert.Equal(t, emailmessage.TemplateDeletionCodeID, actualDeletion.TemplateID())
 	assert.Nil(t, actualDeletion.ValidateData())
 }
 
 func TestDeletionCode_EmptyField_ReturnError(t *testing.T) {
 	tests := []struct {
 		name  string
-		setup func(p *emailrequest.DeletionCode)
+		setup func(p *emailmessage.DeletionCode)
 	}{
 		{
 			name: "empty To",
-			setup: func(p *emailrequest.DeletionCode) {
+			setup: func(p *emailmessage.DeletionCode) {
 				p.To = ""
 			},
 		},
 		{
 			name: "empty Subject",
-			setup: func(p *emailrequest.DeletionCode) {
+			setup: func(p *emailmessage.DeletionCode) {
 				p.Subject = ""
 			},
 		},
 		{
 			name: "empty VerificationCode",
-			setup: func(p *emailrequest.DeletionCode) {
+			setup: func(p *emailmessage.DeletionCode) {
 				p.VerificationCode = ""
 			},
 		},
 		{
 			name: "empty CodeExpirationHours",
-			setup: func(p *emailrequest.DeletionCode) {
+			setup: func(p *emailmessage.DeletionCode) {
 				p.CodeExpirationHours = ""
 			},
 		},

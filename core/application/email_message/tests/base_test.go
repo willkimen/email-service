@@ -1,7 +1,7 @@
-package emailrequest_test
+package emailmessage_test
 
 import (
-	"emailservice/core/application/email_request"
+	"emailservice/core/application/email_message"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -14,6 +14,6 @@ func TestBase_InvalidEmailFormat_ReturnError(t *testing.T) {
 	err := p.ValidateData()
 	assert.NotNil(t, err)
 
-	var emailErr *emailrequest.EmailInvalidFormatError
+	var emailErr *emailmessage.EmailInvalidFormatError
 	assert.ErrorAs(t, err, &emailErr)
 }

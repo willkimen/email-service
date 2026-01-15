@@ -1,4 +1,4 @@
-package emailrequest
+package emailmessage
 
 const TemplateActivationCodeID = "activation_code"
 

@@ -1,7 +1,7 @@
-package emailrequest_test
+package emailmessage_test
 
 import (
-	"emailservice/core/application/email_request"
+	"emailservice/core/application/email_message"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -12,24 +12,24 @@ func TestNotifyDeletion_IsCreatedCorrectly(t *testing.T) {
 
 	assert.Equal(t, to, actualNotify.To)
 	assert.Equal(t, subject, actualNotify.Subject)
-	assert.Equal(t, emailrequest.TemplateNotifyDeletionID, actualNotify.TemplateID())
+	assert.Equal(t, emailmessage.TemplateNotifyDeletionID, actualNotify.TemplateID())
 	assert.Nil(t, actualNotify.ValidateData())
 }
 
 func TestNotifyDeletion_EmptyField_ReturnError(t *testing.T) {
 	tests := []struct {
 		name  string
-		setup func(p *emailrequest.NotifyDeletion)
+		setup func(p *emailmessage.NotifyDeletion)
 	}{
 		{
 			name: "empty To",
-			setup: func(p *emailrequest.NotifyDeletion) {
+			setup: func(p *emailmessage.NotifyDeletion) {
 				p.To = ""
 			},
 		},
 		{
 			name: "empty Subject",
-			setup: func(p *emailrequest.NotifyDeletion) {
+			setup: func(p *emailmessage.NotifyDeletion) {
 				p.Subject = ""
 			},
 		},

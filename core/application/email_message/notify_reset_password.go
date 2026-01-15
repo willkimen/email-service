@@ -1,4 +1,4 @@
-package emailrequest
+package emailmessage
 
 const TemplateNotifyResetPasswordID = "notify_reset_password"
 

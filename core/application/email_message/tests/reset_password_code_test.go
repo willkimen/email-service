@@ -1,7 +1,7 @@
-package emailrequest_test
+package emailmessage_test
 
 import (
-	"emailservice/core/application/email_request"
+	"emailservice/core/application/email_message"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -15,42 +15,42 @@ func TestResetPasswordCode_IsCreatedCorrectly(t *testing.T) {
 	assert.Equal(t, verificationCode, actualReset.VerificationCode)
 	assert.Equal(t, link, actualReset.ResetPasswordLink)
 	assert.Equal(t, codeExpiratinoHours, actualReset.CodeExpirationHours)
-	assert.Equal(t, emailrequest.TemplateResetPasswordCodeID, actualReset.TemplateID())
+	assert.Equal(t, emailmessage.TemplateResetPasswordCodeID, actualReset.TemplateID())
 	assert.Nil(t, actualReset.ValidateData())
 }
 
 func TestResetPasswordCode_EmptyField_ReturnError(t *testing.T) {
 	tests := []struct {
 		name  string
-		setup func(p *emailrequest.ResetPasswordCode)
+		setup func(p *emailmessage.ResetPasswordCode)
 	}{
 		{
 			name: "empty To",
-			setup: func(p *emailrequest.ResetPasswordCode) {
+			setup: func(p *emailmessage.ResetPasswordCode) {
 				p.To = ""
 			},
 		},
 		{
 			name: "empty Subject",
-			setup: func(p *emailrequest.ResetPasswordCode) {
+			setup: func(p *emailmessage.ResetPasswordCode) {
 				p.Subject = ""
 			},
 		},
 		{
 			name: "empty VerificationCode",
-			setup: func(p *emailrequest.ResetPasswordCode) {
+			setup: func(p *emailmessage.ResetPasswordCode) {
 				p.VerificationCode = ""
 			},
 		},
 		{
 			name: "empty ResetPasswordLink",
-			setup: func(p *emailrequest.ResetPasswordCode) {
+			setup: func(p *emailmessage.ResetPasswordCode) {
 				p.ResetPasswordLink = ""
 			},
 		},
 		{
 			name: "empty CodeExpirationHours",
-			setup: func(p *emailrequest.ResetPasswordCode) {
+			setup: func(p *emailmessage.ResetPasswordCode) {
 				p.CodeExpirationHours = ""
 			},
 		},

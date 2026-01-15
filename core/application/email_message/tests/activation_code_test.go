@@ -1,7 +1,7 @@
-package emailrequest_test
+package emailmessage_test
 
 import (
-	"emailservice/core/application/email_request"
+	"emailservice/core/application/email_message"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -16,48 +16,48 @@ func TestActivationCode_IsCreatedCorrectly(t *testing.T) {
 	assert.Equal(t, link, actualActivation.ActivationLink)
 	assert.Equal(t, codeExpiratinoHours, actualActivation.CodeExpirationHours)
 	assert.Equal(t, activationDeadlineDays, actualActivation.ActivationDeadlineDays)
-	assert.Equal(t, emailrequest.TemplateActivationCodeID, actualActivation.TemplateID())
+	assert.Equal(t, emailmessage.TemplateActivationCodeID, actualActivation.TemplateID())
 	assert.Nil(t, actualActivation.ValidateData())
 }
 
 func TestActivationCode_EmptyField_ReturnError(t *testing.T) {
 	tests := []struct {
 		name  string
-		setup func(p *emailrequest.ActivationCode)
+		setup func(p *emailmessage.ActivationCode)
 	}{
 		{
 			name: "empty To",
-			setup: func(p *emailrequest.ActivationCode) {
+			setup: func(p *emailmessage.ActivationCode) {
 				p.To = ""
 			},
 		},
 		{
 			name: "empty Subject",
-			setup: func(p *emailrequest.ActivationCode) {
+			setup: func(p *emailmessage.ActivationCode) {
 				p.Subject = ""
 			},
 		},
 		{
 			name: "empty VerificationCode",
-			setup: func(p *emailrequest.ActivationCode) {
+			setup: func(p *emailmessage.ActivationCode) {
 				p.VerificationCode = ""
 			},
 		},
 		{
 			name: "empty CodeExpirationHours",
-			setup: func(p *emailrequest.ActivationCode) {
+			setup: func(p *emailmessage.ActivationCode) {
 				p.CodeExpirationHours = ""
 			},
 		},
 		{
 			name: "empty ActivationLink",
-			setup: func(p *emailrequest.ActivationCode) {
+			setup: func(p *emailmessage.ActivationCode) {
 				p.ActivationLink = ""
 			},
 		},
 		{
 			name: "empty ActivationDeadlineDays",
-			setup: func(p *emailrequest.ActivationCode) {
+			setup: func(p *emailmessage.ActivationCode) {
 				p.ActivationDeadlineDays = ""
 			},
 		},

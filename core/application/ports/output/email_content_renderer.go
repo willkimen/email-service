@@ -1,7 +1,7 @@
 package outputport
 
-import "emailservice/core/application/email_request"
+import "emailservice/core/application/email_message"
 
 type EmailContentRenderer interface {
-	Render(request emailrequest.EmailRequest) (body string, err error)
+	Render(message emailmessage.EmailMessage) (body string, err error)
 }

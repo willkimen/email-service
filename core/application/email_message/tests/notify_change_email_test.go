@@ -1,40 +1,40 @@
-package emailrequest_test
+package emailmessage_test
 
 import (
-	"emailservice/core/application/email_request"
+	"emailservice/core/application/email_message"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
-func TestNotifyPasswordEmail_IsCreatedCorrectly(t *testing.T) {
-	actualNotify := validNotifyChangePassword()
+func TestNotifyChangeEmail_IsCreatedCorrectly(t *testing.T) {
+	actualNotify := validNotifyChangeEmail()
 	assert.Equal(t, to, actualNotify.To)
 	assert.Equal(t, subject, actualNotify.Subject)
 	assert.Equal(t, link, actualNotify.LoginLink)
-	assert.Equal(t, emailrequest.TemplateNotifyChangePasswordID, actualNotify.TemplateID())
+	assert.Equal(t, emailmessage.TemplateNotifyChangeEmailID, actualNotify.TemplateID())
 	assert.Nil(t, actualNotify.ValidateData())
 }
 
-func TestNotifyChangePassword_EmptyField_ReturnError(t *testing.T) {
+func TestNotifyChangeEmail_EmptyField_ReturnError(t *testing.T) {
 	tests := []struct {
 		name  string
-		setup func(p *emailrequest.NotifyChangePassword)
+		setup func(p *emailmessage.NotifyChangeEmail)
 	}{
 		{
 			name: "empty To",
-			setup: func(p *emailrequest.NotifyChangePassword) {
+			setup: func(p *emailmessage.NotifyChangeEmail) {
 				p.To = ""
 			},
 		},
 		{
 			name: "empty Subject",
-			setup: func(p *emailrequest.NotifyChangePassword) {
+			setup: func(p *emailmessage.NotifyChangeEmail) {
 				p.Subject = ""
 			},
 		},
 		{
 			name: "empty LoginLink",
-			setup: func(p *emailrequest.NotifyChangePassword) {
+			setup: func(p *emailmessage.NotifyChangeEmail) {
 				p.LoginLink = ""
 			},
 		},
@@ -42,7 +42,7 @@ func TestNotifyChangePassword_EmptyField_ReturnError(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			actualNotify := validNotifyChangePassword()
+			actualNotify := validNotifyChangeEmail()
 			tt.setup(actualNotify)
 
 			err := actualNotify.ValidateData()
