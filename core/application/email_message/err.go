@@ -20,7 +20,7 @@ func (e *EmailInvalidFormatError) Error() string {
 	return e.text
 }
 
-func (e *EmailInvalidFormatError) isFieldValidationError() {}
+func (EmailInvalidFormatError) isFieldValidationError() {}
 
 func NewEmailInvalidFormatError() error {
 	return &EmailInvalidFormatError{
@@ -37,9 +37,7 @@ func (e *EmptyFieldError) Error() string {
 	return e.text
 }
 
-func (e *EmptyFieldError) isFieldValidation() bool {
-	return true
-}
+func (EmptyFieldError) isFieldValidationError() {}
 
 func NewEmptyFieldError(field string) error {
 	text := fmt.Sprintf("%s field is required", strings.ToLower(field))
