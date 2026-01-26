@@ -4,8 +4,7 @@ const TemplateNotifyChangePasswordID = "notify_change_password"
 
 type NotifyChangePassword struct {
 	Base
-	LoginLink  string
-	TemplateId string
+	LoginLink string
 }
 
 func (NotifyChangePassword) TemplateID() string {

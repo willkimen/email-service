@@ -7,7 +7,6 @@ type ActivationCode struct {
 	BaseCode
 	ActivationLink         string
 	ActivationDeadlineDays string
-	TemplateId             string
 }
 
 func (ActivationCode) TemplateID() string {

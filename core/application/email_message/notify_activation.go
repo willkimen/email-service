@@ -4,8 +4,7 @@ const TemplateNotifyActivationID = "notify_activation"
 
 type NotifyActivation struct {
 	Base
-	LoginLink  string
-	TemplateId string
+	LoginLink string
 }
 
 func (NotifyActivation) TemplateID() string {

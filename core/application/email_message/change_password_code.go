@@ -5,7 +5,6 @@ const TemplateChangePasswordCodeID = "change_password_code"
 type ChangePasswordCode struct {
 	Base
 	BaseCode
-	TemplateId string
 }
 
 func (ChangePasswordCode) TemplateID() string {
