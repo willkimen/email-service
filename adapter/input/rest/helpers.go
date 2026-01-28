@@ -1,6 +1,7 @@
 package rest
 
 import (
+	"emailservice/core/application/email_message"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -125,9 +126,25 @@ func (h *HandlerEmail) handleEmailRequest(w http.ResponseWriter, r *http.Request
 
 	err = h.Usecase.Request(dto.ToEmailMessage())
 	if err != nil {
-		h.respond(w, r, http.StatusUnprocessableEntity, envelope{"error": err.Error()})
+		var validationErr emailmessage.FieldValidationError
+
+		if errors.As(err, &validationErr) {
+			h.respond(
+				w,
+				r,
+				http.StatusUnprocessableEntity,
+				envelope{"error": err.Error()},
+			)
+			return
+		}
+
+		h.respond(
+			w,
+			r,
+			http.StatusInternalServerError,
+			envelope{"error": "internal server error"},
+		)
 		return
 	}
-
 	h.respond(w, r, http.StatusAccepted, envelope{"status": "accepted"})
 }

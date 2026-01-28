@@ -1,6 +1,7 @@
 package rest_test
 
 import (
+	"errors"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -98,5 +99,39 @@ func TestNotifyActivationHandler_WhenRequestIsValid_ShouldReturnAccepted(t *test
 	res := w.Result()
 
 	require.Equal(t, http.StatusAccepted, res.StatusCode)
+	usecaseMock.AssertCalled(t, "Request", mock.Anything)
+}
+
+func TestNotifyActivationHandler_WhenUnexpectedErrorOccurs_ShouldReturnInternalServerError(t *testing.T) {
+	usecaseMock := new(RequestEmailUseCaseMock)
+
+	usecaseMock.
+		On("Request", mock.Anything).
+		Return(errors.New("failed to request email sending"))
+
+	handler := rest.HandlerEmail{
+		Usecase: usecaseMock,
+	}
+
+	body := `{
+		"to": "user@test.com",
+		"subject": "Account activated",
+		"login_link": "https://example.com/login"
+	}`
+
+	req := httptest.NewRequest(
+		http.MethodPost,
+		"/emails/notify-activation",
+		strings.NewReader(body),
+	)
+	req.Header.Set("Content-Type", "application/json")
+
+	w := httptest.NewRecorder()
+
+	handler.NotifyActivationHandler(w, req)
+
+	res := w.Result()
+
+	require.Equal(t, http.StatusInternalServerError, res.StatusCode)
 	usecaseMock.AssertCalled(t, "Request", mock.Anything)
 }

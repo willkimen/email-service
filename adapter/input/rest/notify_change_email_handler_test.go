@@ -1,6 +1,7 @@
 package rest_test
 
 import (
+	"errors"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -98,5 +99,39 @@ func TestNotifyChangeEmailHandler_WhenRequestIsValid_ShouldReturnAccepted(t *tes
 	res := w.Result()
 
 	require.Equal(t, http.StatusAccepted, res.StatusCode)
+	usecaseMock.AssertCalled(t, "Request", mock.Anything)
+}
+
+func TestNotifyChangeEmailHandler_WhenUnexpectedErrorOccurs_ShouldReturnInternalServerError(t *testing.T) {
+	usecaseMock := new(RequestEmailUseCaseMock)
+
+	usecaseMock.
+		On("Request", mock.Anything).
+		Return(errors.New("failed to request email sending"))
+
+	handler := rest.HandlerEmail{
+		Usecase: usecaseMock,
+	}
+
+	body := `{
+		"to": "user@test.com",
+		"subject": "Email changed",
+		"login_link": "https://example.com/login"
+	}`
+
+	req := httptest.NewRequest(
+		http.MethodPost,
+		"/emails/notify-change-email",
+		strings.NewReader(body),
+	)
+	req.Header.Set("Content-Type", "application/json")
+
+	w := httptest.NewRecorder()
+
+	handler.NotifyChangeEmailHandler(w, req)
+
+	res := w.Result()
+
+	require.Equal(t, http.StatusInternalServerError, res.StatusCode)
 	usecaseMock.AssertCalled(t, "Request", mock.Anything)
 }

@@ -1,6 +1,7 @@
 package rest_test
 
 import (
+	"errors"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -96,5 +97,38 @@ func TestNotifyDeletionHandler_WhenRequestIsValid_ShouldReturnAccepted(t *testin
 	res := w.Result()
 
 	require.Equal(t, http.StatusAccepted, res.StatusCode)
+	usecaseMock.AssertCalled(t, "Request", mock.Anything)
+}
+
+func TestNotifyDeletionHandler_WhenUnexpectedErrorOccurs_ShouldReturnInternalServerError(t *testing.T) {
+	usecaseMock := new(RequestEmailUseCaseMock)
+
+	usecaseMock.
+		On("Request", mock.Anything).
+		Return(errors.New("failed to request email sending"))
+
+	handler := rest.HandlerEmail{
+		Usecase: usecaseMock,
+	}
+
+	body := `{
+		"to": "user@test.com",
+		"subject": "Account deleted"
+	}`
+
+	req := httptest.NewRequest(
+		http.MethodPost,
+		"/emails/notify-deletion",
+		strings.NewReader(body),
+	)
+	req.Header.Set("Content-Type", "application/json")
+
+	w := httptest.NewRecorder()
+
+	handler.NotifyDeletionHandler(w, req)
+
+	res := w.Result()
+
+	require.Equal(t, http.StatusInternalServerError, res.StatusCode)
 	usecaseMock.AssertCalled(t, "Request", mock.Anything)
 }
