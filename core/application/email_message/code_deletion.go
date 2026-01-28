@@ -1,7 +1,5 @@
 package emailmessage
 
-const TemplateDeletionCodeID = "deletion_code"
-
 type DeletionCode struct {
 	Base
 	BaseCode

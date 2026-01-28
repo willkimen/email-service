@@ -1,7 +1,5 @@
 package emailmessage
 
-const TemplateNotifyActivationID = "notify_activation"
-
 type NotifyActivation struct {
 	Base
 	LoginLink string

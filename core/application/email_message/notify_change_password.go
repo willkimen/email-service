@@ -1,7 +1,5 @@
 package emailmessage
 
-const TemplateNotifyChangePasswordID = "notify_change_password"
-
 type NotifyChangePassword struct {
 	Base
 	LoginLink string

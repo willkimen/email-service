@@ -1,7 +1,5 @@
 package emailmessage
 
-const TemplateActivationCodeID = "activation_code"
-
 type ActivationCode struct {
 	Base
 	BaseCode

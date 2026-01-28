@@ -1,7 +1,5 @@
 package emailmessage
 
-const TemplateNotifyDeletionID = "notify_deletion"
-
 type NotifyDeletion struct {
 	Base
 }

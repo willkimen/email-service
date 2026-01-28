@@ -1,7 +1,5 @@
 package emailmessage
 
-const TemplateChangeEmailCodeID = "change_email_code"
-
 type ChangeEmailCode struct {
 	Base
 	BaseCode
