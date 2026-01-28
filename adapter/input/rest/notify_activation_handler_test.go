@@ -13,17 +13,21 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestSendActivationCodeHandler_WhenRequestBodyIsInvalidJSON_ShouldReturnBadRequest(t *testing.T) {
+func TestNotifyActivationHandler_WhenRequestBodyIsInvalidJSON_ShouldReturnBadRequest(t *testing.T) {
 	usecaseMock := new(RequestEmailUseCaseMock)
 
 	handler := rest.HandlerEmail{
 		Usecase: usecaseMock,
 	}
 
-	req := httptest.NewRequest(http.MethodPost, "/emails/activation-code", strings.NewReader("{invalid-json"))
+	req := httptest.NewRequest(
+		http.MethodPost,
+		"/emails/notify-activation",
+		strings.NewReader("{invalid-json"),
+	)
 	w := httptest.NewRecorder()
 
-	handler.SendActivationCodeHandler(w, req)
+	handler.NotifyActivationHandler(w, req)
 
 	res := w.Result()
 
@@ -31,31 +35,32 @@ func TestSendActivationCodeHandler_WhenRequestBodyIsInvalidJSON_ShouldReturnBadR
 	usecaseMock.AssertNotCalled(t, "Request", mock.Anything)
 }
 
-func TestSendActivationCodeHandler_WhenValidationFails_ShouldReturnUnprocessableEntity(t *testing.T) {
+func TestNotifyActivationHandler_WhenValidationFails_ShouldReturnUnprocessableEntity(t *testing.T) {
 	usecaseMock := new(RequestEmailUseCaseMock)
 
 	usecaseMock.
 		On("Request", mock.Anything).
-		Return(emailmessage.NewEmptyFieldError("to"))
+		Return(emailmessage.NewEmptyFieldError("login_link"))
 
 	handler := rest.HandlerEmail{
 		Usecase: usecaseMock,
 	}
 
 	body := `{
-		"to": "",
+		"to": "user@test.com",
 		"subject": "Activation",
-		"verification_code": "123456",
-		"code_expiration_hours": "2",
-		"activation_link": "https://example.com",
-		"activation_deadline_days": "7"
+		"login_link": ""
 	}`
 
-	req := httptest.NewRequest(http.MethodPost, "/emails/activation-code", strings.NewReader(body))
+	req := httptest.NewRequest(
+		http.MethodPost,
+		"/emails/notify-activation",
+		strings.NewReader(body),
+	)
 	req.Header.Set("Content-Type", "application/json")
 	w := httptest.NewRecorder()
 
-	handler.SendActivationCodeHandler(w, req)
+	handler.NotifyActivationHandler(w, req)
 
 	res := w.Result()
 
@@ -63,7 +68,7 @@ func TestSendActivationCodeHandler_WhenValidationFails_ShouldReturnUnprocessable
 	usecaseMock.AssertCalled(t, "Request", mock.Anything)
 }
 
-func TestSendActivationCodeHandler_WhenRequestIsValid_ShouldReturnAccepted(t *testing.T) {
+func TestNotifyActivationHandler_WhenRequestIsValid_ShouldReturnAccepted(t *testing.T) {
 	usecaseMock := new(RequestEmailUseCaseMock)
 
 	usecaseMock.
@@ -77,17 +82,18 @@ func TestSendActivationCodeHandler_WhenRequestIsValid_ShouldReturnAccepted(t *te
 	body := `{
 		"to": "user@test.com",
 		"subject": "Activation",
-		"verification_code": "123456",
-		"code_expiration_hours": "2",
-		"activation_link": "https://example.com",
-		"activation_deadline_days": "7"
+		"login_link": "https://example.com/login"
 	}`
 
-	req := httptest.NewRequest(http.MethodPost, "/emails/activation-code", strings.NewReader(body))
+	req := httptest.NewRequest(
+		http.MethodPost,
+		"/emails/notify-activation",
+		strings.NewReader(body),
+	)
 	req.Header.Set("Content-Type", "application/json")
 	w := httptest.NewRecorder()
 
-	handler.SendActivationCodeHandler(w, req)
+	handler.NotifyActivationHandler(w, req)
 
 	res := w.Result()
 
