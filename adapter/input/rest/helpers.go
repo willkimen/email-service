@@ -10,8 +10,10 @@ import (
 	"strings"
 )
 
+// envelope represents a generic JSON response structure.
 type envelope map[string]any
 
+// writeJSON serializes the given envelope into JSON.
 func (h *HandlerEmail) writeJSON(data envelope) ([]byte, error) {
 	js, err := json.Marshal(data)
 	if err != nil {
@@ -21,12 +23,16 @@ func (h *HandlerEmail) writeJSON(data envelope) ([]byte, error) {
 	return js, nil
 }
 
+// writeResponse writes the HTTP status code and JSON body to the response.
 func (h *HandlerEmail) writeResponse(w http.ResponseWriter, status int, json []byte) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
 	w.Write(json)
 }
 
+// serverErrorResponse sends a generic 500 response.
+//
+// This is used as a defensive fallback for unexpected infrastructure failures.
 func (h *HandlerEmail) serverErrorResponse(w http.ResponseWriter, r *http.Request) {
 	http.Error(
 		w,
@@ -37,9 +43,8 @@ func (h *HandlerEmail) serverErrorResponse(w http.ResponseWriter, r *http.Reques
 
 // respond writes a JSON response to the client.
 //
-// If JSON serialization fails, a 500 Internal Server Error
-// is returned as a defensive fallback. This scenario represents
-// an unexpected infrastructure failure, not a business error.
+// If JSON serialization fails, a 500 Internal Server Error is returned.
+// This situation represents an unexpected infrastructure failure.
 func (h *HandlerEmail) respond(
 	w http.ResponseWriter,
 	r *http.Request,
@@ -54,6 +59,10 @@ func (h *HandlerEmail) respond(
 	h.writeResponse(w, status, json)
 }
 
+// readJSON decodes and validates the JSON request body.
+//
+// It enforces size limits, disallows unknown fields, and ensures
+// that the request body contains exactly one JSON value.
 func (h *HandlerEmail) readJSON(w http.ResponseWriter, r *http.Request, dto any) error {
 	maxBytes := 1_048_576
 	r.Body = http.MaxBytesReader(w, r.Body, int64(maxBytes))
@@ -107,17 +116,19 @@ func (h *HandlerEmail) readJSON(w http.ResponseWriter, r *http.Request, dto any)
 	return nil
 }
 
+// handleEmailRequest is a generic HTTP handler for email-related requests.
+//
+// It is responsible for:
+// - Reading and validating the JSON payload
+// - Converting the DTO into an email message
+// - Delegating the request to the application use case
+// - Mapping infrastructure errors to HTTP responses
 func (h *HandlerEmail) handleEmailRequest(w http.ResponseWriter, r *http.Request, dto EmailRequestDTO) {
 	// Possible responses:
-	// - 202 Accepted: request was accepted for asynchronous processing
+	// - 202 Accepted: request accepted for asynchronous processing
 	// - 400 Bad Request: malformed or invalid JSON payload
-	// - 422 Unprocessable Entity: domain validation error
-	// - 500 Internal Server Error: fallback response for unexpected internal failures
-	//
-	// Note:
-	// The handler does not actively decide when to return 500.
-	// InternalServerError is used only as a last-resort fallback
-	// when response serialization or infrastructure unexpectedly fails.
+	// - 422 Unprocessable Entity: validation error
+	// - 500 Internal Server Error: unexpected internal failure
 	err := h.readJSON(w, r, dto)
 	if err != nil {
 		h.respond(w, r, http.StatusBadRequest, envelope{"error": err.Error()})
@@ -146,5 +157,6 @@ func (h *HandlerEmail) handleEmailRequest(w http.ResponseWriter, r *http.Request
 		)
 		return
 	}
+
 	h.respond(w, r, http.StatusAccepted, envelope{"status": "accepted"})
 }
