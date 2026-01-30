@@ -17,22 +17,20 @@ import (
 func TestNotifyChangePasswordHandler_WhenRequestBodyIsInvalidJSON_ShouldReturnBadRequest(t *testing.T) {
 	usecaseMock := new(RequestEmailUseCaseMock)
 
-	handler := rest.HandlerEmail{
-		Usecase: usecaseMock,
-	}
+	handler := rest.NewHandlerEmail(usecaseMock)
 
-	req := httptest.NewRequest(
+	r := httptest.NewRequest(
 		http.MethodPost,
 		"/emails/notify-change-password",
 		strings.NewReader("{invalid-json"),
 	)
 	w := httptest.NewRecorder()
 
-	handler.NotifyChangePasswordHandler(w, req)
+	handler.NotifyChangePasswordHandler(w, r)
 
-	res := w.Result()
+	response := w.Result()
 
-	require.Equal(t, http.StatusBadRequest, res.StatusCode)
+	require.Equal(t, http.StatusBadRequest, response.StatusCode)
 	usecaseMock.AssertNotCalled(t, "Request", mock.Anything)
 }
 
@@ -43,9 +41,7 @@ func TestNotifyChangePasswordHandler_WhenValidationFails_ShouldReturnUnprocessab
 		On("Request", mock.Anything).
 		Return(emailmessage.NewEmptyFieldError("login_link"))
 
-	handler := rest.HandlerEmail{
-		Usecase: usecaseMock,
-	}
+	handler := rest.NewHandlerEmail(usecaseMock)
 
 	body := `{
 		"to": "user@test.com",
@@ -53,19 +49,19 @@ func TestNotifyChangePasswordHandler_WhenValidationFails_ShouldReturnUnprocessab
 		"login_link": ""
 	}`
 
-	req := httptest.NewRequest(
+	r := httptest.NewRequest(
 		http.MethodPost,
 		"/emails/notify-change-password",
 		strings.NewReader(body),
 	)
-	req.Header.Set("Content-Type", "application/json")
+	r.Header.Set("Content-Type", "application/json")
 	w := httptest.NewRecorder()
 
-	handler.NotifyChangePasswordHandler(w, req)
+	handler.NotifyChangePasswordHandler(w, r)
 
-	res := w.Result()
+	response := w.Result()
 
-	require.Equal(t, http.StatusUnprocessableEntity, res.StatusCode)
+	require.Equal(t, http.StatusUnprocessableEntity, response.StatusCode)
 	usecaseMock.AssertCalled(t, "Request", mock.Anything)
 }
 
@@ -76,9 +72,7 @@ func TestNotifyChangePasswordHandler_WhenRequestIsValid_ShouldReturnAccepted(t *
 		On("Request", mock.Anything).
 		Return(nil)
 
-	handler := rest.HandlerEmail{
-		Usecase: usecaseMock,
-	}
+	handler := rest.NewHandlerEmail(usecaseMock)
 
 	body := `{
 		"to": "user@test.com",
@@ -86,19 +80,19 @@ func TestNotifyChangePasswordHandler_WhenRequestIsValid_ShouldReturnAccepted(t *
 		"login_link": "https://example.com/login"
 	}`
 
-	req := httptest.NewRequest(
+	r := httptest.NewRequest(
 		http.MethodPost,
 		"/emails/notify-change-password",
 		strings.NewReader(body),
 	)
-	req.Header.Set("Content-Type", "application/json")
+	r.Header.Set("Content-Type", "application/json")
 	w := httptest.NewRecorder()
 
-	handler.NotifyChangePasswordHandler(w, req)
+	handler.NotifyChangePasswordHandler(w, r)
 
-	res := w.Result()
+	response := w.Result()
 
-	require.Equal(t, http.StatusAccepted, res.StatusCode)
+	require.Equal(t, http.StatusAccepted, response.StatusCode)
 	usecaseMock.AssertCalled(t, "Request", mock.Anything)
 }
 
@@ -109,9 +103,7 @@ func TestNotifyChangePasswordHandler_WhenUnexpectedErrorOccurs_ShouldReturnInter
 		On("Request", mock.Anything).
 		Return(errors.New("failed to request email sending"))
 
-	handler := rest.HandlerEmail{
-		Usecase: usecaseMock,
-	}
+	handler := rest.NewHandlerEmail(usecaseMock)
 
 	body := `{
 		"to": "user@test.com",
@@ -119,19 +111,19 @@ func TestNotifyChangePasswordHandler_WhenUnexpectedErrorOccurs_ShouldReturnInter
 		"login_link": "https://example.com/login"
 	}`
 
-	req := httptest.NewRequest(
+	r := httptest.NewRequest(
 		http.MethodPost,
 		"/emails/notify-change-password",
 		strings.NewReader(body),
 	)
-	req.Header.Set("Content-Type", "application/json")
+	r.Header.Set("Content-Type", "application/json")
 
 	w := httptest.NewRecorder()
 
-	handler.NotifyChangePasswordHandler(w, req)
+	handler.NotifyChangePasswordHandler(w, r)
 
-	res := w.Result()
+	response := w.Result()
 
-	require.Equal(t, http.StatusInternalServerError, res.StatusCode)
+	require.Equal(t, http.StatusInternalServerError, response.StatusCode)
 	usecaseMock.AssertCalled(t, "Request", mock.Anything)
 }

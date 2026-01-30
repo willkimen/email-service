@@ -17,22 +17,20 @@ import (
 func TestSendResetPasswordCodeHandler_WhenRequestBodyIsInvalidJSON_ShouldReturnBadRequest(t *testing.T) {
 	usecaseMock := new(RequestEmailUseCaseMock)
 
-	handler := rest.HandlerEmail{
-		Usecase: usecaseMock,
-	}
+	handler := rest.NewHandlerEmail(usecaseMock)
 
-	req := httptest.NewRequest(
+	r := httptest.NewRequest(
 		http.MethodPost,
 		"/emails/reset-password-code",
 		strings.NewReader("{invalid-json"),
 	)
 	w := httptest.NewRecorder()
 
-	handler.SendResetPasswordCodeHandler(w, req)
+	handler.SendResetPasswordCodeHandler(w, r)
 
-	res := w.Result()
+	response := w.Result()
 
-	require.Equal(t, http.StatusBadRequest, res.StatusCode)
+	require.Equal(t, http.StatusBadRequest, response.StatusCode)
 	usecaseMock.AssertNotCalled(t, "Request", mock.Anything)
 }
 
@@ -43,9 +41,7 @@ func TestSendResetPasswordCodeHandler_WhenValidationFails_ShouldReturnUnprocessa
 		On("Request", mock.Anything).
 		Return(emailmessage.NewEmptyFieldError("reset_password_link"))
 
-	handler := rest.HandlerEmail{
-		Usecase: usecaseMock,
-	}
+	handler := rest.NewHandlerEmail(usecaseMock)
 
 	body := `{
 		"to": "user@test.com",
@@ -55,19 +51,19 @@ func TestSendResetPasswordCodeHandler_WhenValidationFails_ShouldReturnUnprocessa
 		"reset_password_link": ""
 	}`
 
-	req := httptest.NewRequest(
+	r := httptest.NewRequest(
 		http.MethodPost,
 		"/emails/reset-password-code",
 		strings.NewReader(body),
 	)
-	req.Header.Set("Content-Type", "application/json")
+	r.Header.Set("Content-Type", "application/json")
 	w := httptest.NewRecorder()
 
-	handler.SendResetPasswordCodeHandler(w, req)
+	handler.SendResetPasswordCodeHandler(w, r)
 
-	res := w.Result()
+	response := w.Result()
 
-	require.Equal(t, http.StatusUnprocessableEntity, res.StatusCode)
+	require.Equal(t, http.StatusUnprocessableEntity, response.StatusCode)
 	usecaseMock.AssertCalled(t, "Request", mock.Anything)
 }
 
@@ -78,9 +74,7 @@ func TestSendResetPasswordCodeHandler_WhenRequestIsValid_ShouldReturnAccepted(t 
 		On("Request", mock.Anything).
 		Return(nil)
 
-	handler := rest.HandlerEmail{
-		Usecase: usecaseMock,
-	}
+	handler := rest.NewHandlerEmail(usecaseMock)
 
 	body := `{
 		"to": "user@test.com",
@@ -90,19 +84,19 @@ func TestSendResetPasswordCodeHandler_WhenRequestIsValid_ShouldReturnAccepted(t 
 		"reset_password_link": "https://example.com/reset"
 	}`
 
-	req := httptest.NewRequest(
+	r := httptest.NewRequest(
 		http.MethodPost,
 		"/emails/reset-password-code",
 		strings.NewReader(body),
 	)
-	req.Header.Set("Content-Type", "application/json")
+	r.Header.Set("Content-Type", "application/json")
 	w := httptest.NewRecorder()
 
-	handler.SendResetPasswordCodeHandler(w, req)
+	handler.SendResetPasswordCodeHandler(w, r)
 
-	res := w.Result()
+	response := w.Result()
 
-	require.Equal(t, http.StatusAccepted, res.StatusCode)
+	require.Equal(t, http.StatusAccepted, response.StatusCode)
 	usecaseMock.AssertCalled(t, "Request", mock.Anything)
 }
 
@@ -113,9 +107,7 @@ func TestSendResetPasswordCodeHandler_WhenUnexpectedErrorOccurs_ShouldReturnInte
 		On("Request", mock.Anything).
 		Return(errors.New("failed to request email sending"))
 
-	handler := rest.HandlerEmail{
-		Usecase: usecaseMock,
-	}
+	handler := rest.NewHandlerEmail(usecaseMock)
 
 	body := `{
 		"to": "user@test.com",
@@ -125,19 +117,19 @@ func TestSendResetPasswordCodeHandler_WhenUnexpectedErrorOccurs_ShouldReturnInte
 		"reset_password_link": "https://example.com/reset"
 	}`
 
-	req := httptest.NewRequest(
+	r := httptest.NewRequest(
 		http.MethodPost,
 		"/emails/reset-password-code",
 		strings.NewReader(body),
 	)
-	req.Header.Set("Content-Type", "application/json")
+	r.Header.Set("Content-Type", "application/json")
 
 	w := httptest.NewRecorder()
 
-	handler.SendResetPasswordCodeHandler(w, req)
+	handler.SendResetPasswordCodeHandler(w, r)
 
-	res := w.Result()
+	response := w.Result()
 
-	require.Equal(t, http.StatusInternalServerError, res.StatusCode)
+	require.Equal(t, http.StatusInternalServerError, response.StatusCode)
 	usecaseMock.AssertCalled(t, "Request", mock.Anything)
 }

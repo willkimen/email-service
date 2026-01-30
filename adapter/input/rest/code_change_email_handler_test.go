@@ -17,22 +17,20 @@ import (
 func TestSendChangeEmailCodeHandler_WhenRequestBodyIsInvalidJSON_ShouldReturnBadRequest(t *testing.T) {
 	usecaseMock := new(RequestEmailUseCaseMock)
 
-	handler := rest.HandlerEmail{
-		Usecase: usecaseMock,
-	}
+	handler := rest.NewHandlerEmail(usecaseMock)
 
-	req := httptest.NewRequest(
+	r := httptest.NewRequest(
 		http.MethodPost,
 		"/emails/change-email-code",
 		strings.NewReader("{invalid-json"),
 	)
 	w := httptest.NewRecorder()
 
-	handler.SendChangeEmailCodeHandler(w, req)
+	handler.SendChangeEmailCodeHandler(w, r)
 
-	res := w.Result()
+	response := w.Result()
 
-	require.Equal(t, http.StatusBadRequest, res.StatusCode)
+	require.Equal(t, http.StatusBadRequest, response.StatusCode)
 	usecaseMock.AssertNotCalled(t, "Request", mock.Anything)
 }
 
@@ -43,9 +41,7 @@ func TestSendChangeEmailCodeHandler_WhenValidationFails_ShouldReturnUnprocessabl
 		On("Request", mock.Anything).
 		Return(emailmessage.NewEmptyFieldError("verification_code"))
 
-	handler := rest.HandlerEmail{
-		Usecase: usecaseMock,
-	}
+	handler := rest.NewHandlerEmail(usecaseMock)
 
 	body := `{
 		"to": "user@test.com",
@@ -54,19 +50,19 @@ func TestSendChangeEmailCodeHandler_WhenValidationFails_ShouldReturnUnprocessabl
 		"code_expiration_hours": "2"
 	}`
 
-	req := httptest.NewRequest(
+	r := httptest.NewRequest(
 		http.MethodPost,
 		"/emails/change-email-code",
 		strings.NewReader(body),
 	)
-	req.Header.Set("Content-Type", "application/json")
+	r.Header.Set("Content-Type", "application/json")
 	w := httptest.NewRecorder()
 
-	handler.SendChangeEmailCodeHandler(w, req)
+	handler.SendChangeEmailCodeHandler(w, r)
 
-	res := w.Result()
+	response := w.Result()
 
-	require.Equal(t, http.StatusUnprocessableEntity, res.StatusCode)
+	require.Equal(t, http.StatusUnprocessableEntity, response.StatusCode)
 	usecaseMock.AssertCalled(t, "Request", mock.Anything)
 }
 
@@ -77,9 +73,7 @@ func TestSendChangeEmailCodeHandler_WhenRequestIsValid_ShouldReturnAccepted(t *t
 		On("Request", mock.Anything).
 		Return(nil)
 
-	handler := rest.HandlerEmail{
-		Usecase: usecaseMock,
-	}
+	handler := rest.NewHandlerEmail(usecaseMock)
 
 	body := `{
 		"to": "user@test.com",
@@ -88,19 +82,19 @@ func TestSendChangeEmailCodeHandler_WhenRequestIsValid_ShouldReturnAccepted(t *t
 		"code_expiration_hours": "2"
 	}`
 
-	req := httptest.NewRequest(
+	r := httptest.NewRequest(
 		http.MethodPost,
 		"/emails/change-email-code",
 		strings.NewReader(body),
 	)
-	req.Header.Set("Content-Type", "application/json")
+	r.Header.Set("Content-Type", "application/json")
 	w := httptest.NewRecorder()
 
-	handler.SendChangeEmailCodeHandler(w, req)
+	handler.SendChangeEmailCodeHandler(w, r)
 
-	res := w.Result()
+	response := w.Result()
 
-	require.Equal(t, http.StatusAccepted, res.StatusCode)
+	require.Equal(t, http.StatusAccepted, response.StatusCode)
 	usecaseMock.AssertCalled(t, "Request", mock.Anything)
 }
 
@@ -111,9 +105,7 @@ func TestSendChangeEmailCodeHandler_WhenUnexpectedErrorOccurs_ShouldReturnIntern
 		On("Request", mock.Anything).
 		Return(errors.New("failed to request email sending"))
 
-	handler := rest.HandlerEmail{
-		Usecase: usecaseMock,
-	}
+	handler := rest.NewHandlerEmail(usecaseMock)
 
 	body := `{
 		"to": "user@test.com",
@@ -122,19 +114,19 @@ func TestSendChangeEmailCodeHandler_WhenUnexpectedErrorOccurs_ShouldReturnIntern
 		"code_expiration_hours": "2"
 	}`
 
-	req := httptest.NewRequest(
+	r := httptest.NewRequest(
 		http.MethodPost,
 		"/emails/change-email-code",
 		strings.NewReader(body),
 	)
-	req.Header.Set("Content-Type", "application/json")
+	r.Header.Set("Content-Type", "application/json")
 
 	w := httptest.NewRecorder()
 
-	handler.SendChangeEmailCodeHandler(w, req)
+	handler.SendChangeEmailCodeHandler(w, r)
 
-	res := w.Result()
+	response := w.Result()
 
-	require.Equal(t, http.StatusInternalServerError, res.StatusCode)
+	require.Equal(t, http.StatusInternalServerError, response.StatusCode)
 	usecaseMock.AssertCalled(t, "Request", mock.Anything)
 }

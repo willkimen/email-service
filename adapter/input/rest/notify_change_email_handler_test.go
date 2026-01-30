@@ -17,22 +17,20 @@ import (
 func TestNotifyChangeEmailHandler_WhenRequestBodyIsInvalidJSON_ShouldReturnBadRequest(t *testing.T) {
 	usecaseMock := new(RequestEmailUseCaseMock)
 
-	handler := rest.HandlerEmail{
-		Usecase: usecaseMock,
-	}
+	handler := rest.NewHandlerEmail(usecaseMock)
 
-	req := httptest.NewRequest(
+	r := httptest.NewRequest(
 		http.MethodPost,
 		"/emails/notify-change-email",
 		strings.NewReader("{invalid-json"),
 	)
 	w := httptest.NewRecorder()
 
-	handler.NotifyChangeEmailHandler(w, req)
+	handler.NotifyChangeEmailHandler(w, r)
 
-	res := w.Result()
+	response := w.Result()
 
-	require.Equal(t, http.StatusBadRequest, res.StatusCode)
+	require.Equal(t, http.StatusBadRequest, response.StatusCode)
 	usecaseMock.AssertNotCalled(t, "Request", mock.Anything)
 }
 
@@ -43,9 +41,7 @@ func TestNotifyChangeEmailHandler_WhenValidationFails_ShouldReturnUnprocessableE
 		On("Request", mock.Anything).
 		Return(emailmessage.NewEmptyFieldError("login_link"))
 
-	handler := rest.HandlerEmail{
-		Usecase: usecaseMock,
-	}
+	handler := rest.NewHandlerEmail(usecaseMock)
 
 	body := `{
 		"to": "user@test.com",
@@ -53,19 +49,19 @@ func TestNotifyChangeEmailHandler_WhenValidationFails_ShouldReturnUnprocessableE
 		"login_link": ""
 	}`
 
-	req := httptest.NewRequest(
+	r := httptest.NewRequest(
 		http.MethodPost,
 		"/emails/notify-change-email",
 		strings.NewReader(body),
 	)
-	req.Header.Set("Content-Type", "application/json")
+	r.Header.Set("Content-Type", "application/json")
 	w := httptest.NewRecorder()
 
-	handler.NotifyChangeEmailHandler(w, req)
+	handler.NotifyChangeEmailHandler(w, r)
 
-	res := w.Result()
+	response := w.Result()
 
-	require.Equal(t, http.StatusUnprocessableEntity, res.StatusCode)
+	require.Equal(t, http.StatusUnprocessableEntity, response.StatusCode)
 	usecaseMock.AssertCalled(t, "Request", mock.Anything)
 }
 
@@ -76,9 +72,7 @@ func TestNotifyChangeEmailHandler_WhenRequestIsValid_ShouldReturnAccepted(t *tes
 		On("Request", mock.Anything).
 		Return(nil)
 
-	handler := rest.HandlerEmail{
-		Usecase: usecaseMock,
-	}
+	handler := rest.NewHandlerEmail(usecaseMock)
 
 	body := `{
 		"to": "user@test.com",
@@ -86,19 +80,19 @@ func TestNotifyChangeEmailHandler_WhenRequestIsValid_ShouldReturnAccepted(t *tes
 		"login_link": "https://example.com/login"
 	}`
 
-	req := httptest.NewRequest(
+	r := httptest.NewRequest(
 		http.MethodPost,
 		"/emails/notify-change-email",
 		strings.NewReader(body),
 	)
-	req.Header.Set("Content-Type", "application/json")
+	r.Header.Set("Content-Type", "application/json")
 	w := httptest.NewRecorder()
 
-	handler.NotifyChangeEmailHandler(w, req)
+	handler.NotifyChangeEmailHandler(w, r)
 
-	res := w.Result()
+	response := w.Result()
 
-	require.Equal(t, http.StatusAccepted, res.StatusCode)
+	require.Equal(t, http.StatusAccepted, response.StatusCode)
 	usecaseMock.AssertCalled(t, "Request", mock.Anything)
 }
 
@@ -109,9 +103,7 @@ func TestNotifyChangeEmailHandler_WhenUnexpectedErrorOccurs_ShouldReturnInternal
 		On("Request", mock.Anything).
 		Return(errors.New("failed to request email sending"))
 
-	handler := rest.HandlerEmail{
-		Usecase: usecaseMock,
-	}
+	handler := rest.NewHandlerEmail(usecaseMock)
 
 	body := `{
 		"to": "user@test.com",
@@ -119,19 +111,19 @@ func TestNotifyChangeEmailHandler_WhenUnexpectedErrorOccurs_ShouldReturnInternal
 		"login_link": "https://example.com/login"
 	}`
 
-	req := httptest.NewRequest(
+	r := httptest.NewRequest(
 		http.MethodPost,
 		"/emails/notify-change-email",
 		strings.NewReader(body),
 	)
-	req.Header.Set("Content-Type", "application/json")
+	r.Header.Set("Content-Type", "application/json")
 
 	w := httptest.NewRecorder()
 
-	handler.NotifyChangeEmailHandler(w, req)
+	handler.NotifyChangeEmailHandler(w, r)
 
-	res := w.Result()
+	response := w.Result()
 
-	require.Equal(t, http.StatusInternalServerError, res.StatusCode)
+	require.Equal(t, http.StatusInternalServerError, response.StatusCode)
 	usecaseMock.AssertCalled(t, "Request", mock.Anything)
 }

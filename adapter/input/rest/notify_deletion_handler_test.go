@@ -17,22 +17,20 @@ import (
 func TestNotifyDeletionHandler_WhenRequestBodyIsInvalidJSON_ShouldReturnBadRequest(t *testing.T) {
 	usecaseMock := new(RequestEmailUseCaseMock)
 
-	handler := rest.HandlerEmail{
-		Usecase: usecaseMock,
-	}
+	handler := rest.NewHandlerEmail(usecaseMock)
 
-	req := httptest.NewRequest(
+	r := httptest.NewRequest(
 		http.MethodPost,
 		"/emails/notify-deletion",
 		strings.NewReader("{invalid-json"),
 	)
 	w := httptest.NewRecorder()
 
-	handler.NotifyDeletionHandler(w, req)
+	handler.NotifyDeletionHandler(w, r)
 
-	res := w.Result()
+	response := w.Result()
 
-	require.Equal(t, http.StatusBadRequest, res.StatusCode)
+	require.Equal(t, http.StatusBadRequest, response.StatusCode)
 	usecaseMock.AssertNotCalled(t, "Request", mock.Anything)
 }
 
@@ -43,28 +41,26 @@ func TestNotifyDeletionHandler_WhenValidationFails_ShouldReturnUnprocessableEnti
 		On("Request", mock.Anything).
 		Return(emailmessage.NewEmptyFieldError("to"))
 
-	handler := rest.HandlerEmail{
-		Usecase: usecaseMock,
-	}
+	handler := rest.NewHandlerEmail(usecaseMock)
 
 	body := `{
 		"to": "",
 		"subject": "Account deleted"
 	}`
 
-	req := httptest.NewRequest(
+	r := httptest.NewRequest(
 		http.MethodPost,
 		"/emails/notify-deletion",
 		strings.NewReader(body),
 	)
-	req.Header.Set("Content-Type", "application/json")
+	r.Header.Set("Content-Type", "application/json")
 	w := httptest.NewRecorder()
 
-	handler.NotifyDeletionHandler(w, req)
+	handler.NotifyDeletionHandler(w, r)
 
-	res := w.Result()
+	response := w.Result()
 
-	require.Equal(t, http.StatusUnprocessableEntity, res.StatusCode)
+	require.Equal(t, http.StatusUnprocessableEntity, response.StatusCode)
 	usecaseMock.AssertCalled(t, "Request", mock.Anything)
 }
 
@@ -75,28 +71,26 @@ func TestNotifyDeletionHandler_WhenRequestIsValid_ShouldReturnAccepted(t *testin
 		On("Request", mock.Anything).
 		Return(nil)
 
-	handler := rest.HandlerEmail{
-		Usecase: usecaseMock,
-	}
+	handler := rest.NewHandlerEmail(usecaseMock)
 
 	body := `{
 		"to": "user@test.com",
 		"subject": "Account deleted"
 	}`
 
-	req := httptest.NewRequest(
+	r := httptest.NewRequest(
 		http.MethodPost,
 		"/emails/notify-deletion",
 		strings.NewReader(body),
 	)
-	req.Header.Set("Content-Type", "application/json")
+	r.Header.Set("Content-Type", "application/json")
 	w := httptest.NewRecorder()
 
-	handler.NotifyDeletionHandler(w, req)
+	handler.NotifyDeletionHandler(w, r)
 
-	res := w.Result()
+	response := w.Result()
 
-	require.Equal(t, http.StatusAccepted, res.StatusCode)
+	require.Equal(t, http.StatusAccepted, response.StatusCode)
 	usecaseMock.AssertCalled(t, "Request", mock.Anything)
 }
 
@@ -107,28 +101,26 @@ func TestNotifyDeletionHandler_WhenUnexpectedErrorOccurs_ShouldReturnInternalSer
 		On("Request", mock.Anything).
 		Return(errors.New("failed to request email sending"))
 
-	handler := rest.HandlerEmail{
-		Usecase: usecaseMock,
-	}
+	handler := rest.NewHandlerEmail(usecaseMock)
 
 	body := `{
 		"to": "user@test.com",
 		"subject": "Account deleted"
 	}`
 
-	req := httptest.NewRequest(
+	r := httptest.NewRequest(
 		http.MethodPost,
 		"/emails/notify-deletion",
 		strings.NewReader(body),
 	)
-	req.Header.Set("Content-Type", "application/json")
+	r.Header.Set("Content-Type", "application/json")
 
 	w := httptest.NewRecorder()
 
-	handler.NotifyDeletionHandler(w, req)
+	handler.NotifyDeletionHandler(w, r)
 
-	res := w.Result()
+	response := w.Result()
 
-	require.Equal(t, http.StatusInternalServerError, res.StatusCode)
+	require.Equal(t, http.StatusInternalServerError, response.StatusCode)
 	usecaseMock.AssertCalled(t, "Request", mock.Anything)
 }

@@ -10,3 +10,7 @@ import "emailservice/core/application/ports/input"
 type HandlerEmail struct {
 	Usecase inputport.RequestEmailSendUseCase
 }
+
+func NewHandlerEmail(usecase inputport.RequestEmailSendUseCase) *HandlerEmail {
+	return &HandlerEmail{Usecase: usecase}
+}

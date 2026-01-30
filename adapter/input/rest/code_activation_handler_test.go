@@ -17,18 +17,16 @@ import (
 func TestSendActivationCodeHandler_WhenRequestBodyIsInvalidJSON_ShouldReturnBadRequest(t *testing.T) {
 	usecaseMock := new(RequestEmailUseCaseMock)
 
-	handler := rest.HandlerEmail{
-		Usecase: usecaseMock,
-	}
+	    handler := rest.NewHandlerEmail(usecaseMock)
 
-	req := httptest.NewRequest(http.MethodPost, "/emails/activation-code", strings.NewReader("{invalid-json"))
+	r := httptest.NewRequest(http.MethodPost, "/emails/activation-code", strings.NewReader("{invalid-json"))
 	w := httptest.NewRecorder()
 
-	handler.SendActivationCodeHandler(w, req)
+	handler.SendActivationCodeHandler(w, r)
 
-	res := w.Result()
+	response := w.Result()
 
-	require.Equal(t, http.StatusBadRequest, res.StatusCode)
+	require.Equal(t, http.StatusBadRequest, response.StatusCode)
 	usecaseMock.AssertNotCalled(t, "Request", mock.Anything)
 }
 
@@ -39,9 +37,7 @@ func TestSendActivationCodeHandler_WhenValidationFails_ShouldReturnUnprocessable
 		On("Request", mock.Anything).
 		Return(emailmessage.NewEmptyFieldError("to"))
 
-	handler := rest.HandlerEmail{
-		Usecase: usecaseMock,
-	}
+	    handler := rest.NewHandlerEmail(usecaseMock)
 
 	body := `{
 		"to": "",
@@ -52,15 +48,15 @@ func TestSendActivationCodeHandler_WhenValidationFails_ShouldReturnUnprocessable
 		"activation_deadline_days": "7"
 	}`
 
-	req := httptest.NewRequest(http.MethodPost, "/emails/activation-code", strings.NewReader(body))
-	req.Header.Set("Content-Type", "application/json")
+	r := httptest.NewRequest(http.MethodPost, "/emails/activation-code", strings.NewReader(body))
+	r.Header.Set("Content-Type", "application/json")
 	w := httptest.NewRecorder()
 
-	handler.SendActivationCodeHandler(w, req)
+	handler.SendActivationCodeHandler(w, r)
 
-	res := w.Result()
+	response := w.Result()
 
-	require.Equal(t, http.StatusUnprocessableEntity, res.StatusCode)
+	require.Equal(t, http.StatusUnprocessableEntity, response.StatusCode)
 	usecaseMock.AssertCalled(t, "Request", mock.Anything)
 }
 
@@ -71,9 +67,7 @@ func TestSendActivationCodeHandler_WhenRequestIsValid_ShouldReturnAccepted(t *te
 		On("Request", mock.Anything).
 		Return(nil)
 
-	handler := rest.HandlerEmail{
-		Usecase: usecaseMock,
-	}
+	    handler := rest.NewHandlerEmail(usecaseMock)
 
 	body := `{
 		"to": "user@test.com",
@@ -84,15 +78,15 @@ func TestSendActivationCodeHandler_WhenRequestIsValid_ShouldReturnAccepted(t *te
 		"activation_deadline_days": "7"
 	}`
 
-	req := httptest.NewRequest(http.MethodPost, "/emails/activation-code", strings.NewReader(body))
-	req.Header.Set("Content-Type", "application/json")
+	r := httptest.NewRequest(http.MethodPost, "/emails/activation-code", strings.NewReader(body))
+	r.Header.Set("Content-Type", "application/json")
 	w := httptest.NewRecorder()
 
-	handler.SendActivationCodeHandler(w, req)
+	handler.SendActivationCodeHandler(w, r)
 
-	res := w.Result()
+	response := w.Result()
 
-	require.Equal(t, http.StatusAccepted, res.StatusCode)
+	require.Equal(t, http.StatusAccepted, response.StatusCode)
 	usecaseMock.AssertCalled(t, "Request", mock.Anything)
 }
 
@@ -103,9 +97,7 @@ func TestSendActivationCodeHandler_WhenUnexpectedErrorOccurs_ShouldReturnInterna
 		On("Request", mock.Anything).
 		Return(errors.New("failed to request email sending"))
 
-	handler := rest.HandlerEmail{
-		Usecase: usecaseMock,
-	}
+	    handler := rest.NewHandlerEmail(usecaseMock)
 
 	body := `{
 		"to": "user@test.com",
@@ -116,14 +108,14 @@ func TestSendActivationCodeHandler_WhenUnexpectedErrorOccurs_ShouldReturnInterna
 		"activation_deadline_days": "7"
 	}`
 
-	req := httptest.NewRequest(http.MethodPost, "/emails/activation-code", strings.NewReader(body))
-	req.Header.Set("Content-Type", "application/json")
+	r := httptest.NewRequest(http.MethodPost, "/emails/activation-code", strings.NewReader(body))
+	r.Header.Set("Content-Type", "application/json")
 	w := httptest.NewRecorder()
 
-	handler.SendActivationCodeHandler(w, req)
+	handler.SendActivationCodeHandler(w, r)
 
-	res := w.Result()
+	response := w.Result()
 
-	require.Equal(t, http.StatusInternalServerError, res.StatusCode)
+	require.Equal(t, http.StatusInternalServerError, response.StatusCode)
 	usecaseMock.AssertCalled(t, "Request", mock.Anything)
 }
