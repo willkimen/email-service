@@ -9,6 +9,7 @@ package emailmessage
 // represents an acceptable and consistent state.
 type EmailMessage interface {
 	ValidateData() error
+	TemplateID() string
 }
 
 // BaseMessage represents the common data required by all email messages.

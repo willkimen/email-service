@@ -7,15 +7,18 @@ package emailmessage
 // sending verification codes or notifying the user about completed
 // account-related actions.
 const (
-	TemplateActivationCodeID     = "activation_code"
-	TemplateChangeEmailCodeID    = "change_email_code"
-	TemplateChangePasswordCodeID = "change_password_code"
-	TemplateResetPasswordCodeID  = "reset_password_code"
-	TemplateDeletionCodeID       = "deletion_code"
+	TemplateActivationCodeID   = "activation_code"
+	TemplateNotifyActivationID = "notify_activation"
 
-	TemplateNotifyActivationID     = "notify_activation"
-	TemplateNotifyChangeEmailID    = "notify_change_email"
+	TemplateChangeEmailCodeID   = "change_email_code"
+	TemplateNotifyChangeEmailID = "notify_change_email"
+
+	TemplateChangePasswordCodeID   = "change_password_code"
 	TemplateNotifyChangePasswordID = "notify_change_password"
-	TemplateNotifyResetPasswordID  = "notify_reset_password"
-	TemplateNotifyDeletionID       = "notify_deletion"
+
+	TemplateResetPasswordCodeID   = "reset_password_code"
+	TemplateNotifyResetPasswordID = "notify_reset_password"
+
+	TemplateDeletionCodeID   = "deletion_code"
+	TemplateNotifyDeletionID = "notify_deletion"
 )
