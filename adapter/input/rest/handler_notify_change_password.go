@@ -8,7 +8,7 @@ import (
 //
 // It decodes the request body into a NotifyChangePasswordDTO and delegates
 // validation and processing to the shared email request handler.
-func (h *SendEmailHandler) NotifyChangePasswordHandler(w http.ResponseWriter, r *http.Request) {
+func (s *SendEmailHandler) NotifyChangePasswordHandler(w http.ResponseWriter, r *http.Request) {
 	var dto NotifyChangePasswordDTO
-	h.handleEmailRequest(w, r, &dto)
+	s.handleEmailRequest(w, r, &dto)
 }

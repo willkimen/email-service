@@ -9,7 +9,7 @@ import (
 // It decodes the incoming request into a NotifyDeletionDTO and forwards it
 // to the common email request handling flow, which performs validation and
 // dispatches the email request asynchronously.
-func (h *SendEmailHandler) NotifyDeletionHandler(w http.ResponseWriter, r *http.Request) {
+func (s *SendEmailHandler) NotifyDeletionHandler(w http.ResponseWriter, r *http.Request) {
 	var dto NotifyDeletionDTO
-	h.handleEmailRequest(w, r, &dto)
+	s.handleEmailRequest(w, r, &dto)
 }

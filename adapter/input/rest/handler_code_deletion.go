@@ -10,11 +10,11 @@ import (
 // This handler only coordinates the HTTP layer and delegates
 // request parsing, validation, use case execution and response
 // handling to the shared helper.
-func (h *SendEmailHandler) SendDeletionCodeHandler(w http.ResponseWriter, r *http.Request) {
+func (s *SendEmailHandler) SendDeletionCodeHandler(w http.ResponseWriter, r *http.Request) {
 	// DeletionCodeDTO represents the expected payload
 	// for requesting an account deletion verification code.
 	var dto DeletionCodeDTO
 
 	// Delegate the request handling flow to the shared helper.
-	h.handleEmailRequest(w, r, &dto)
+	s.handleEmailRequest(w, r, &dto)
 }

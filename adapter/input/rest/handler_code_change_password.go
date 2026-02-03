@@ -10,11 +10,11 @@ import (
 // This handler is responsible only for HTTP-level concerns and
 // delegates request decoding, validation, use case execution
 // and response handling to the shared helper.
-func (h *SendEmailHandler) SendChangePasswordCodeHandler(w http.ResponseWriter, r *http.Request) {
+func (s *SendEmailHandler) SendChangePasswordCodeHandler(w http.ResponseWriter, r *http.Request) {
 	// ChangePasswordCodeDTO represents the expected payload
 	// for requesting a change password verification code.
 	var dto ChangePasswordCodeDTO
 
 	// Delegate the full request handling flow to the shared helper.
-	h.handleEmailRequest(w, r, &dto)
+	s.handleEmailRequest(w, r, &dto)
 }

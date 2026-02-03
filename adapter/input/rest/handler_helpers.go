@@ -14,7 +14,7 @@ import (
 type envelope map[string]any
 
 // writeJSON serializes the given envelope into JSON.
-func (h *SendEmailHandler) writeJSON(data envelope) ([]byte, error) {
+func (s *SendEmailHandler) writeJSON(data envelope) ([]byte, error) {
 	js, err := json.Marshal(data)
 	if err != nil {
 		return nil, err
@@ -24,7 +24,7 @@ func (h *SendEmailHandler) writeJSON(data envelope) ([]byte, error) {
 }
 
 // writeResponse writes the HTTP status code and JSON body to the response.
-func (h *SendEmailHandler) writeResponse(w http.ResponseWriter, status int, json []byte) {
+func (s *SendEmailHandler) writeResponse(w http.ResponseWriter, status int, json []byte) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
 	w.Write(json)
@@ -33,7 +33,7 @@ func (h *SendEmailHandler) writeResponse(w http.ResponseWriter, status int, json
 // serverErrorResponse sends a generic 500 response.
 //
 // This is used as a defensive fallback for unexpected infrastructure failures.
-func (h *SendEmailHandler) serverErrorResponse(w http.ResponseWriter, r *http.Request) {
+func (s *SendEmailHandler) serverErrorResponse(w http.ResponseWriter, r *http.Request) {
 	http.Error(
 		w,
 		http.StatusText(http.StatusInternalServerError),
@@ -45,25 +45,25 @@ func (h *SendEmailHandler) serverErrorResponse(w http.ResponseWriter, r *http.Re
 //
 // If JSON serialization fails, a 500 Internal Server Error is returned.
 // This situation represents an unexpected infrastructure failure.
-func (h *SendEmailHandler) respond(
+func (s *SendEmailHandler) respond(
 	w http.ResponseWriter,
 	r *http.Request,
 	status int,
 	data envelope,
 ) {
-	json, err := h.writeJSON(data)
+	json, err := s.writeJSON(data)
 	if err != nil {
-		h.serverErrorResponse(w, r)
+		s.serverErrorResponse(w, r)
 		return
 	}
-	h.writeResponse(w, status, json)
+	s.writeResponse(w, status, json)
 }
 
 // readJSON decodes and validates the JSON request body.
 //
 // It enforces size limits, disallows unknown fields, and ensures
 // that the request body contains exactly one JSON value.
-func (h *SendEmailHandler) readJSON(w http.ResponseWriter, r *http.Request, dto any) error {
+func (s *SendEmailHandler) readJSON(w http.ResponseWriter, r *http.Request, dto any) error {
 	maxBytes := 1_048_576
 	r.Body = http.MaxBytesReader(w, r.Body, int64(maxBytes))
 
@@ -123,24 +123,24 @@ func (h *SendEmailHandler) readJSON(w http.ResponseWriter, r *http.Request, dto 
 // - Converting the DTO into an email message
 // - Delegating the request to the application use case
 // - Mapping infrastructure errors to HTTP responses
-func (h *SendEmailHandler) handleEmailRequest(w http.ResponseWriter, r *http.Request, dto EmailRequestDTO) {
+func (s *SendEmailHandler) handleEmailRequest(w http.ResponseWriter, r *http.Request, dto EmailRequestDTO) {
 	// Possible responses:
 	// - 202 Accepted: request accepted for asynchronous processing
 	// - 400 Bad Request: malformed or invalid JSON payload
 	// - 422 Unprocessable Entity: field validation error
 	// - 500 Internal Server Error: unexpected internal failure
-	err := h.readJSON(w, r, dto)
+	err := s.readJSON(w, r, dto)
 	if err != nil {
-		h.respond(w, r, http.StatusBadRequest, envelope{"error": err.Error()})
+		s.respond(w, r, http.StatusBadRequest, envelope{"error": err.Error()})
 		return
 	}
 
-	err = h.Usecase.Request(dto.ToEmailMessage())
+	err = s.Usecase.Request(dto.ToEmailMessage())
 	if err != nil {
 		var validationErr emailmessage.FieldValidationError
 
 		if errors.As(err, &validationErr) {
-			h.respond(
+			s.respond(
 				w,
 				r,
 				http.StatusUnprocessableEntity,
@@ -149,7 +149,7 @@ func (h *SendEmailHandler) handleEmailRequest(w http.ResponseWriter, r *http.Req
 			return
 		}
 
-		h.respond(
+		s.respond(
 			w,
 			r,
 			http.StatusInternalServerError,
@@ -158,5 +158,5 @@ func (h *SendEmailHandler) handleEmailRequest(w http.ResponseWriter, r *http.Req
 		return
 	}
 
-	h.respond(w, r, http.StatusAccepted, envelope{"status": "accepted"})
+	s.respond(w, r, http.StatusAccepted, envelope{"status": "accepted"})
 }
