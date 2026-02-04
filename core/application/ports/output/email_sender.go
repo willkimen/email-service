@@ -1,12 +1,12 @@
 package outputport
 
-// SendEmailService defines the output port responsible for delivering
+// SendEmailOutputPort defines the output port responsible for delivering
 // an email to an external email provider.
 //
 // Implementations of this interface encapsulate the integration with
 // SMTP servers or third-party email services and are responsible only
 // for sending the email, not for rendering content or validating data.
-type SendEmailService interface {
+type SendEmailOutputPort interface {
 	// SendEmail sends an email using the given destination, subject,
 	// and rendered body content.
 	//

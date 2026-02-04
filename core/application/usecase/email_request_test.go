@@ -9,7 +9,7 @@ import (
 )
 
 func TestWhenMessageIsInvalid_RequestIsRejected(t *testing.T) {
-	request := usecase.RequestSendEmail{Publisher: publisherSuccessFake{}}
+	request := usecase.RequestSendEmailUseCase{Publisher: publisherSuccessFake{}}
 	err := request.Request(invalidMessage)
 
 	assert.NotNil(t, err)
@@ -20,7 +20,7 @@ func TestWhenMessageIsInvalid_RequestIsRejected(t *testing.T) {
 }
 
 func TestWhenPublisherFails_RequestFails(t *testing.T) {
-	request := usecase.RequestSendEmail{Publisher: publishFailureFake{}}
+	request := usecase.RequestSendEmailUseCase{Publisher: publishFailureFake{}}
 	err := request.Request(messageCorrect)
 
 	assert.NotNil(t, err)
@@ -28,7 +28,7 @@ func TestWhenPublisherFails_RequestFails(t *testing.T) {
 }
 
 func TestSuccessfulRequest(t *testing.T) {
-	request := usecase.RequestSendEmail{Publisher: publisherSuccessFake{}}
+	request := usecase.RequestSendEmailUseCase{Publisher: publisherSuccessFake{}}
 	err := request.Request(messageCorrect)
 
 	assert.Nil(t, err)

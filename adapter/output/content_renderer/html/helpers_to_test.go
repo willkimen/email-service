@@ -1,6 +1,6 @@
 package renderer
 
-var renderer = &HTMLEmailRenderer{}
+var renderer = &HTMLEmailContentRendererAdapter{}
 
 type FakeEmailMessageWithTemplateIDNotExist struct{}
 

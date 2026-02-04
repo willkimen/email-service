@@ -8,9 +8,9 @@ import "emailservice/core/application/ports/input"
 // into domain messages, and delegating execution to the appropriate
 // application use case.
 type SendEmailHandler struct {
-	Usecase inputport.RequestEmailSendUseCase
+	Usecase inputport.RequestSendEmailInputPort
 }
 
-func NewSendEmailHandler(usecase inputport.RequestEmailSendUseCase) *SendEmailHandler {
+func NewSendEmailHandler(usecase inputport.RequestSendEmailInputPort) *SendEmailHandler {
 	return &SendEmailHandler{Usecase: usecase}
 }
