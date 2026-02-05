@@ -11,5 +11,5 @@ type SendEmailOutputPort interface {
 	// and rendered body content.
 	//
 	// It returns an error if the email cannot be delivered.
-	SendEmail(to, subject, body string) error
+	SendEmail(to, subject, body string) (string, error)
 }
