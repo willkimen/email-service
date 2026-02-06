@@ -49,3 +49,4 @@ func (FakeEmailMessage) ValidateData() error { return nil }
 func (FakeEmailMessage) TemplateID() string  { return "anytemplate" }
 func (FakeEmailMessage) GetTo() string       { return "to" }
 func (FakeEmailMessage) GetSubject() string  { return "subject" }
+func (FakeEmailMessage) GetBodyData() any    { return nil }

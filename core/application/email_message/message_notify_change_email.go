@@ -19,6 +19,21 @@ func (NotifyChangeEmail) TemplateID() string {
 	return TemplateNotifyChangeEmailID
 }
 
+// GetBodyData returns the data structure used to populate the email template
+// associated with the entity.
+//
+// The returned value contains only the fields required by the template
+// renderer and represents a read-only projection of the entity.
+// This method does not apply formatting or validation logic;
+// it simply exposes the data needed for template interpolation.
+func (n *NotifyChangeEmail) GetBodyData() any {
+	return struct {
+		LoginLink string
+	}{
+		LoginLink: n.LoginLink,
+	}
+}
+
 func NewNotifyChangeEmail(
 	to, subject, loginLink string,
 ) *NotifyChangeEmail {

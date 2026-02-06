@@ -12,6 +12,7 @@ type EmailMessage interface {
 	TemplateID() string
 	GetTo() string
 	GetSubject() string
+	GetBodyData() any
 }
 
 // BaseMessage represents the common data required by all email messages.

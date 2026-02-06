@@ -19,6 +19,27 @@ func (ActivationCode) TemplateID() string {
 	return TemplateActivationCodeID
 }
 
+// GetBodyData returns the data structure used to populate the email template
+// associated with the entity.
+//
+// The returned value contains only the fields required by the template
+// renderer and represents a read-only projection of the entity.
+// This method does not apply formatting or validation logic;
+// it simply exposes the data needed for template interpolation.
+func (a *ActivationCode) GetBodyData() any {
+	return struct {
+		VerificationCode       string
+		CodeExpirationHours    string
+		ActivationLink         string
+		ActivationDeadlineDays string
+	}{
+		VerificationCode:       a.VerificationCode,
+		CodeExpirationHours:    a.CodeExpirationHours,
+		ActivationLink:         a.ActivationLink,
+		ActivationDeadlineDays: a.ActivationDeadlineDays,
+	}
+}
+
 func NewActivationCode(
 	to, subject, verificationCode, activationLink,
 	codeExpirationHours, activationDeadlineDays string,
