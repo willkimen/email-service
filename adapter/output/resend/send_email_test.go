@@ -7,7 +7,6 @@ import (
 	"testing"
 
 	"github.com/joho/godotenv"
-	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
@@ -27,12 +26,11 @@ func TestResendEmailSenderAdapter_SendEmail_Integration(t *testing.T) {
 
 	adapter := &ResendEmailSenderAdapter{}
 
-	emailID, err := adapter.SendEmail(
+	err = adapter.SendEmail(
 		"delivered@resend.dev",
 		"Integration test email",
 		"<p>Integration test</p>",
 	)
 
 	require.NoError(t, err)
-	assert.NotEmpty(t, emailID)
 }
