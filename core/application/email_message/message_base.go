@@ -10,6 +10,8 @@ package emailmessage
 type EmailMessage interface {
 	ValidateData() error
 	TemplateID() string
+	GetTo() string
+	GetSubject() string
 }
 
 // BaseMessage represents the common data required by all email messages.
@@ -18,6 +20,14 @@ type EmailMessage interface {
 type BaseMessage struct {
 	To      string
 	Subject string
+}
+
+func (b *BaseMessage) GetTo() string {
+	return b.To
+}
+
+func (b *BaseMessage) GetSubject() string {
+	return b.Subject
 }
 
 // BaseCodeMessage represents shared data for email messages that rely
