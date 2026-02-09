@@ -12,7 +12,7 @@ func TestNotifyDeletion_IsCreatedCorrectly(t *testing.T) {
 
 	assert.Equal(t, to, actualNotify.To)
 	assert.Equal(t, subject, actualNotify.Subject)
-	assert.Equal(t, emailmessage.TemplateNotifyDeletionID, actualNotify.TemplateID())
+	assert.Equal(t, emailmessage.EmailTypeNotifyDeletion, actualNotify.GetEmailType())
 	assert.Nil(t, actualNotify.ValidateData())
 }
 

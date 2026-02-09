@@ -12,19 +12,10 @@ type NotifyActivation struct {
 	LoginLink string
 }
 
-// TemplateID returns the identifier of the email template
-// associated with the activation notification.
-func (NotifyActivation) TemplateID() string {
-	return TemplateNotifyActivationID
+func (NotifyActivation) GetEmailType() string {
+	return EmailTypeNotifyActivation
 }
 
-// GetBodyData returns the data structure used to populate the email template
-// associated with the entity.
-//
-// The returned value contains only the fields required by the template
-// renderer and represents a read-only projection of the entity.
-// This method does not apply formatting or validation logic;
-// it simply exposes the data needed for template interpolation.
 func (n *NotifyActivation) GetBodyData() any {
 	return struct {
 		LoginLink string

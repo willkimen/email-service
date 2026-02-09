@@ -7,7 +7,7 @@
 package emailsender
 
 import (
-	emailerrors "emailservice/core/application/email_errors"
+	"emailservice/core/application/email_errors"
 	"errors"
 	"fmt"
 	"os"

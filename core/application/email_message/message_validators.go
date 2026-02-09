@@ -55,9 +55,6 @@ func validateRequiredFields(fields ...fieldRule) error {
 	return nil
 }
 
-// ValidateData validates the minimal required state for any email message.
-// All messages must define a recipient and a subject, and the email
-// address must be syntactically valid.
 func (b *BaseMessage) ValidateData() error {
 	if err := validateRequiredFields(
 		fieldRule{b.To, FieldTo},
@@ -73,8 +70,6 @@ func (b *BaseMessage) ValidateData() error {
 	return nil
 }
 
-// ValidateData validates fields common to code-based emails.
-// Code-based messages must define a verification code and its expiration.
 func (b *BaseCodeMessage) ValidateData() error {
 	if err := validateRequiredFields(
 		fieldRule{b.VerificationCode, FieldVerificationCode},
@@ -86,8 +81,6 @@ func (b *BaseCodeMessage) ValidateData() error {
 	return nil
 }
 
-// ValidateData validates activation code emails.
-// In addition to base validations, activation-specific data must be present.
 func (a *ActivationCode) ValidateData() error {
 	if err := a.BaseMessage.ValidateData(); err != nil {
 		return err
@@ -107,8 +100,6 @@ func (a *ActivationCode) ValidateData() error {
 	return nil
 }
 
-// ValidateData validates change email code messages.
-// No additional fields are required beyond BaseMessage and BaseCodeMessage.
 func (c *ChangeEmailCode) ValidateData() error {
 	if err := c.BaseMessage.ValidateData(); err != nil {
 		return err
@@ -121,8 +112,6 @@ func (c *ChangeEmailCode) ValidateData() error {
 	return nil
 }
 
-// ValidateData validates reset password code messages.
-// A reset password link must be provided.
 func (r *ResetPasswordCode) ValidateData() error {
 	if err := r.BaseMessage.ValidateData(); err != nil {
 		return err
@@ -141,8 +130,6 @@ func (r *ResetPasswordCode) ValidateData() error {
 	return nil
 }
 
-// ValidateData validates account deletion code messages.
-// Only base email and code-related fields are required.
 func (d *DeletionCode) ValidateData() error {
 	if err := d.BaseMessage.ValidateData(); err != nil {
 		return err
@@ -155,8 +142,6 @@ func (d *DeletionCode) ValidateData() error {
 	return nil
 }
 
-// ValidateData validates change password code messages.
-// No additional fields beyond BaseMessage and BaseCodeMessage are required.
 func (c *ChangePasswordCode) ValidateData() error {
 	if err := c.BaseMessage.ValidateData(); err != nil {
 		return err
@@ -169,8 +154,6 @@ func (c *ChangePasswordCode) ValidateData() error {
 	return nil
 }
 
-// ValidateData validates activation notification emails.
-// A login link must be present to allow user access.
 func (p *NotifyActivation) ValidateData() error {
 	if err := p.BaseMessage.ValidateData(); err != nil {
 		return err
@@ -185,8 +168,6 @@ func (p *NotifyActivation) ValidateData() error {
 	return nil
 }
 
-// ValidateData validates change email notification emails.
-// A login link is required to allow user confirmation.
 func (n *NotifyChangeEmail) ValidateData() error {
 	if err := n.BaseMessage.ValidateData(); err != nil {
 		return err
@@ -201,8 +182,6 @@ func (n *NotifyChangeEmail) ValidateData() error {
 	return nil
 }
 
-// ValidateData validates reset password notification emails.
-// A login link must be provided.
 func (n *NotifyResetPassword) ValidateData() error {
 	if err := n.BaseMessage.ValidateData(); err != nil {
 		return err
@@ -217,8 +196,6 @@ func (n *NotifyResetPassword) ValidateData() error {
 	return nil
 }
 
-// ValidateData validates account deletion notification emails.
-// Only base email fields are required.
 func (n *NotifyDeletion) ValidateData() error {
 	if err := n.BaseMessage.ValidateData(); err != nil {
 		return err
@@ -227,8 +204,6 @@ func (n *NotifyDeletion) ValidateData() error {
 	return nil
 }
 
-// ValidateData validates change password notification emails.
-// A login link is required to allow user access.
 func (n *NotifyChangePassword) ValidateData() error {
 	if err := n.BaseMessage.ValidateData(); err != nil {
 		return err

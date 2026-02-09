@@ -14,7 +14,7 @@ func TestChangePasswordCode_IsCreatedCorrectly(t *testing.T) {
 	assert.Equal(t, subject, actualChange.Subject)
 	assert.Equal(t, verificationCode, actualChange.VerificationCode)
 	assert.Equal(t, codeExpiratinoHours, actualChange.CodeExpirationHours)
-	assert.Equal(t, emailmessage.TemplateChangePasswordCodeID, actualChange.TemplateID())
+	assert.Equal(t, emailmessage.EmailTypeChangePasswordCode, actualChange.GetEmailType())
 	assert.Nil(t, actualChange.ValidateData())
 }
 

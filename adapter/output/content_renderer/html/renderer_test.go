@@ -7,8 +7,8 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestRender_WhenTemplateIDDoesNotExist_ShouldReturnError(t *testing.T) {
-	emailMessage := FakeEmailMessageWithTemplateIDNotExist{}
+func TestRender_WhenEmailTypeDoesNotExist_ShouldReturnError(t *testing.T) {
+	emailMessage := FakeEmailMessageWithEmailTypeNotExist{}
 	_, err := renderer.Render(emailMessage)
 
 	assert.Error(t, err)

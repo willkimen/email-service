@@ -14,7 +14,7 @@ func TestChangeEmailCode_IsCreatedCorrectly(t *testing.T) {
 	assert.Equal(t, subject, actualChange.Subject)
 	assert.Equal(t, verificationCode, actualChange.VerificationCode)
 	assert.Equal(t, codeExpiratinoHours, actualChange.CodeExpirationHours)
-	assert.Equal(t, emailmessage.TemplateChangeEmailCodeID, actualChange.TemplateID())
+	assert.Equal(t, emailmessage.EmailTypeChangeEmailCode, actualChange.GetEmailType())
 	assert.Nil(t, actualChange.ValidateData())
 }
 

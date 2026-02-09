@@ -13,19 +13,10 @@ type NotifyResetPassword struct {
 	LoginLink string
 }
 
-// TemplateID returns the identifier of the email template
-// associated with the password reset notification.
-func (NotifyResetPassword) TemplateID() string {
-	return TemplateNotifyResetPasswordID
+func (NotifyResetPassword) GetEmailType() string {
+	return EmailTypeNotifyResetPassword
 }
 
-// GetBodyData returns the data structure used to populate the email template
-// associated with the entity.
-//
-// The returned value contains only the fields required by the template
-// renderer and represents a read-only projection of the entity.
-// This method does not apply formatting or validation logic;
-// it simply exposes the data needed for template interpolation.
 func (n *NotifyResetPassword) GetBodyData() any {
 	return struct {
 		LoginLink string

@@ -2,20 +2,20 @@ package renderer
 
 var renderer = &HTMLEmailContentRendererAdapter{}
 
-type FakeEmailMessageWithTemplateIDNotExist struct{}
+type FakeEmailMessageWithEmailTypeNotExist struct{}
 
-func (FakeEmailMessageWithTemplateIDNotExist) ValidateData() error { return nil }
-func (FakeEmailMessageWithTemplateIDNotExist) TemplateID() string  { return "TemplateNotExist" }
-func (FakeEmailMessageWithTemplateIDNotExist) GetTo() string       { return "to" }
-func (FakeEmailMessageWithTemplateIDNotExist) GetSubject() string  { return "subject" }
-func (FakeEmailMessageWithTemplateIDNotExist) GetBodyData() any    { return nil }
+func (FakeEmailMessageWithEmailTypeNotExist) ValidateData() error  { return nil }
+func (FakeEmailMessageWithEmailTypeNotExist) GetEmailType() string { return "EmailTypeNotExist" }
+func (FakeEmailMessageWithEmailTypeNotExist) GetTo() string        { return "to" }
+func (FakeEmailMessageWithEmailTypeNotExist) GetSubject() string   { return "subject" }
+func (FakeEmailMessageWithEmailTypeNotExist) GetBodyData() any     { return nil }
 
 type FakeEmailMessageWithDataInvalid struct {
 	FieldNotExist string
 }
 
-func (FakeEmailMessageWithDataInvalid) ValidateData() error { return nil }
-func (FakeEmailMessageWithDataInvalid) TemplateID() string  { return "activation_code" }
-func (FakeEmailMessageWithDataInvalid) GetTo() string       { return "to" }
-func (FakeEmailMessageWithDataInvalid) GetSubject() string  { return "subject" }
-func (FakeEmailMessageWithDataInvalid) GetBodyData() any    { return nil }
+func (FakeEmailMessageWithDataInvalid) ValidateData() error  { return nil }
+func (FakeEmailMessageWithDataInvalid) GetEmailType() string { return "activation_code" }
+func (FakeEmailMessageWithDataInvalid) GetTo() string        { return "to" }
+func (FakeEmailMessageWithDataInvalid) GetSubject() string   { return "subject" }
+func (FakeEmailMessageWithDataInvalid) GetBodyData() any     { return nil }

@@ -14,7 +14,7 @@ func TestDeletionCode_IsCreatedCorrectly(t *testing.T) {
 	assert.Equal(t, subject, actualDeletion.Subject)
 	assert.Equal(t, verificationCode, actualDeletion.VerificationCode)
 	assert.Equal(t, codeExpiratinoHours, actualDeletion.CodeExpirationHours)
-	assert.Equal(t, emailmessage.TemplateDeletionCodeID, actualDeletion.TemplateID())
+	assert.Equal(t, emailmessage.EmailTypeDeletionCode, actualDeletion.GetEmailType())
 	assert.Nil(t, actualDeletion.ValidateData())
 }
 

@@ -15,7 +15,7 @@ func TestResetPasswordCode_IsCreatedCorrectly(t *testing.T) {
 	assert.Equal(t, verificationCode, actualReset.VerificationCode)
 	assert.Equal(t, link, actualReset.ResetPasswordLink)
 	assert.Equal(t, codeExpiratinoHours, actualReset.CodeExpirationHours)
-	assert.Equal(t, emailmessage.TemplateResetPasswordCodeID, actualReset.TemplateID())
+	assert.Equal(t, emailmessage.EmailTypeResetPasswordCode, actualReset.GetEmailType())
 	assert.Nil(t, actualReset.ValidateData())
 }
 

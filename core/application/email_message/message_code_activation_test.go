@@ -16,7 +16,7 @@ func TestActivationCode_IsCreatedCorrectly(t *testing.T) {
 	assert.Equal(t, link, actualActivation.ActivationLink)
 	assert.Equal(t, codeExpiratinoHours, actualActivation.CodeExpirationHours)
 	assert.Equal(t, activationDeadlineDays, actualActivation.ActivationDeadlineDays)
-	assert.Equal(t, emailmessage.TemplateActivationCodeID, actualActivation.TemplateID())
+	assert.Equal(t, emailmessage.EmailTypeActivationCode, actualActivation.GetEmailType())
 	assert.Nil(t, actualActivation.ValidateData())
 }
 

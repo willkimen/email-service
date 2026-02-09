@@ -11,7 +11,7 @@ func TestNotifyChangeEmail_IsCreatedCorrectly(t *testing.T) {
 	assert.Equal(t, to, actualNotify.To)
 	assert.Equal(t, subject, actualNotify.Subject)
 	assert.Equal(t, link, actualNotify.LoginLink)
-	assert.Equal(t, emailmessage.TemplateNotifyChangeEmailID, actualNotify.TemplateID())
+	assert.Equal(t, emailmessage.EmailTypeNotifyChangeEmail, actualNotify.GetEmailType())
 	assert.Nil(t, actualNotify.ValidateData())
 }
 

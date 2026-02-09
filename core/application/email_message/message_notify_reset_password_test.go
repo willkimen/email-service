@@ -13,7 +13,7 @@ func TestNotifyResetPassword_IsCreatedCorrectly(t *testing.T) {
 	assert.Equal(t, to, actualNotify.To)
 	assert.Equal(t, subject, actualNotify.Subject)
 	assert.Equal(t, link, actualNotify.LoginLink)
-	assert.Equal(t, emailmessage.TemplateNotifyResetPasswordID, actualNotify.TemplateID())
+	assert.Equal(t, emailmessage.EmailTypeNotifyResetPassword, actualNotify.GetEmailType())
 	assert.Nil(t, actualNotify.ValidateData())
 }
 
