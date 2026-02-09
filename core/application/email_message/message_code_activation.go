@@ -1,11 +1,7 @@
 package emailmessage
 
-// ActivationCode represents the email message used to deliver an account
-// activation code and related activation details to the user.
-type ActivationCode struct {
-	BaseMessage
+type ActivationCodeBody struct {
 	BaseCodeMessage
-
 	// ActivationLink is the URL the user must access to activate the account.
 	ActivationLink string
 
@@ -13,22 +9,19 @@ type ActivationCode struct {
 	ActivationDeadlineDays string
 }
 
+// ActivationCode represents the email message used to deliver an account
+// activation code and related activation details to the user.
+type ActivationCode struct {
+	BaseMessage
+	ActivationCodeBody
+}
+
 func (ActivationCode) GetEmailType() string {
 	return EmailTypeActivationCode
 }
 
 func (a *ActivationCode) GetBodyData() any {
-	return struct {
-		VerificationCode       string
-		CodeExpirationHours    string
-		ActivationLink         string
-		ActivationDeadlineDays string
-	}{
-		VerificationCode:       a.VerificationCode,
-		CodeExpirationHours:    a.CodeExpirationHours,
-		ActivationLink:         a.ActivationLink,
-		ActivationDeadlineDays: a.ActivationDeadlineDays,
-	}
+	return a.ActivationCodeBody
 }
 
 func NewActivationCode(

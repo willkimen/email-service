@@ -1,5 +1,11 @@
 package emailmessage
 
+type NotifyChangeEmailBody struct {
+	// LoginLink defines the URL the user should use to access the system
+	// after the email change is completed.
+	LoginLink string
+}
+
 // NotifyChangeEmail represents an email notification sent after
 // a user's email address has been successfully changed.
 //
@@ -7,10 +13,7 @@ package emailmessage
 // a link to access the system.
 type NotifyChangeEmail struct {
 	BaseMessage
-
-	// LoginLink defines the URL the user should use to access the system
-	// after the email change is completed.
-	LoginLink string
+	NotifyChangeEmailBody
 }
 
 func (NotifyChangeEmail) GetEmailType() string {
@@ -18,11 +21,7 @@ func (NotifyChangeEmail) GetEmailType() string {
 }
 
 func (n *NotifyChangeEmail) GetBodyData() any {
-	return struct {
-		LoginLink string
-	}{
-		LoginLink: n.LoginLink,
-	}
+	return n.NotifyChangeEmailBody
 }
 
 func NewNotifyChangeEmail(

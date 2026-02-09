@@ -1,5 +1,11 @@
 package emailmessage
 
+type NotifyResetPasswordBody struct {
+	// LoginLink defines the URL the user can use to access
+	// the application after resetting the password.
+	LoginLink string
+}
+
 // NotifyResetPassword represents an email notification sent after
 // a password reset has been completed.
 //
@@ -7,10 +13,7 @@ package emailmessage
 // was successfully changed and provides a link for login.
 type NotifyResetPassword struct {
 	BaseMessage
-
-	// LoginLink defines the URL the user can use to access
-	// the application after resetting the password.
-	LoginLink string
+	NotifyResetPasswordBody
 }
 
 func (NotifyResetPassword) GetEmailType() string {
@@ -18,11 +21,7 @@ func (NotifyResetPassword) GetEmailType() string {
 }
 
 func (n *NotifyResetPassword) GetBodyData() any {
-	return struct {
-		LoginLink string
-	}{
-		LoginLink: n.LoginLink,
-	}
+	return n.NotifyResetPasswordBody
 }
 
 func NewNotifyResetPassword(

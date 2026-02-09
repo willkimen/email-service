@@ -1,10 +1,14 @@
 package emailmessage
 
+type ChangeEmailCodeBody struct {
+	BaseCodeMessage
+}
+
 // ChangeEmailCode represents the data required to send an email
 // containing a verification code for changing the user's email address.
 type ChangeEmailCode struct {
 	BaseMessage
-	BaseCodeMessage
+	ChangeEmailCodeBody
 }
 
 func (ChangeEmailCode) GetEmailType() string {
@@ -12,13 +16,7 @@ func (ChangeEmailCode) GetEmailType() string {
 }
 
 func (c *ChangeEmailCode) GetBodyData() any {
-	return struct {
-		VerificationCode    string
-		CodeExpirationHours string
-	}{
-		VerificationCode:    c.VerificationCode,
-		CodeExpirationHours: c.CodeExpirationHours,
-	}
+	return c.ChangeEmailCodeBody
 }
 
 func NewChangeEmailCode(

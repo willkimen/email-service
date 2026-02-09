@@ -1,5 +1,11 @@
 package emailmessage
 
+type NotifyChangePasswordBody struct {
+	// LoginLink defines the URL the user should use to access the system
+	// after the password change is completed.
+	LoginLink string
+}
+
 // NotifyChangePassword represents an email notification sent after
 // a user's password has been successfully changed.
 //
@@ -7,10 +13,7 @@ package emailmessage
 // and provide a link to access the system.
 type NotifyChangePassword struct {
 	BaseMessage
-
-	// LoginLink defines the URL the user should use to access the system
-	// after the password change is completed.
-	LoginLink string
+	NotifyChangePasswordBody
 }
 
 func (NotifyChangePassword) GetEmailType() string {
@@ -18,11 +21,7 @@ func (NotifyChangePassword) GetEmailType() string {
 }
 
 func (n *NotifyChangePassword) GetBodyData() any {
-	return struct {
-		LoginLink string
-	}{
-		LoginLink: n.LoginLink,
-	}
+	return n.NotifyChangePasswordBody
 }
 
 func NewNotifyChangePassword(

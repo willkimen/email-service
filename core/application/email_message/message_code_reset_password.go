@@ -1,9 +1,6 @@
 package emailmessage
 
-// ResetPasswordCode represents the data required to send an email
-// containing a verification code and link for password reset.
-type ResetPasswordCode struct {
-	BaseMessage
+type ResetPasswordCodeBody struct {
 	BaseCodeMessage
 
 	// ResetPasswordLink is the URL the user must access to complete
@@ -11,20 +8,19 @@ type ResetPasswordCode struct {
 	ResetPasswordLink string
 }
 
+// ResetPasswordCode represents the data required to send an email
+// containing a verification code and link for password reset.
+type ResetPasswordCode struct {
+	BaseMessage
+	ResetPasswordCodeBody
+}
+
 func (ResetPasswordCode) GetEmailType() string {
 	return EmailTypeResetPasswordCode
 }
 
 func (r *ResetPasswordCode) GetBodyData() any {
-	return struct {
-		VerificationCode    string
-		CodeExpirationHours string
-		ResetPasswordLink   string
-	}{
-		VerificationCode:    r.VerificationCode,
-		CodeExpirationHours: r.CodeExpirationHours,
-		ResetPasswordLink:   r.ResetPasswordLink,
-	}
+	return r.ResetPasswordCodeBody
 }
 
 func NewResetPasswordCode(

@@ -1,10 +1,14 @@
 package emailmessage
 
+type DeletionCodeBody struct {
+	BaseCodeMessage
+}
+
 // DeletionCode represents the data required to send an email
 // containing a verification code for account deletion operations.
 type DeletionCode struct {
 	BaseMessage
-	BaseCodeMessage
+	DeletionCodeBody
 }
 
 func (DeletionCode) GetEmailType() string {
@@ -12,13 +16,7 @@ func (DeletionCode) GetEmailType() string {
 }
 
 func (d *DeletionCode) GetBodyData() any {
-	return struct {
-		VerificationCode    string
-		CodeExpirationHours string
-	}{
-		VerificationCode:    d.VerificationCode,
-		CodeExpirationHours: d.CodeExpirationHours,
-	}
+	return d.DeletionCodeBody
 }
 
 func NewDeletionCode(

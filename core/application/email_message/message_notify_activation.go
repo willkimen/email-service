@@ -1,5 +1,10 @@
 package emailmessage
 
+type NotifyActivationBody struct {
+	// LoginLink defines the URL the user should access after activation.
+	LoginLink string
+}
+
 // NotifyActivation represents an email notification sent after
 // an account has been successfully activated.
 //
@@ -7,9 +12,7 @@ package emailmessage
 // process is complete and provides a link to access the system.
 type NotifyActivation struct {
 	BaseMessage
-
-	// LoginLink defines the URL the user should access after activation.
-	LoginLink string
+	NotifyActivationBody
 }
 
 func (NotifyActivation) GetEmailType() string {
@@ -17,11 +20,7 @@ func (NotifyActivation) GetEmailType() string {
 }
 
 func (n *NotifyActivation) GetBodyData() any {
-	return struct {
-		LoginLink string
-	}{
-		LoginLink: n.LoginLink,
-	}
+	return n.NotifyActivationBody
 }
 
 func NewNotifiyActivation(
