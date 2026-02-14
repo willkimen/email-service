@@ -1,0 +1,52 @@
+package emailpublisher
+
+import (
+	"emailservice/core/application/email_message"
+	"encoding/json"
+	"fmt"
+
+	"github.com/hibiken/asynq"
+)
+
+// AsynqEmailPublisherAdapter implements the output port responsible for
+// publishing email sending requests using Asynq as the asynchronous mechanism.
+//
+// This adapter belongs to the infrastructure layer and translates
+// a domain EmailMessage into a background task. It is responsible only
+// for serialization and task enqueueing, not for executing the email send itself.
+type AsynqEmailPublisherAdapter struct {
+	// Client is the Asynq client used to enqueue background tasks.
+	Client *asynq.Client
+}
+
+// Publish serializes the given EmailMessage into a task payload
+// and enqueues it for asynchronous processing.
+//
+// The method transforms the domain message into a transport-friendly
+// structure, marshals it to JSON, and creates a task with a predefined
+// type identifier.
+//
+// If serialization fails, a marshalling error is returned.
+// If enqueueing fails, an infrastructure-level error is returned.
+// The actual email delivery is expected to be handled by a separate worker.
+func (a *AsynqEmailPublisherAdapter) Publish(message emailmessage.EmailMessage) error {
+
+	payload, err := json.Marshal(Payload{
+		To:        message.GetTo(),
+		Subject:   message.GetSubject(),
+		EmailType: message.GetEmailType(),
+		BodyData:  message.GetBodyData(),
+	})
+
+	if err != nil {
+		return fmt.Errorf("marshal email payload: %w", err)
+	}
+
+	task := asynq.NewTask("email:send", payload)
+
+	if _, err := a.Client.Enqueue(task); err != nil {
+		return fmt.Errorf("enqueue email task: %w", err)
+	}
+
+	return nil
+}
