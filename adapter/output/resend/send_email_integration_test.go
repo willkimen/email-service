@@ -1,4 +1,4 @@
-//go:build emailtest
+//go:build email
 
 package emailsender
 
