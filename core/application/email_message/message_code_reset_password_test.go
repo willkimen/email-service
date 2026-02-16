@@ -5,18 +5,26 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestResetPasswordCode_IsCreatedCorrectly(t *testing.T) {
 	actualReset := validResetPasswordCode()
 
-	assert.Equal(t, to, actualReset.To)
-	assert.Equal(t, subject, actualReset.Subject)
-	assert.Equal(t, verificationCode, actualReset.VerificationCode)
-	assert.Equal(t, link, actualReset.ResetPasswordLink)
-	assert.Equal(t, codeExpiratinoHours, actualReset.CodeExpirationHours)
-	assert.Equal(t, emailmessage.EmailTypeResetPasswordCode, actualReset.GetEmailType())
-	assert.Nil(t, actualReset.ValidateData())
+	assert.Equal(t, to, actualReset.To,
+		"expected To to match the provided value")
+	assert.Equal(t, subject, actualReset.Subject,
+		"expected Subject to match the provided value")
+	assert.Equal(t, verificationCode, actualReset.VerificationCode,
+		"expected VerificationCode to match the provided value")
+	assert.Equal(t, link, actualReset.ResetPasswordLink,
+		"expected ResetPasswordLink to match the provided value")
+	assert.Equal(t, codeExpiratinoHours, actualReset.CodeExpirationHours,
+		"expected CodeExpirationHours to match the provided value")
+	assert.Equal(t, emailmessage.EmailTypeResetPasswordCode, actualReset.GetEmailType(),
+		"expected email type to be ResetPasswordCode")
+	assert.Nil(t, actualReset.ValidateData(),
+		"expected ValidateData to return nil for a valid ResetPasswordCode")
 }
 
 func TestResetPasswordCode_EmptyField_ReturnError(t *testing.T) {
@@ -61,8 +69,8 @@ func TestResetPasswordCode_EmptyField_ReturnError(t *testing.T) {
 			actualReset := validResetPasswordCode()
 			tt.setup(actualReset)
 
-			err := actualReset.ValidateData()
-			assert.NotNil(t, err)
+			require.Error(t, actualReset.ValidateData(),
+				"expected ValidateData to return an error when %s is empty", tt.name)
 		})
 	}
 }

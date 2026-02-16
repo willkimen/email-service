@@ -2,17 +2,25 @@ package emailmessage_test
 
 import (
 	"emailservice/core/application/email_message"
-	"github.com/stretchr/testify/assert"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestNotifyChangeEmail_IsCreatedCorrectly(t *testing.T) {
 	actualNotify := validNotifyChangeEmail()
-	assert.Equal(t, to, actualNotify.To)
-	assert.Equal(t, subject, actualNotify.Subject)
-	assert.Equal(t, link, actualNotify.LoginLink)
-	assert.Equal(t, emailmessage.EmailTypeNotifyChangeEmail, actualNotify.GetEmailType())
-	assert.Nil(t, actualNotify.ValidateData())
+
+	assert.Equal(t, to, actualNotify.To,
+		"expected To to match the provided value")
+	assert.Equal(t, subject, actualNotify.Subject,
+		"expected Subject to match the provided value")
+	assert.Equal(t, link, actualNotify.LoginLink,
+		"expected LoginLink to match the provided value")
+	assert.Equal(t, emailmessage.EmailTypeNotifyChangeEmail, actualNotify.GetEmailType(),
+		"expected email type to be NotifyChangeEmail")
+	assert.Nil(t, actualNotify.ValidateData(),
+		"expected ValidateData to return nil for a valid NotifyChangeEmail")
 }
 
 func TestNotifyChangeEmail_EmptyField_ReturnError(t *testing.T) {
@@ -45,8 +53,8 @@ func TestNotifyChangeEmail_EmptyField_ReturnError(t *testing.T) {
 			actualNotify := validNotifyChangeEmail()
 			tt.setup(actualNotify)
 
-			err := actualNotify.ValidateData()
-			assert.NotNil(t, err)
+			require.Error(t, actualNotify.ValidateData(),
+				"expected ValidateData to return an error when %s is empty", tt.name)
 		})
 	}
 }

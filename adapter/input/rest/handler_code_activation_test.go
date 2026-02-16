@@ -10,8 +10,8 @@ import (
 	"emailservice/adapter/input/rest"
 	"emailservice/core/application/email_message"
 
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
-	"github.com/stretchr/testify/require"
 )
 
 func TestSendActivationCodeHandler_WhenRequestBodyIsInvalidJSON_ShouldReturnBadRequest(t *testing.T) {
@@ -26,7 +26,9 @@ func TestSendActivationCodeHandler_WhenRequestBodyIsInvalidJSON_ShouldReturnBadR
 
 	response := w.Result()
 
-	require.Equal(t, http.StatusBadRequest, response.StatusCode)
+	assert.Equal(t, http.StatusBadRequest, response.StatusCode,
+		"expected status code to be 400 when request body contains invalid JSON")
+
 	usecaseMock.AssertNotCalled(t, "Request", mock.Anything)
 }
 
@@ -56,7 +58,9 @@ func TestSendActivationCodeHandler_WhenValidationFails_ShouldReturnUnprocessable
 
 	response := w.Result()
 
-	require.Equal(t, http.StatusUnprocessableEntity, response.StatusCode)
+	assert.Equal(t, http.StatusUnprocessableEntity, response.StatusCode,
+		"expected status code to be 422 when validation fails")
+
 	usecaseMock.AssertCalled(t, "Request", mock.Anything)
 }
 
@@ -86,7 +90,9 @@ func TestSendActivationCodeHandler_WhenRequestIsValid_ShouldReturnAccepted(t *te
 
 	response := w.Result()
 
-	require.Equal(t, http.StatusAccepted, response.StatusCode)
+	assert.Equal(t, http.StatusAccepted, response.StatusCode,
+		"expected status code to be 202 when request is valid")
+
 	usecaseMock.AssertCalled(t, "Request", mock.Anything)
 }
 
@@ -116,6 +122,9 @@ func TestSendActivationCodeHandler_WhenUnexpectedErrorOccurs_ShouldReturnInterna
 
 	response := w.Result()
 
-	require.Equal(t, http.StatusInternalServerError, response.StatusCode)
+	assert.Equal(t, http.StatusInternalServerError, response.StatusCode,
+		"expected status code to be 500 when unexpected error occurs")
+
 	usecaseMock.AssertCalled(t, "Request", mock.Anything)
 }
+

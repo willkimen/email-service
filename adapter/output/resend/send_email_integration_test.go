@@ -1,8 +1,9 @@
 //go:build email
 
-package emailsender
+package emailsender_test
 
 import (
+	"emailservice/adapter/output/resend"
 	"os"
 	"testing"
 
@@ -19,12 +20,25 @@ func TestResendEmailSenderAdapter_SendEmail_Integration(t *testing.T) {
 	// The goal here is only to ensure that configuration, authentication,
 	// and request formatting are correct.
 	err := godotenv.Load("../../../.env")
-	require.NoError(t, err)
+	require.NoError(
+		t,
+		err,
+		"expected .env file to load successfully for integration test",
+	)
 
-	require.NotEmpty(t, os.Getenv("RESEND_API_KEY"))
-	require.NotEmpty(t, os.Getenv("FROM_EMAIL"))
+	require.NotEmpty(
+		t,
+		os.Getenv("RESEND_API_KEY"),
+		"expected RESEND_API_KEY to be set in environment variables",
+	)
 
-	adapter := &ResendEmailSenderAdapter{}
+	require.NotEmpty(
+		t,
+		os.Getenv("FROM_EMAIL"),
+		"expected FROM_EMAIL to be set in environment variables",
+	)
+
+	adapter := &emailsender.ResendEmailSenderAdapter{}
 
 	err = adapter.SendEmail(
 		"delivered@resend.dev",
@@ -32,5 +46,9 @@ func TestResendEmailSenderAdapter_SendEmail_Integration(t *testing.T) {
 		"<p>Integration test</p>",
 	)
 
-	require.NoError(t, err)
+	require.NoError(
+		t,
+		err,
+		"expected SendEmail to complete without returning an error",
+	)
 }

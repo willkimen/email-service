@@ -10,13 +10,12 @@ import (
 	"emailservice/adapter/input/rest"
 	"emailservice/core/application/email_message"
 
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
-	"github.com/stretchr/testify/require"
 )
 
 func TestNotifyDeletionHandler_WhenRequestBodyIsInvalidJSON_ShouldReturnBadRequest(t *testing.T) {
 	usecaseMock := new(RequestEmailUseCaseMock)
-
 	handler := rest.NewSendEmailHandler(usecaseMock)
 
 	r := httptest.NewRequest(
@@ -27,10 +26,15 @@ func TestNotifyDeletionHandler_WhenRequestBodyIsInvalidJSON_ShouldReturnBadReque
 	w := httptest.NewRecorder()
 
 	handler.NotifyDeletionHandler(w, r)
-
 	response := w.Result()
 
-	require.Equal(t, http.StatusBadRequest, response.StatusCode)
+	assert.Equal(
+		t,
+		http.StatusBadRequest,
+		response.StatusCode,
+		"expected status 400 when request body contains invalid JSON",
+	)
+
 	usecaseMock.AssertNotCalled(t, "Request", mock.Anything)
 }
 
@@ -57,10 +61,15 @@ func TestNotifyDeletionHandler_WhenValidationFails_ShouldReturnUnprocessableEnti
 	w := httptest.NewRecorder()
 
 	handler.NotifyDeletionHandler(w, r)
-
 	response := w.Result()
 
-	require.Equal(t, http.StatusUnprocessableEntity, response.StatusCode)
+	assert.Equal(
+		t,
+		http.StatusUnprocessableEntity,
+		response.StatusCode,
+		"expected status 422 when validation error occurs",
+	)
+
 	usecaseMock.AssertCalled(t, "Request", mock.Anything)
 }
 
@@ -87,10 +96,15 @@ func TestNotifyDeletionHandler_WhenRequestIsValid_ShouldReturnAccepted(t *testin
 	w := httptest.NewRecorder()
 
 	handler.NotifyDeletionHandler(w, r)
-
 	response := w.Result()
 
-	require.Equal(t, http.StatusAccepted, response.StatusCode)
+	assert.Equal(
+		t,
+		http.StatusAccepted,
+		response.StatusCode,
+		"expected status 202 when request is successfully accepted",
+	)
+
 	usecaseMock.AssertCalled(t, "Request", mock.Anything)
 }
 
@@ -114,13 +128,17 @@ func TestNotifyDeletionHandler_WhenUnexpectedErrorOccurs_ShouldReturnInternalSer
 		strings.NewReader(body),
 	)
 	r.Header.Set("Content-Type", "application/json")
-
 	w := httptest.NewRecorder()
 
 	handler.NotifyDeletionHandler(w, r)
-
 	response := w.Result()
 
-	require.Equal(t, http.StatusInternalServerError, response.StatusCode)
+	assert.Equal(
+		t,
+		http.StatusInternalServerError,
+		response.StatusCode,
+		"expected status 500 when an unexpected error occurs",
+	)
+
 	usecaseMock.AssertCalled(t, "Request", mock.Anything)
 }

@@ -5,15 +5,20 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestNotifyDeletion_IsCreatedCorrectly(t *testing.T) {
 	actualNotify := validNotifyDeletion()
 
-	assert.Equal(t, to, actualNotify.To)
-	assert.Equal(t, subject, actualNotify.Subject)
-	assert.Equal(t, emailmessage.EmailTypeNotifyDeletion, actualNotify.GetEmailType())
-	assert.Nil(t, actualNotify.ValidateData())
+	assert.Equal(t, to, actualNotify.To,
+		"expected To to match the provided value")
+	assert.Equal(t, subject, actualNotify.Subject,
+		"expected Subject to match the provided value")
+	assert.Equal(t, emailmessage.EmailTypeNotifyDeletion, actualNotify.GetEmailType(),
+		"expected email type to be NotifyDeletion")
+	assert.Nil(t, actualNotify.ValidateData(),
+		"expected ValidateData to return nil for a valid NotifyDeletion")
 }
 
 func TestNotifyDeletion_EmptyField_ReturnError(t *testing.T) {
@@ -40,8 +45,8 @@ func TestNotifyDeletion_EmptyField_ReturnError(t *testing.T) {
 			actualNotify := validNotifyDeletion()
 			tt.setup(actualNotify)
 
-			err := actualNotify.ValidateData()
-			assert.NotNil(t, err)
+			require.Error(t, actualNotify.ValidateData(),
+				"expected ValidateData to return an error when %s is empty", tt.name)
 		})
 	}
 }

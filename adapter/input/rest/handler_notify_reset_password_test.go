@@ -10,13 +10,12 @@ import (
 	"emailservice/adapter/input/rest"
 	"emailservice/core/application/email_message"
 
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
-	"github.com/stretchr/testify/require"
 )
 
 func TestNotifyResetPasswordHandler_WhenRequestBodyIsInvalidJSON_ShouldReturnBadRequest(t *testing.T) {
 	usecaseMock := new(RequestEmailUseCaseMock)
-
 	handler := rest.NewSendEmailHandler(usecaseMock)
 
 	r := httptest.NewRequest(
@@ -27,10 +26,15 @@ func TestNotifyResetPasswordHandler_WhenRequestBodyIsInvalidJSON_ShouldReturnBad
 	w := httptest.NewRecorder()
 
 	handler.NotifyResetPasswordHandler(w, r)
-
 	response := w.Result()
 
-	require.Equal(t, http.StatusBadRequest, response.StatusCode)
+	assert.Equal(
+		t,
+		http.StatusBadRequest,
+		response.StatusCode,
+		"expected status 400 when request body contains invalid JSON",
+	)
+
 	usecaseMock.AssertNotCalled(t, "Request", mock.Anything)
 }
 
@@ -58,10 +62,15 @@ func TestNotifyResetPasswordHandler_WhenValidationFails_ShouldReturnUnprocessabl
 	w := httptest.NewRecorder()
 
 	handler.NotifyResetPasswordHandler(w, r)
-
 	response := w.Result()
 
-	require.Equal(t, http.StatusUnprocessableEntity, response.StatusCode)
+	assert.Equal(
+		t,
+		http.StatusUnprocessableEntity,
+		response.StatusCode,
+		"expected status 422 when validation error occurs",
+	)
+
 	usecaseMock.AssertCalled(t, "Request", mock.Anything)
 }
 
@@ -89,10 +98,15 @@ func TestNotifyResetPasswordHandler_WhenRequestIsValid_ShouldReturnAccepted(t *t
 	w := httptest.NewRecorder()
 
 	handler.NotifyResetPasswordHandler(w, r)
-
 	response := w.Result()
 
-	require.Equal(t, http.StatusAccepted, response.StatusCode)
+	assert.Equal(
+		t,
+		http.StatusAccepted,
+		response.StatusCode,
+		"expected status 202 when request is successfully accepted",
+	)
+
 	usecaseMock.AssertCalled(t, "Request", mock.Anything)
 }
 
@@ -117,13 +131,17 @@ func TestNotifyResetPasswordHandler_WhenUnexpectedErrorOccurs_ShouldReturnIntern
 		strings.NewReader(body),
 	)
 	r.Header.Set("Content-Type", "application/json")
-
 	w := httptest.NewRecorder()
 
 	handler.NotifyResetPasswordHandler(w, r)
-
 	response := w.Result()
 
-	require.Equal(t, http.StatusInternalServerError, response.StatusCode)
+	assert.Equal(
+		t,
+		http.StatusInternalServerError,
+		response.StatusCode,
+		"expected status 500 when an unexpected error occurs",
+	)
+
 	usecaseMock.AssertCalled(t, "Request", mock.Anything)
 }

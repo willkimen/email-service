@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestExecute_ReturnsError_WhenRendererFails(t *testing.T) {
@@ -20,8 +21,9 @@ func TestExecute_ReturnsError_WhenRendererFails(t *testing.T) {
 
 	err := usecase.Execute(FakeEmailMessage{})
 
-	assert.Error(t, err)
-	assert.Contains(t, err.Error(), "during rendering")
+	require.Error(t, err, "expected Execute to return an error when renderer fails")
+	assert.Contains(t, err.Error(), "during rendering",
+		"expected error message to indicate failure during rendering")
 }
 
 func TestExecute_ReturnsError_WhenSenderFails(t *testing.T) {
@@ -38,8 +40,9 @@ func TestExecute_ReturnsError_WhenSenderFails(t *testing.T) {
 
 	err := usecase.Execute(FakeEmailMessage{})
 
-	assert.Error(t, err)
-	assert.Contains(t, err.Error(), "during sending")
+	require.Error(t, err, "expected Execute to return an error when sender fails")
+	assert.Contains(t, err.Error(), "during sending",
+		"expected error message to indicate failure during sending")
 }
 
 func TestExecute_ReturnsNil_WhenRenderAndSendSucceed(t *testing.T) {
@@ -52,5 +55,6 @@ func TestExecute_ReturnsNil_WhenRenderAndSendSucceed(t *testing.T) {
 
 	err := usecase.Execute(FakeEmailMessage{})
 
-	assert.NoError(t, err)
+	require.NoError(t, err,
+		"expected Execute to return nil when render and send succeed")
 }

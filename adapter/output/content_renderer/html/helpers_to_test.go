@@ -1,6 +1,8 @@
-package renderer
+package renderer_test
 
-var renderer = &HTMLEmailContentRendererAdapter{}
+import "emailservice/adapter/output/content_renderer/html"
+
+var rendererAdapter = &renderer.HTMLEmailContentRendererAdapter{}
 
 type FakeEmailMessageWithEmailTypeNotExist struct{}
 

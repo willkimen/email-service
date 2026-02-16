@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/hibiken/asynq"
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"github.com/testcontainers/testcontainers-go"
 )
@@ -42,7 +43,11 @@ func TestPublish_Integration(t *testing.T) {
 	defer testcontainers.CleanupContainer(t, redis)
 
 	// Assert that Publish returned no error.
-	require.NoError(t, err)
+	require.NoError(
+		t,
+		err,
+		"expected Publish to enqueue task without returning error",
+	)
 
 	// Create an Asynq Inspector connected to the same Redis instance.
 	// The Inspector allows querying the state of queues.
@@ -53,26 +58,48 @@ func TestPublish_Integration(t *testing.T) {
 
 	// Retrieve all pending tasks from the default queue.
 	tasks, err := inspector.ListPendingTasks("default")
-	require.NoError(t, err)
+	require.NoError(
+		t,
+		err,
+		"expected inspector to list pending tasks without error",
+	)
 
 	// Assert that exactly one task was enqueued.
-	require.Len(t, tasks, 1)
+	require.Len(
+		t,
+		tasks,
+		1,
+		"expected exactly one task to be enqueued in the default queue",
+	)
 
 	// Assert that the task type matches the expected identifier.
-	require.Equal(t, "email:send", tasks[0].Type)
+	assert.Equal(
+		t,
+		"email:send",
+		tasks[0].Type,
+		"expected enqueued task type to be 'email:send'",
+	)
 
 	// Ensure that the task payload is not empty.
-	require.NotEmpty(t, tasks[0].Payload)
+	require.NotEmpty(
+		t,
+		tasks[0].Payload,
+		"expected enqueued task payload to be non-empty",
+	)
 
 	// Deserialize the task payload back into the expected struct.
 	// This verifies that the JSON serialization was correct.
 	var p emailpublisher.Payload
 	err = json.Unmarshal(tasks[0].Payload, &p)
-	require.NoError(t, err)
+	require.NoError(
+		t,
+		err,
+		"expected task payload to deserialize without error",
+	)
 
 	// Validate that all fields were correctly serialized and preserved.
-	require.Equal(t, to, p.To)
-	require.Equal(t, subject, p.Subject)
-	require.Equal(t, emailType, p.EmailType)
-	require.Equal(t, bodyData, p.BodyData)
+	assert.Equal(t, to, p.To, "expected payload To field to match input")
+	assert.Equal(t, subject, p.Subject, "expected payload Subject field to match input")
+	assert.Equal(t, emailType, p.EmailType, "expected payload EmailType field to match input")
+	assert.Equal(t, bodyData, p.BodyData, "expected payload BodyData to match input")
 }

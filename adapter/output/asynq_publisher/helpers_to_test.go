@@ -47,10 +47,18 @@ func RunRedisContainer(t *testing.T) (*testcontainers.DockerContainer, string) {
 			wait.ForLog("Ready to accept connections"),
 		),
 	)
-	require.NoError(t, err)
+	require.NoError(
+		t,
+		err,
+		"expected Redis test container to start successfully",
+	)
 
 	addr, err := redis.Endpoint(ctx, "")
-	require.NoError(t, err)
+	require.NoError(
+		t,
+		err,
+		"expected to retrieve Redis container endpoint without error",
+	)
 
 	return redis, addr
 }

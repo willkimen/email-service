@@ -24,3 +24,4 @@ func TestRecoverPanicMiddleware(t *testing.T) {
 
 	assert.Equal(t, rr.Code, http.StatusInternalServerError)
 }
+

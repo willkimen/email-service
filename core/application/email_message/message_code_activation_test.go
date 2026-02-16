@@ -5,19 +5,28 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestActivationCode_IsCreatedCorrectly(t *testing.T) {
 	actualActivation := validActivationCode()
 
-	assert.Equal(t, to, actualActivation.To)
-	assert.Equal(t, subject, actualActivation.Subject)
-	assert.Equal(t, verificationCode, actualActivation.VerificationCode)
-	assert.Equal(t, link, actualActivation.ActivationLink)
-	assert.Equal(t, codeExpiratinoHours, actualActivation.CodeExpirationHours)
-	assert.Equal(t, activationDeadlineDays, actualActivation.ActivationDeadlineDays)
-	assert.Equal(t, emailmessage.EmailTypeActivationCode, actualActivation.GetEmailType())
-	assert.Nil(t, actualActivation.ValidateData())
+	assert.Equal(t, to, actualActivation.To,
+		"expected To to match the provided value")
+	assert.Equal(t, subject, actualActivation.Subject,
+		"expected Subject to match the provided value")
+	assert.Equal(t, verificationCode, actualActivation.VerificationCode,
+		"expected VerificationCode to match the provided value")
+	assert.Equal(t, link, actualActivation.ActivationLink,
+		"expected ActivationLink to match the provided value")
+	assert.Equal(t, codeExpiratinoHours, actualActivation.CodeExpirationHours,
+		"expected CodeExpirationHours to match the provided value")
+	assert.Equal(t, activationDeadlineDays, actualActivation.ActivationDeadlineDays,
+		"expected ActivationDeadlineDays to match the provided value")
+	assert.Equal(t, emailmessage.EmailTypeActivationCode, actualActivation.GetEmailType(),
+		"expected email type to be ActivationCode")
+	assert.Nil(t, actualActivation.ValidateData(),
+		"expected ValidateData to return nil for a valid ActivationCode")
 }
 
 func TestActivationCode_EmptyField_ReturnError(t *testing.T) {
@@ -68,8 +77,8 @@ func TestActivationCode_EmptyField_ReturnError(t *testing.T) {
 			actualActivation := validActivationCode()
 			tt.setup(actualActivation)
 
-			err := actualActivation.ValidateData()
-			assert.NotNil(t, err)
+			require.Error(t, actualActivation.ValidateData(),
+				"expected ValidateData to return an error when %s is empty", tt.name)
 		})
 	}
 }

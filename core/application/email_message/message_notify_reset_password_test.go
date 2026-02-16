@@ -5,16 +5,22 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestNotifyResetPassword_IsCreatedCorrectly(t *testing.T) {
 	actualNotify := validNotifyResetPassword()
 
-	assert.Equal(t, to, actualNotify.To)
-	assert.Equal(t, subject, actualNotify.Subject)
-	assert.Equal(t, link, actualNotify.LoginLink)
-	assert.Equal(t, emailmessage.EmailTypeNotifyResetPassword, actualNotify.GetEmailType())
-	assert.Nil(t, actualNotify.ValidateData())
+	assert.Equal(t, to, actualNotify.To,
+		"expected To to match the provided value")
+	assert.Equal(t, subject, actualNotify.Subject,
+		"expected Subject to match the provided value")
+	assert.Equal(t, link, actualNotify.LoginLink,
+		"expected LoginLink to match the provided value")
+	assert.Equal(t, emailmessage.EmailTypeNotifyResetPassword, actualNotify.GetEmailType(),
+		"expected email type to be NotifyResetPassword")
+	assert.Nil(t, actualNotify.ValidateData(),
+		"expected ValidateData to return nil for a valid NotifyResetPassword")
 }
 
 func TestNotifyResetPassword_EmptyField_ReturnError(t *testing.T) {
@@ -47,8 +53,8 @@ func TestNotifyResetPassword_EmptyField_ReturnError(t *testing.T) {
 			actualNotify := validNotifyResetPassword()
 			tt.setup(actualNotify)
 
-			err := actualNotify.ValidateData()
-			assert.NotNil(t, err)
+			require.Error(t, actualNotify.ValidateData(),
+				"expected ValidateData to return an error when %s is empty", tt.name)
 		})
 	}
 }
