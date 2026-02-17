@@ -8,7 +8,7 @@ type ChangePasswordCodeBody struct {
 // containing a verification code for password change operations.
 type ChangePasswordCode struct {
 	BaseMessage
-	ChangeEmailCodeBody
+	ChangePasswordCodeBody
 }
 
 func (ChangePasswordCode) GetEmailType() string {
@@ -16,7 +16,7 @@ func (ChangePasswordCode) GetEmailType() string {
 }
 
 func (c *ChangePasswordCode) GetBodyData() any {
-	return c.ChangeEmailCodeBody
+	return c.ChangePasswordCodeBody
 }
 
 func NewChangePasswordCode(
