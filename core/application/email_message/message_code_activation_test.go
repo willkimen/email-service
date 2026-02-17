@@ -11,6 +11,9 @@ import (
 func TestActivationCode_IsCreatedCorrectly(t *testing.T) {
 	actualActivation := validActivationCode()
 
+	_, ok := actualActivation.GetBodyData().(emailmessage.ActivationCodeBody)
+	require.True(t, ok, "expected body data to be of type ActivationCodeBody")
+
 	assert.Equal(t, to, actualActivation.To,
 		"expected To to match the provided value")
 	assert.Equal(t, subject, actualActivation.Subject,
@@ -27,6 +30,7 @@ func TestActivationCode_IsCreatedCorrectly(t *testing.T) {
 		"expected email type to be ActivationCode")
 	assert.Nil(t, actualActivation.ValidateData(),
 		"expected ValidateData to return nil for a valid ActivationCode")
+
 }
 
 func TestActivationCode_EmptyField_ReturnError(t *testing.T) {

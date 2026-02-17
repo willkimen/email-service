@@ -11,6 +11,9 @@ import (
 func TestResetPasswordCode_IsCreatedCorrectly(t *testing.T) {
 	actualReset := validResetPasswordCode()
 
+	_, ok := actualReset.GetBodyData().(emailmessage.ResetPasswordCodeBody)
+	require.True(t, ok, "expected body data to be of type ResetPasswordCodeBody")
+
 	assert.Equal(t, to, actualReset.To,
 		"expected To to match the provided value")
 	assert.Equal(t, subject, actualReset.Subject,

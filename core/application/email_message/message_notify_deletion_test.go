@@ -11,6 +11,9 @@ import (
 func TestNotifyDeletion_IsCreatedCorrectly(t *testing.T) {
 	actualNotify := validNotifyDeletion()
 
+	_, ok := actualNotify.GetBodyData().(emailmessage.NotifyDeletionBody)
+	require.True(t, ok, "expected body data to be of type NotifyDeletionBody")
+
 	assert.Equal(t, to, actualNotify.To,
 		"expected To to match the provided value")
 	assert.Equal(t, subject, actualNotify.Subject,

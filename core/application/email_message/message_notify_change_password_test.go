@@ -8,8 +8,11 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestNotifyPasswordEmail_IsCreatedCorrectly(t *testing.T) {
+func TestNotifyChangePasswordEmail_IsCreatedCorrectly(t *testing.T) {
 	actualNotify := validNotifyChangePassword()
+
+	_, ok := actualNotify.GetBodyData().(emailmessage.NotifyChangePasswordBody)
+	require.True(t, ok, "expected body data to be of type NotifyChangePasswordBody")
 
 	assert.Equal(t, to, actualNotify.To,
 		"expected To to match the provided value")

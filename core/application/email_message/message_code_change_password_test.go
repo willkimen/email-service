@@ -11,6 +11,9 @@ import (
 func TestChangePasswordCode_IsCreatedCorrectly(t *testing.T) {
 	actualChange := validChangePasswordCode()
 
+	_, ok := actualChange.GetBodyData().(emailmessage.ChangePasswordCodeBody)
+	require.True(t, ok, "expected body data to be of type ChangePasswordCodeBody")
+
 	assert.Equal(t, to, actualChange.To,
 		"expected To to match the provided value")
 	assert.Equal(t, subject, actualChange.Subject,

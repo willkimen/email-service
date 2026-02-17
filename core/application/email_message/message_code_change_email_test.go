@@ -11,6 +11,9 @@ import (
 func TestChangeEmailCode_IsCreatedCorrectly(t *testing.T) {
 	actualChange := validChangeEmailCode()
 
+	_, ok := actualChange.GetBodyData().(emailmessage.ChangeEmailCodeBody)
+	require.True(t, ok, "expected body data to be of type ChangeEmailCodeBody")
+
 	assert.Equal(t, to, actualChange.To,
 		"expected To to match the provided value")
 	assert.Equal(t, subject, actualChange.Subject,
@@ -66,4 +69,3 @@ func TestChangeEmailCode_EmptyField_ReturnError(t *testing.T) {
 		})
 	}
 }
-

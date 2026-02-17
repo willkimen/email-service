@@ -11,6 +11,9 @@ import (
 func TestNotifyResetPassword_IsCreatedCorrectly(t *testing.T) {
 	actualNotify := validNotifyResetPassword()
 
+	_, ok := actualNotify.GetBodyData().(emailmessage.NotifyResetPasswordBody)
+	require.True(t, ok, "expected body data to be of type NotifyResetPasswordBody")
+
 	assert.Equal(t, to, actualNotify.To,
 		"expected To to match the provided value")
 	assert.Equal(t, subject, actualNotify.Subject,

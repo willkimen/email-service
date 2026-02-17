@@ -11,6 +11,9 @@ import (
 func TestDeletionCode_IsCreatedCorrectly(t *testing.T) {
 	actualDeletion := validDeletionCode()
 
+	_, ok := actualDeletion.GetBodyData().(emailmessage.DeletionCodeBody)
+	require.True(t, ok, "expected body data to be of type DeletionCodeBody")
+
 	assert.Equal(t, to, actualDeletion.To,
 		"expected To to match the provided value")
 	assert.Equal(t, subject, actualDeletion.Subject,

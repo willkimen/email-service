@@ -11,6 +11,9 @@ import (
 func TestNotifyActivation_IsCreatedCorrectly(t *testing.T) {
 	actualNotify := validNotifyActivation()
 
+	_, ok := actualNotify.GetBodyData().(emailmessage.NotifyActivationBody)
+	require.True(t, ok, "expected body data to be of type NotifyActivationBody")
+
 	assert.Equal(t, to, actualNotify.To,
 		"expected To to match the provided value")
 	assert.Equal(t, subject, actualNotify.Subject,
