@@ -6,7 +6,7 @@ import "emailservice/core/application/email_message"
 // HTML template file paths.
 //
 // This map defines the relationship between an EmailType
-// (a domain-level concept that represents a kind of email)
+// (a concept that represents a kind of email)
 // and the physical HTML template used to render it.
 //
 // The renderer uses this map to resolve which HTML template

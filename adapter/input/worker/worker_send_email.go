@@ -14,11 +14,8 @@ import (
 //
 // This struct belongs to the infrastructure layer and acts as an
 // input adapter between Asynq and the application use case.
-// It converts an incoming task into a domain EmailMessage and
+// It converts an incoming task into an EmailMessage and
 // delegates execution to the core application.
-//
-// It is also responsible for translating domain-level errors
-// into retry semantics understood by Asynq.
 type SendEmailTaskHandler struct {
 	// UseCase executes the synchronous email sending use case.
 	UseCase inputport.ExecuteSendEmailInputPort

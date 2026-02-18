@@ -16,7 +16,7 @@ type ExecuteSendEmailUsecase struct {
 	// through an external email service.
 	Sender outputport.SendEmailOutputPort
 	// Renderer is responsible for generating the email body based on
-	// the domain EmailMessage.
+	// the EmailMessage.
 	Renderer outputport.RenderEmailContentOutputPort
 }
 

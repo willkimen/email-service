@@ -11,7 +11,7 @@ package emailmessage
 //   - Select the appropriate HTML template during rendering
 //
 // Using explicit email types avoids hardcoded strings, improves
-// type safety, and provides a shared domain vocabulary between layers.
+// type safety, and provides a shared vocabulary between layers.
 const (
 	EmailTypeActivationCode   = "activation_code"
 	EmailTypeNotifyActivation = "notify_activation"

@@ -8,7 +8,7 @@ import (
 // an activation code email.
 //
 // This handler is responsible only for HTTP-level concerns.
-// It delegates JSON parsing, validation, domain interaction
+// It delegates JSON parsing, validation, interaction
 // and response mapping to the shared helper.
 func (s *SendEmailHandler) SendActivationCodeHandler(w http.ResponseWriter, r *http.Request) {
 	// ActivationCodeDTO represents the expected payload
@@ -17,8 +17,8 @@ func (s *SendEmailHandler) SendActivationCodeHandler(w http.ResponseWriter, r *h
 
 	// Delegate the full request lifecycle to the shared helper:
 	// - read and validate the request body
-	// - convert DTO to a domain message
+	// - convert DTO to a email message
 	// - invoke the use case
-	// - map domain and infrastructure errors to HTTP responses
+	// - map application and infrastructure errors to HTTP responses
 	s.handleEmailRequest(w, r, &dto)
 }

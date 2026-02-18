@@ -5,14 +5,14 @@ package emailmessage
 // EmailMessage defines the behavior required by any email message
 // that can be processed by the application.
 //
-// It represents a domain-level email abstraction, decoupled from
+// It represents a level email abstraction, decoupled from
 // rendering, transport, or template concerns.
 type EmailMessage interface {
 	// ValidateData validates whether the message data represents
 	// an acceptable and consistent state for sending.
 	ValidateData() error
 
-	// GetEmailType returns the domain-level email type associated
+	// GetEmailType returns the email type associated
 	// with this message.
 	//
 	// The returned value is used by other layers (such as renderers

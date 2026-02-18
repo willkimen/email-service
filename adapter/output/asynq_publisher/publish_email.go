@@ -12,7 +12,7 @@ import (
 // publishing email sending requests using Asynq as the asynchronous mechanism.
 //
 // This adapter belongs to the infrastructure layer and translates
-// a domain EmailMessage into a background task. It is responsible only
+// an EmailMessage into a background task. It is responsible only
 // for serialization and task enqueueing, not for executing the email send itself.
 type AsynqEmailPublisherAdapter struct {
 	// Client is the Asynq client used to enqueue background tasks.
@@ -22,7 +22,7 @@ type AsynqEmailPublisherAdapter struct {
 // Publish serializes the given EmailMessage into a task payload
 // and enqueues it for asynchronous processing.
 //
-// The method transforms the domain message into a transport-friendly
+// The method transforms the message into a transport-friendly
 // structure, marshals it to JSON, and creates a task with a predefined
 // type identifier.
 //

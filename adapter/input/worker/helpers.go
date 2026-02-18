@@ -19,7 +19,7 @@ import (
 //
 // For each supported EmailType, the function unmarshals the BodyData
 // into the corresponding body structure and invokes the appropriate
-// factory constructor from the domain layer.
+// factory constructor.
 //
 // If the payload cannot be deserialized, or if the EmailType is unknown,
 // an error is returned. The caller is responsible for deciding whether
