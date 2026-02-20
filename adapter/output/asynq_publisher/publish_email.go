@@ -8,6 +8,19 @@ import (
 	"github.com/hibiken/asynq"
 )
 
+// taskEnqueuer abstracts the enqueueing behavior required by
+// AsynqEmailPublisherAdapter.
+//
+// This interface exists to decouple the adapter from the concrete
+// *asynq.Client implementation, enabling easier testing and
+// substitution of the underlying task queue mechanism.
+//
+// Any implementation must enqueue a task and return the associated
+// TaskInfo or an error if the operation fails.
+type taskEnqueuer interface {
+	Enqueue(task *asynq.Task, opts ...asynq.Option) (*asynq.TaskInfo, error)
+}
+
 // AsynqEmailPublisherAdapter implements the output port responsible for
 // publishing email sending requests using Asynq as the asynchronous mechanism.
 //
@@ -16,7 +29,7 @@ import (
 // for serialization and task enqueueing, not for executing the email send itself.
 type AsynqEmailPublisherAdapter struct {
 	// Client is the Asynq client used to enqueue background tasks.
-	Client *asynq.Client
+	Client taskEnqueuer
 }
 
 // Publish serializes the given EmailMessage into a task payload

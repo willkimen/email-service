@@ -37,6 +37,14 @@ func (fakeMessage) GetBodyData() any {
 
 func (fakeMessage) ValidateData() error { return nil }
 
+type fakeEnqueuer struct {
+	enqueueFunc func(task *asynq.Task, opts ...asynq.Option) (*asynq.TaskInfo, error)
+}
+
+func (f *fakeEnqueuer) Enqueue(task *asynq.Task, opts ...asynq.Option) (*asynq.TaskInfo, error) {
+	return f.enqueueFunc(task, opts...)
+}
+
 func RunRedisContainer(t *testing.T) (*testcontainers.DockerContainer, string) {
 	ctx := context.Background()
 	redis, err := testcontainers.Run(
