@@ -8,6 +8,13 @@ import (
 	"github.com/hibiken/asynq"
 )
 
+type Payload struct {
+	To        string
+	Subject   string
+	EmailType string
+	BodyData  any
+}
+
 // taskEnqueuer abstracts the enqueueing behavior required by
 // AsynqEmailPublisherAdapter.
 //
