@@ -8,6 +8,7 @@ import (
 	"testing"
 
 	"github.com/joho/godotenv"
+	"github.com/resend/resend-go/v3"
 	"github.com/stretchr/testify/require"
 )
 
@@ -38,7 +39,11 @@ func TestResendEmailSenderAdapter_SendEmail_Integration(t *testing.T) {
 		"expected FROM_EMAIL to be set in environment variables",
 	)
 
-	adapter := &emailsender.ResendEmailSenderAdapter{}
+	client := resend.NewClient(os.Getenv("RESEND_API_KEY"))
+	adapter := &emailsender.ResendEmailSenderAdapter{
+		Emails: client.Emails,
+		From:   os.Getenv("FROM_EMAIL"),
+	}
 
 	err = adapter.SendEmail(
 		"delivered@resend.dev",
