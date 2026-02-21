@@ -2,7 +2,6 @@ package worker_test
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 	"testing"
 
@@ -13,31 +12,6 @@ import (
 	"github.com/hibiken/asynq"
 	"github.com/stretchr/testify/require"
 )
-
-type mockUseCase struct {
-	executeFn func(emailmessage.EmailMessage) error
-}
-
-func (m *mockUseCase) ExecuteSend(msg emailmessage.EmailMessage) error {
-	return m.executeFn(msg)
-}
-
-func validTask(t *testing.T) *asynq.Task {
-	payload, err := json.Marshal(map[string]any{
-		"To":        "user@test.com",
-		"Subject":   "Activation",
-		"EmailType": emailmessage.EmailTypeActivationCode,
-		"BodyData": map[string]any{
-			"VerificationCode":       "123456",
-			"ActivationLink":         "http://link",
-			"CodeExpirationHours":    "2",
-			"ActivationDeadlineDays": "3",
-		},
-	})
-	require.NoError(t, err)
-
-	return asynq.NewTask("send:email", payload)
-}
 
 func TestProcessSendEmail_InvalidPayload_ReturnsSkipRetry(t *testing.T) {
 	handler := &worker.SendEmailTaskHandler{
@@ -102,4 +76,3 @@ func TestProcessSendEmail_Success_ReturnsNil(t *testing.T) {
 	require.NoError(t, err,
 		"expected no error when email is successfully processed")
 }
-

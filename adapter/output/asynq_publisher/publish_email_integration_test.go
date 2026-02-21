@@ -1,3 +1,5 @@
+//go:build slow
+
 package emailpublisher_test
 
 import (

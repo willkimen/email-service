@@ -1,6 +1,7 @@
-package worker
+package worker_test
 
 import (
+	"emailservice/adapter/input/worker"
 	"emailservice/core/application/email_message"
 	"encoding/json"
 	"testing"
@@ -23,7 +24,7 @@ func TestToEmailMessage_UnknownType(t *testing.T) {
 		"BodyData":  map[string]any{},
 	})
 
-	msg, err := ToEmailMessage(payload)
+	msg, err := worker.ToEmailMessage(payload)
 
 	require.Error(t, err)
 	require.Nil(t, msg)
@@ -43,7 +44,7 @@ func TestToEmailMessage_ActivationCode(t *testing.T) {
 		"BodyData":  body,
 	})
 
-	msg, err := ToEmailMessage(payload)
+	msg, err := worker.ToEmailMessage(payload)
 
 	require.NoError(t, err)
 	require.NotNil(t, msg)
@@ -69,7 +70,7 @@ func TestToEmailMessage_NotifyActivation(t *testing.T) {
 		"BodyData":  body,
 	})
 
-	msg, err := ToEmailMessage(payload)
+	msg, err := worker.ToEmailMessage(payload)
 
 	require.NoError(t, err)
 	require.NotNil(t, msg)
@@ -93,7 +94,7 @@ func TestToEmailMessage_ChangeEmailCode(t *testing.T) {
 		"BodyData":  body,
 	})
 
-	msg, err := ToEmailMessage(payload)
+	msg, err := worker.ToEmailMessage(payload)
 
 	require.NoError(t, err)
 	require.NotNil(t, msg)
@@ -117,7 +118,7 @@ func TestToEmailMessage_NotifyChangeEmail(t *testing.T) {
 		"BodyData":  body,
 	})
 
-	msg, err := ToEmailMessage(payload)
+	msg, err := worker.ToEmailMessage(payload)
 
 	require.NoError(t, err)
 	require.NotNil(t, msg)
@@ -142,7 +143,7 @@ func TestToEmailMessage_ResetPasswordCode(t *testing.T) {
 		"BodyData":  body,
 	})
 
-	msg, err := ToEmailMessage(payload)
+	msg, err := worker.ToEmailMessage(payload)
 
 	require.NoError(t, err)
 	require.NotNil(t, msg)
@@ -167,7 +168,7 @@ func TestToEmailMessage_NotifyResetPassword(t *testing.T) {
 		"BodyData":  body,
 	})
 
-	msg, err := ToEmailMessage(payload)
+	msg, err := worker.ToEmailMessage(payload)
 
 	require.NoError(t, err)
 	require.NotNil(t, msg)
@@ -191,7 +192,7 @@ func TestToEmailMessage_ChangePasswordCode(t *testing.T) {
 		"BodyData":  body,
 	})
 
-	msg, err := ToEmailMessage(payload)
+	msg, err := worker.ToEmailMessage(payload)
 
 	require.NoError(t, err)
 	require.NotNil(t, msg)
@@ -215,7 +216,7 @@ func TestToEmailMessage_NotifyChangePassword(t *testing.T) {
 		"BodyData":  body,
 	})
 
-	msg, err := ToEmailMessage(payload)
+	msg, err := worker.ToEmailMessage(payload)
 
 	require.NoError(t, err)
 	require.NotNil(t, msg)
@@ -239,7 +240,7 @@ func TestToEmailMessage_DeletionCode(t *testing.T) {
 		"BodyData":  body,
 	})
 
-	msg, err := ToEmailMessage(payload)
+	msg, err := worker.ToEmailMessage(payload)
 
 	require.NoError(t, err)
 	require.NotNil(t, msg)
@@ -262,7 +263,7 @@ func TestToEmailMessage_NotifyDeletion(t *testing.T) {
 		"BodyData":  body,
 	})
 
-	msg, err := ToEmailMessage(payload)
+	msg, err := worker.ToEmailMessage(payload)
 
 	require.NoError(t, err)
 	require.NotNil(t, msg)
