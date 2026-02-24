@@ -19,7 +19,7 @@ func TestExecute_ReturnsError_WhenRendererFails(t *testing.T) {
 		Sender: FakeSender{},
 	}
 
-	err := usecase.Execute(FakeEmailMessage{})
+	err := usecase.ExecuteSend(FakeEmailMessage{})
 
 	require.Error(t, err, "expected Execute to return an error when renderer fails")
 	assert.Contains(t, err.Error(), "during rendering",
@@ -38,7 +38,7 @@ func TestExecute_ReturnsError_WhenSenderFails(t *testing.T) {
 		},
 	}
 
-	err := usecase.Execute(FakeEmailMessage{})
+	err := usecase.ExecuteSend(FakeEmailMessage{})
 
 	require.Error(t, err, "expected Execute to return an error when sender fails")
 	assert.Contains(t, err.Error(), "during sending",
@@ -53,7 +53,7 @@ func TestExecute_ReturnsNil_WhenRenderAndSendSucceed(t *testing.T) {
 		Sender: FakeSender{},
 	}
 
-	err := usecase.Execute(FakeEmailMessage{})
+	err := usecase.ExecuteSend(FakeEmailMessage{})
 
 	require.NoError(t, err,
 		"expected Execute to return nil when render and send succeed")
