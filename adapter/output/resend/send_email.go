@@ -33,6 +33,13 @@ type ResendEmailSenderAdapter struct {
 	From   string
 }
 
+func NewResendEmailSenderAdapter(client *resend.Client, from string) *ResendEmailSenderAdapter {
+	return &ResendEmailSenderAdapter{
+		Emails: client.Emails,
+		From:   from,
+	}
+}
+
 // SendEmail sends an email message to the given recipient with the provided
 // subject and HTML body.
 //

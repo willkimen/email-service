@@ -21,6 +21,10 @@ type SendEmailTaskHandler struct {
 	UseCase inputport.ExecuteSendEmailInputPort
 }
 
+func NewSendEmailTaskHandler(usecase inputport.ExecuteSendEmailInputPort) *SendEmailTaskHandler {
+	return &SendEmailTaskHandler{UseCase: usecase}
+}
+
 // ProcessSendEmail processes the "email:send" task received from Asynq.
 //
 // The method reconstructs the EmailMessage from the task payload

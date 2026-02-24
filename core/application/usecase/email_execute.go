@@ -20,8 +20,19 @@ type ExecuteSendEmailUsecase struct {
 	Renderer outputport.RenderEmailContentOutputPort
 }
 
+func NewExecuteSendEmailUseCase(
+	sender outputport.SendEmailOutputPort,
+	renderer outputport.RenderEmailContentOutputPort,
+) *ExecuteSendEmailUsecase {
+	return &ExecuteSendEmailUsecase{
+		Sender:   sender,
+		Renderer: renderer,
+	}
+
+}
+
 // Execute renders the email content and sends the email synchronously.
-func (e *ExecuteSendEmailUsecase) Execute(message emailmessage.EmailMessage) error {
+func (e *ExecuteSendEmailUsecase) ExecuteSend(message emailmessage.EmailMessage) error {
 	body, err := e.Renderer.Render(message)
 	if err != nil {
 		return fmt.Errorf("send email failed during rendering: %w", err)

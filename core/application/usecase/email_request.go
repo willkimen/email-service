@@ -18,6 +18,12 @@ type RequestSendEmailUseCase struct {
 	Publisher outputport.PublishEmailRequestOutputPort
 }
 
+func NewRequestSendEmailUseCase(
+	publisher outputport.PublishEmailRequestOutputPort,
+) *RequestSendEmailUseCase {
+	return &RequestSendEmailUseCase{Publisher: publisher}
+}
+
 // Request validates the given email message and publishes a request
 // for it to be sent asynchronously.
 //

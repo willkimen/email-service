@@ -16,6 +16,10 @@ import (
 type HTMLEmailContentRendererAdapter struct {
 }
 
+func NewHTMLEmailContentRendererAdapter() *HTMLEmailContentRendererAdapter {
+	return &HTMLEmailContentRendererAdapter{}
+}
+
 // Render renders the HTML body for the given email message.
 //
 // The email type returned by GetEmailType is used to resolve

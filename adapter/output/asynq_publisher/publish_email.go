@@ -39,6 +39,10 @@ type AsynqEmailPublisherAdapter struct {
 	Client taskEnqueuer
 }
 
+func NewAsynqEmailPublisherAdapter(client *asynq.Client) *AsynqEmailPublisherAdapter {
+	return &AsynqEmailPublisherAdapter{Client: client}
+}
+
 // Publish serializes the given EmailMessage into a task payload
 // and enqueues it for asynchronous processing.
 //
