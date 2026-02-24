@@ -2,7 +2,7 @@ package rest
 
 import "net/http"
 
-func (s *SendEmailHandler) routes() http.Handler {
+func (s *SendEmailHandler) Routes() http.Handler {
 	mux := http.NewServeMux()
 
 	mux.HandleFunc("POST /api/v1/email/activation/code", s.SendActivationCodeHandler)
