@@ -4,6 +4,7 @@ package emailsender_test
 
 import (
 	"emailservice/adapter/output/resend"
+	"log/slog"
 	"os"
 	"testing"
 
@@ -43,6 +44,7 @@ func TestResendEmailSenderAdapter_SendEmail_Integration(t *testing.T) {
 	adapter := &emailsender.ResendEmailSenderAdapter{
 		Emails: client.Emails,
 		From:   os.Getenv("FROM_EMAIL"),
+		Logger: slog.New(slog.NewJSONHandler(os.Stdout, nil)),
 	}
 
 	err = adapter.SendEmail(

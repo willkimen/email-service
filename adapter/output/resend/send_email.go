@@ -10,6 +10,7 @@ import (
 	"emailservice/core/application/email_errors"
 	"errors"
 	"fmt"
+	"log/slog"
 
 	"github.com/resend/resend-go/v3"
 )
@@ -31,12 +32,18 @@ type resendEmailAPI interface {
 type ResendEmailSenderAdapter struct {
 	Emails resendEmailAPI
 	From   string
+	Logger *slog.Logger
 }
 
-func NewResendEmailSenderAdapter(client *resend.Client, from string) *ResendEmailSenderAdapter {
+func NewResendEmailSenderAdapter(
+	client *resend.Client,
+	from string,
+	logger *slog.Logger,
+) *ResendEmailSenderAdapter {
 	return &ResendEmailSenderAdapter{
 		Emails: client.Emails,
 		From:   from,
+		Logger: logger,
 	}
 }
 
@@ -49,6 +56,13 @@ func NewResendEmailSenderAdapter(client *resend.Client, from string) *ResendEmai
 //
 // Permanent failures are returned as errors without retry guarantees.
 func (r *ResendEmailSenderAdapter) SendEmail(to, subject, body string) error {
+	r.Logger.Info(
+		"sending email via resend",
+		"to", to,
+		"subject", subject,
+		"from", r.From,
+	)
+
 	params := &resend.SendEmailRequest{
 		To:      []string{to},
 		From:    r.From,
@@ -56,18 +70,36 @@ func (r *ResendEmailSenderAdapter) SendEmail(to, subject, body string) error {
 		Html:    body,
 	}
 
-	_, err := r.Emails.Send(params)
+	resp, err := r.Emails.Send(params)
 	if err != nil {
 		// Rate limit errors are propagated so the application layer
 		// can decide whether the operation should be retried.
 		if errors.Is(err, resend.ErrRateLimit) {
+			r.Logger.Error(
+				"resend rate limit error",
+				"error", err,
+				"to", to,
+				"subject", subject,
+			)
 			return fmt.Errorf("%w: %w", emailerrors.ErrTemporaryFailure, err)
-
 		}
 
+		r.Logger.Error(
+			"resend permanent failure",
+			"error", err,
+			"to", to,
+			"subject", subject,
+		)
 		// Other failures are treated as non-retryable by default.
 		return fmt.Errorf("%w: %w", emailerrors.ErrPermanentFailure, err)
 	}
+
+	r.Logger.Info(
+		"email sent successfully via resend",
+		"provider_id", resp.Id,
+		"to", to,
+		"subject", subject,
+	)
 
 	return nil
 }

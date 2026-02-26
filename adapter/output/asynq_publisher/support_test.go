@@ -2,6 +2,8 @@ package emailpublisher_test
 
 import (
 	"context"
+	"log/slog"
+	"os"
 	"testing"
 
 	"github.com/hibiken/asynq"
@@ -16,6 +18,8 @@ const (
 	emailType = "activation"
 	bodyData  = "body data fake"
 )
+
+var logger = slog.New(slog.NewJSONHandler(os.Stdout, nil))
 
 type fakeMessage struct{}
 

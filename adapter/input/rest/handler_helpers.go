@@ -129,8 +129,23 @@ func (s *SendEmailHandler) handleEmailRequest(w http.ResponseWriter, r *http.Req
 	// - 400 Bad Request: malformed or invalid JSON payload
 	// - 422 Unprocessable Entity: field validation error
 	// - 500 Internal Server Error: unexpected internal failure
+	s.Logger.InfoContext(
+		r.Context(),
+		"http email request received",
+		"method", r.Method,
+		"path", r.URL.Path,
+	)
+
 	err := s.readJSON(w, r, dto)
 	if err != nil {
+		s.Logger.ErrorContext(
+			r.Context(),
+			"invalid json payload",
+			"error", err,
+			"method", r.Method,
+			"path", r.URL.Path,
+		)
+
 		s.respond(w, r, http.StatusBadRequest, envelope{"error": err.Error()})
 		return
 	}
@@ -140,6 +155,14 @@ func (s *SendEmailHandler) handleEmailRequest(w http.ResponseWriter, r *http.Req
 		var validationErr emailmessage.FieldValidationError
 
 		if errors.As(err, &validationErr) {
+			s.Logger.ErrorContext(
+				r.Context(),
+				"email validation error",
+				"error", err,
+				"method", r.Method,
+				"path", r.URL.Path,
+			)
+
 			s.respond(
 				w,
 				r,
@@ -149,6 +172,14 @@ func (s *SendEmailHandler) handleEmailRequest(w http.ResponseWriter, r *http.Req
 			return
 		}
 
+		s.Logger.ErrorContext(
+			r.Context(),
+			"internal error while requesting email",
+			"error", err,
+			"method", r.Method,
+			"path", r.URL.Path,
+		)
+
 		s.respond(
 			w,
 			r,
@@ -157,6 +188,13 @@ func (s *SendEmailHandler) handleEmailRequest(w http.ResponseWriter, r *http.Req
 		)
 		return
 	}
+
+	s.Logger.InfoContext(
+		r.Context(),
+		"email request accepted",
+		"method", r.Method,
+		"path", r.URL.Path,
+	)
 
 	s.respond(w, r, http.StatusAccepted, envelope{"status": "accepted"})
 }

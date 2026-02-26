@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"log"
+	"log/slog"
 	"net/http"
 	"os"
 	"os/signal"
@@ -13,6 +14,7 @@ import (
 	"emailservice/adapter/input/worker"
 	"emailservice/adapter/output/asynq_publisher"
 	"emailservice/adapter/output/content_renderer/html"
+	"emailservice/adapter/output/logger"
 	"emailservice/adapter/output/resend"
 	"emailservice/core/application/usecase"
 
@@ -22,11 +24,14 @@ import (
 )
 
 func main() {
+	baseLogger := slog.New(slog.NewJSONHandler(os.Stdout, nil))
+
+	baseLogger.Info("starting email service")
+
 	if err := godotenv.Load(".env"); err != nil {
-		log.Println("could not load .env")
+		baseLogger.Warn("could not load .env file")
 	}
 
-	// contexto raiz do app
 	ctx, stop := signal.NotifyContext(
 		context.Background(),
 		os.Interrupt,
@@ -34,11 +39,11 @@ func main() {
 	)
 	defer stop()
 
+	// ===== ASYNQ CLIENT (publisher) =====
 	redisOpt := asynq.RedisClientOpt{
 		Addr: os.Getenv("BROKER_ADDR"),
 	}
 
-	// ===== ASYNQ CLIENT (publisher) =====
 	asynqClient := asynq.NewClient(redisOpt)
 	defer asynqClient.Close()
 
@@ -46,22 +51,28 @@ func main() {
 	resendClient := resend.NewClient(os.Getenv("RESEND_API_KEY"))
 
 	// ===== OUTPUT ADAPTERS =====
-	publisherAdapter := emailpublisher.NewAsynqEmailPublisherAdapter(asynqClient)
-	rendererAdapter := renderer.NewHTMLEmailContentRendererAdapter()
+	publisherAdapter := emailpublisher.NewAsynqEmailPublisherAdapter(asynqClient, baseLogger)
+	rendererAdapter := renderer.NewHTMLEmailContentRendererAdapter(baseLogger)
 	senderAdapter := emailsender.NewResendEmailSenderAdapter(
 		resendClient,
 		os.Getenv("FROM_EMAIL"),
+		baseLogger,
 	)
+	loggerAdapter := sloglogger.New(baseLogger)
 
 	// ===== USE CASES =====
-	requestUsecase := usecase.NewRequestSendEmailUseCase(publisherAdapter)
+	requestUsecase := usecase.NewRequestSendEmailUseCase(
+		publisherAdapter,
+		loggerAdapter,
+	)
 	executeUsecase := usecase.NewExecuteSendEmailUseCase(
 		senderAdapter,
 		rendererAdapter,
+		loggerAdapter,
 	)
 
 	// ===== INPUT ADAPTER: HTTP SERVER =====
-	httpHandler := rest.NewSendEmailHandler(requestUsecase)
+	httpHandler := rest.NewSendEmailHandler(requestUsecase, baseLogger)
 
 	httpServer := &http.Server{
 		Addr:    ":4000",
@@ -70,7 +81,10 @@ func main() {
 
 	// ===== INPUT ADAPTER: ASYNQ SERVER (worker) =====
 	asynqMux := asynq.NewServeMux()
-	asynqHandler := worker.NewSendEmailTaskHandler(executeUsecase)
+	asynqHandler := worker.NewSendEmailTaskHandler(
+		executeUsecase,
+		baseLogger,
+	)
 
 	asynqMux.HandleFunc(
 		"email:send",
@@ -89,7 +103,7 @@ func main() {
 
 	// ===== START HTTP SERVER =====
 	go func() {
-		log.Println("HTTP server started on :4000")
+		baseLogger.Info("http server starting", "addr", ":4000")
 		if err := httpServer.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			httpErrCh <- err
 		}
@@ -97,7 +111,7 @@ func main() {
 
 	// ===== START ASYNQ WORKER =====
 	go func() {
-		log.Println("Asynq worker started")
+		baseLogger.Info("asynq worker starting", "concurrency", 5)
 		if err := asynqServer.Run(asynqMux); err != nil {
 			asynqErrCh <- err
 		}
@@ -106,25 +120,26 @@ func main() {
 	// ===== WAIT =====
 	select {
 	case <-ctx.Done():
-		log.Println("shutdown signal received")
+		baseLogger.Info("shutdown signal received")
+
 	case err := <-httpErrCh:
-		log.Printf("http server error: %v", err)
+		baseLogger.Error("http server error", "error", err)
 
 	case err := <-asynqErrCh:
-		log.Printf("asynq server error: %v", err)
+		baseLogger.Error("asynq server error", "error", err)
 	}
 
 	// ===== GRACEFUL SHUTDOWN =====
 	shutdownCtx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	log.Println("shutting down HTTP server")
+	baseLogger.Info("shutting down http server")
 	if err := httpServer.Shutdown(shutdownCtx); err != nil {
 		log.Printf("http shutdown error: %v", err)
 	}
 
-	log.Println("shutting down Asynq server")
+	baseLogger.Info("shutting down asynq server")
 	asynqServer.Shutdown()
 
-	log.Println("application stopped")
+	baseLogger.Info("application stopped")
 }

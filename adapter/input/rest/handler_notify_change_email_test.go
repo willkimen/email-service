@@ -16,7 +16,7 @@ import (
 
 func TestNotifyChangeEmailHandler_WhenRequestBodyIsInvalidJSON_ShouldReturnBadRequest(t *testing.T) {
 	usecaseMock := new(RequestEmailUseCaseMock)
-	handler := rest.NewSendEmailHandler(usecaseMock)
+	handler := rest.NewSendEmailHandler(usecaseMock, logger)
 
 	r := httptest.NewRequest(
 		http.MethodPost,
@@ -45,7 +45,7 @@ func TestNotifyChangeEmailHandler_WhenValidationFails_ShouldReturnUnprocessableE
 		On("Request", mock.Anything).
 		Return(emailmessage.NewEmptyFieldError("login_link"))
 
-	handler := rest.NewSendEmailHandler(usecaseMock)
+	handler := rest.NewSendEmailHandler(usecaseMock, logger)
 
 	body := `{
 		"to": "user@test.com",
@@ -81,7 +81,7 @@ func TestNotifyChangeEmailHandler_WhenRequestIsValid_ShouldReturnAccepted(t *tes
 		On("Request", mock.Anything).
 		Return(nil)
 
-	handler := rest.NewSendEmailHandler(usecaseMock)
+	handler := rest.NewSendEmailHandler(usecaseMock, logger)
 
 	body := `{
 		"to": "user@test.com",
@@ -117,7 +117,7 @@ func TestNotifyChangeEmailHandler_WhenUnexpectedErrorOccurs_ShouldReturnInternal
 		On("Request", mock.Anything).
 		Return(errors.New("failed to request email sending"))
 
-	handler := rest.NewSendEmailHandler(usecaseMock)
+	handler := rest.NewSendEmailHandler(usecaseMock, logger)
 
 	body := `{
 		"to": "user@test.com",

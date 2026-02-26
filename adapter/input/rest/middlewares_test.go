@@ -1,8 +1,10 @@
 package rest
 
 import (
+	"log/slog"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -13,7 +15,7 @@ func TestRecoverPanicMiddleware(t *testing.T) {
 		panic("boom")
 	})
 
-	s := &SendEmailHandler{}
+	s := &SendEmailHandler{Logger: slog.New(slog.NewJSONHandler(os.Stdout, nil))}
 
 	handler := s.recoverPanicMiddleware(panicHandler)
 
@@ -24,4 +26,3 @@ func TestRecoverPanicMiddleware(t *testing.T) {
 
 	assert.Equal(t, rr.Code, http.StatusInternalServerError)
 }
-

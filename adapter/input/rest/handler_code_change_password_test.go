@@ -17,7 +17,7 @@ import (
 func TestSendChangePasswordCodeHandler_WhenRequestBodyIsInvalidJSON_ShouldReturnBadRequest(t *testing.T) {
 	usecaseMock := new(RequestEmailUseCaseMock)
 
-	handler := rest.NewSendEmailHandler(usecaseMock)
+	handler := rest.NewSendEmailHandler(usecaseMock, logger)
 
 	r := httptest.NewRequest(
 		http.MethodPost,
@@ -43,7 +43,7 @@ func TestSendChangePasswordCodeHandler_WhenValidationFails_ShouldReturnUnprocess
 		On("Request", mock.Anything).
 		Return(emailmessage.NewEmptyFieldError("verification_code"))
 
-	handler := rest.NewSendEmailHandler(usecaseMock)
+	handler := rest.NewSendEmailHandler(usecaseMock, logger)
 
 	body := `{
 		"to": "user@test.com",
@@ -77,7 +77,7 @@ func TestSendChangePasswordCodeHandler_WhenRequestIsValid_ShouldReturnAccepted(t
 		On("Request", mock.Anything).
 		Return(nil)
 
-	handler := rest.NewSendEmailHandler(usecaseMock)
+	handler := rest.NewSendEmailHandler(usecaseMock, logger)
 
 	body := `{
 		"to": "user@test.com",
@@ -111,7 +111,7 @@ func TestSendChangePasswordCodeHandler_WhenUnexpectedErrorOccurs_ShouldReturnInt
 		On("Request", mock.Anything).
 		Return(errors.New("failed to request email sending"))
 
-	handler := rest.NewSendEmailHandler(usecaseMock)
+	handler := rest.NewSendEmailHandler(usecaseMock, logger)
 
 	body := `{
 		"to": "user@test.com",

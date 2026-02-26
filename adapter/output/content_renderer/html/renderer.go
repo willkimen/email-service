@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"html/template"
+	"log/slog"
 )
 
 // HTMLEmailContentRendererAdapter is responsible for rendering
@@ -14,10 +15,15 @@ import (
 // It resolves the template based on the email type exposed by
 // the EmailMessage and executes it using the message data.
 type HTMLEmailContentRendererAdapter struct {
+	Logger *slog.Logger
 }
 
-func NewHTMLEmailContentRendererAdapter() *HTMLEmailContentRendererAdapter {
-	return &HTMLEmailContentRendererAdapter{}
+func NewHTMLEmailContentRendererAdapter(
+	logger *slog.Logger,
+) *HTMLEmailContentRendererAdapter {
+	return &HTMLEmailContentRendererAdapter{
+		Logger: logger,
+	}
 }
 
 // Render renders the HTML body for the given email message.
@@ -28,14 +34,34 @@ func NewHTMLEmailContentRendererAdapter() *HTMLEmailContentRendererAdapter {
 //
 // An error is returned if no template is registered for the email
 // type, if the template cannot be parsed, or if execution fails.
-func (r *HTMLEmailContentRendererAdapter) Render(message emailmessage.EmailMessage) (string, error) {
-	path, ok := pathTemplates[message.GetEmailType()]
+func (r *HTMLEmailContentRendererAdapter) Render(
+	message emailmessage.EmailMessage,
+) (string, error) {
+	emailType := message.GetEmailType()
+	path, ok := pathTemplates[emailType]
 	if !ok {
+		r.Logger.Error(
+			"email template not found",
+			"email_type", emailType,
+		)
 		return "", errors.New("template not found")
 	}
 
+	r.Logger.Info(
+		"rendering email template",
+		"email_type", emailType,
+		"template_path", path,
+	)
+
 	tmpl, err := template.ParseFiles(path)
 	if err != nil {
+		r.Logger.Error(
+			"failed to parse email template",
+			"error", err,
+			"email_type", emailType,
+			"template_path", path,
+		)
+
 		return "", fmt.Errorf(
 			"failed to parse email template %q: %w",
 			path,
@@ -45,12 +71,25 @@ func (r *HTMLEmailContentRendererAdapter) Render(message emailmessage.EmailMessa
 
 	var buf bytes.Buffer
 	if err := tmpl.Execute(&buf, message); err != nil {
+		r.Logger.Error(
+			"failed to execute email template",
+			"error", err,
+			"email_type", emailType,
+			"template_path", path,
+		)
+
 		return "", fmt.Errorf(
 			"failed to execute email template %q: %w",
 			path,
 			err,
 		)
 	}
+
+	r.Logger.Info(
+		"email template rendered successfully",
+		"email_type", emailType,
+		"template_path", path,
+	)
 
 	return buf.String(), nil
 }

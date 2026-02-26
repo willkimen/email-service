@@ -18,6 +18,7 @@ func TestPublish_Success(t *testing.T) {
 
 	adapter := &emailpublisher.AsynqEmailPublisherAdapter{
 		Client: fake,
+		Logger: logger,
 	}
 
 	msg := fakeMessage{}
@@ -42,6 +43,7 @@ func TestPublish_EnqueueError(t *testing.T) {
 
 	adapter := &emailpublisher.AsynqEmailPublisherAdapter{
 		Client: fake,
+		Logger: logger,
 	}
 
 	msg := fakeMessage{}

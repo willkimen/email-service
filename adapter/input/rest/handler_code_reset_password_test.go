@@ -17,7 +17,7 @@ import (
 func TestSendResetPasswordCodeHandler_WhenRequestBodyIsInvalidJSON_ShouldReturnBadRequest(t *testing.T) {
 	usecaseMock := new(RequestEmailUseCaseMock)
 
-	handler := rest.NewSendEmailHandler(usecaseMock)
+	handler := rest.NewSendEmailHandler(usecaseMock, logger)
 
 	r := httptest.NewRequest(
 		http.MethodPost,
@@ -43,7 +43,7 @@ func TestSendResetPasswordCodeHandler_WhenValidationFails_ShouldReturnUnprocessa
 		On("Request", mock.Anything).
 		Return(emailmessage.NewEmptyFieldError("reset_password_link"))
 
-	handler := rest.NewSendEmailHandler(usecaseMock)
+	handler := rest.NewSendEmailHandler(usecaseMock, logger)
 
 	body := `{
 		"to": "user@test.com",
@@ -78,7 +78,7 @@ func TestSendResetPasswordCodeHandler_WhenRequestIsValid_ShouldReturnAccepted(t 
 		On("Request", mock.Anything).
 		Return(nil)
 
-	handler := rest.NewSendEmailHandler(usecaseMock)
+	handler := rest.NewSendEmailHandler(usecaseMock, logger)
 
 	body := `{
 		"to": "user@test.com",
@@ -113,7 +113,7 @@ func TestSendResetPasswordCodeHandler_WhenUnexpectedErrorOccurs_ShouldReturnInte
 		On("Request", mock.Anything).
 		Return(errors.New("failed to request email sending"))
 
-	handler := rest.NewSendEmailHandler(usecaseMock)
+	handler := rest.NewSendEmailHandler(usecaseMock, logger)
 
 	body := `{
 		"to": "user@test.com",

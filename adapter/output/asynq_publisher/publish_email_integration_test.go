@@ -35,6 +35,7 @@ func TestPublish_Integration(t *testing.T) {
 	// Create the adapter under test, injecting the real Asynq client.
 	adapter := emailpublisher.AsynqEmailPublisherAdapter{
 		Client: client,
+		Logger: logger,
 	}
 
 	// Execute the method under test.

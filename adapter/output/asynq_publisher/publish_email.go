@@ -4,6 +4,7 @@ import (
 	"emailservice/core/application/email_message"
 	"encoding/json"
 	"fmt"
+	"log/slog"
 
 	"github.com/hibiken/asynq"
 )
@@ -37,10 +38,17 @@ type taskEnqueuer interface {
 type AsynqEmailPublisherAdapter struct {
 	// Client is the Asynq client used to enqueue background tasks.
 	Client taskEnqueuer
+	Logger *slog.Logger
 }
 
-func NewAsynqEmailPublisherAdapter(client *asynq.Client) *AsynqEmailPublisherAdapter {
-	return &AsynqEmailPublisherAdapter{Client: client}
+func NewAsynqEmailPublisherAdapter(
+	client *asynq.Client,
+	logger *slog.Logger,
+) *AsynqEmailPublisherAdapter {
+	return &AsynqEmailPublisherAdapter{
+		Client: client,
+		Logger: logger,
+	}
 }
 
 // Publish serializes the given EmailMessage into a task payload
@@ -54,6 +62,12 @@ func NewAsynqEmailPublisherAdapter(client *asynq.Client) *AsynqEmailPublisherAda
 // If enqueueing fails, an infrastructure-level error is returned.
 // The actual email delivery is expected to be handled by a separate worker.
 func (a *AsynqEmailPublisherAdapter) Publish(message emailmessage.EmailMessage) error {
+	a.Logger.Info(
+		"publishing email task",
+		"to", message.GetTo(),
+		"subject", message.GetSubject(),
+		"email_type", message.GetEmailType(),
+	)
 
 	payload, err := json.Marshal(Payload{
 		To:        message.GetTo(),
@@ -63,14 +77,35 @@ func (a *AsynqEmailPublisherAdapter) Publish(message emailmessage.EmailMessage) 
 	})
 
 	if err != nil {
+		a.Logger.Error(
+			"failed to marshal email payload",
+			"error", err,
+			"to", message.GetTo(),
+			"subject", message.GetSubject(),
+		)
 		return fmt.Errorf("marshal email payload: %w", err)
 	}
 
 	task := asynq.NewTask("email:send", payload)
 
-	if _, err := a.Client.Enqueue(task); err != nil {
+	info, err := a.Client.Enqueue(task)
+	if err != nil {
+		a.Logger.Error(
+			"failed to enqueue email task",
+			"error", err,
+			"to", message.GetTo(),
+			"subject", message.GetSubject(),
+		)
 		return fmt.Errorf("enqueue email task: %w", err)
 	}
+
+	a.Logger.Info(
+		"email task enqueued successfully",
+		"task_id", info.ID,
+		"queue", info.Queue,
+		"to", message.GetTo(),
+		"subject", message.GetSubject(),
+	)
 
 	return nil
 }

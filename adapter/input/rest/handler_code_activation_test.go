@@ -17,7 +17,7 @@ import (
 func TestSendActivationCodeHandler_WhenRequestBodyIsInvalidJSON_ShouldReturnBadRequest(t *testing.T) {
 	usecaseMock := new(RequestEmailUseCaseMock)
 
-	handler := rest.NewSendEmailHandler(usecaseMock)
+	handler := rest.NewSendEmailHandler(usecaseMock, logger)
 
 	r := httptest.NewRequest(http.MethodPost, "/emails/activation-code", strings.NewReader("{invalid-json"))
 	w := httptest.NewRecorder()
@@ -39,7 +39,7 @@ func TestSendActivationCodeHandler_WhenValidationFails_ShouldReturnUnprocessable
 		On("Request", mock.Anything).
 		Return(emailmessage.NewEmptyFieldError("to"))
 
-	handler := rest.NewSendEmailHandler(usecaseMock)
+	handler := rest.NewSendEmailHandler(usecaseMock, logger)
 
 	body := `{
 		"to": "",
@@ -71,7 +71,7 @@ func TestSendActivationCodeHandler_WhenRequestIsValid_ShouldReturnAccepted(t *te
 		On("Request", mock.Anything).
 		Return(nil)
 
-	handler := rest.NewSendEmailHandler(usecaseMock)
+	handler := rest.NewSendEmailHandler(usecaseMock, logger)
 
 	body := `{
 		"to": "user@test.com",
@@ -103,7 +103,7 @@ func TestSendActivationCodeHandler_WhenUnexpectedErrorOccurs_ShouldReturnInterna
 		On("Request", mock.Anything).
 		Return(errors.New("failed to request email sending"))
 
-	handler := rest.NewSendEmailHandler(usecaseMock)
+	handler := rest.NewSendEmailHandler(usecaseMock, logger)
 
 	body := `{
 		"to": "user@test.com",
@@ -127,4 +127,3 @@ func TestSendActivationCodeHandler_WhenUnexpectedErrorOccurs_ShouldReturnInterna
 
 	usecaseMock.AssertCalled(t, "Request", mock.Anything)
 }
-

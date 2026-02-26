@@ -13,13 +13,14 @@ func TestExecute_ReturnsError_WhenRendererFails(t *testing.T) {
 	renderErr := errors.New("render failed")
 
 	usecase := usecase.ExecuteSendEmailUsecase{
-		Renderer: FakeRenderer{
+		Renderer: fakeRenderer{
 			Err: renderErr,
 		},
-		Sender: FakeSender{},
+		Sender: fakeSender{},
+		Logger: fakeLogger{},
 	}
 
-	err := usecase.ExecuteSend(FakeEmailMessage{})
+	err := usecase.ExecuteSend(fakeEmailMessage{})
 
 	require.Error(t, err, "expected Execute to return an error when renderer fails")
 	assert.Contains(t, err.Error(), "during rendering",
@@ -30,15 +31,16 @@ func TestExecute_ReturnsError_WhenSenderFails(t *testing.T) {
 	sendErr := errors.New("send failed")
 
 	usecase := usecase.ExecuteSendEmailUsecase{
-		Renderer: FakeRenderer{
+		Renderer: fakeRenderer{
 			Body: "<html>body</html>",
 		},
-		Sender: FakeSender{
+		Sender: fakeSender{
 			Err: sendErr,
 		},
+		Logger: fakeLogger{},
 	}
 
-	err := usecase.ExecuteSend(FakeEmailMessage{})
+	err := usecase.ExecuteSend(fakeEmailMessage{})
 
 	require.Error(t, err, "expected Execute to return an error when sender fails")
 	assert.Contains(t, err.Error(), "during sending",
@@ -47,13 +49,14 @@ func TestExecute_ReturnsError_WhenSenderFails(t *testing.T) {
 
 func TestExecute_ReturnsNil_WhenRenderAndSendSucceed(t *testing.T) {
 	usecase := usecase.ExecuteSendEmailUsecase{
-		Renderer: FakeRenderer{
+		Renderer: fakeRenderer{
 			Body: "<html>body</html>",
 		},
-		Sender: FakeSender{},
+		Sender: fakeSender{},
+		Logger: fakeLogger{},
 	}
 
-	err := usecase.ExecuteSend(FakeEmailMessage{})
+	err := usecase.ExecuteSend(fakeEmailMessage{})
 
 	require.NoError(t, err,
 		"expected Execute to return nil when render and send succeed")

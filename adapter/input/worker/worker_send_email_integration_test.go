@@ -7,6 +7,8 @@ import (
 	"emailservice/core/application/email_errors"
 	"emailservice/core/application/email_message"
 	"errors"
+	"log/slog"
+	"os"
 	"testing"
 	"time"
 
@@ -23,6 +25,7 @@ func TestProcessSendEmail_PermanentFailure_archiveTask(t *testing.T) {
 				return errors.New("permanent failure")
 			},
 		},
+		Logger: slog.New(slog.NewJSONHandler(os.Stdout, nil)),
 	}
 
 	redis, addr := setupIntegration(t, *handler)
@@ -79,6 +82,7 @@ func TestProcessSendEmail_TemporaryFailure_retryTask(t *testing.T) {
 				return emailerrors.ErrTemporaryFailure
 			},
 		},
+		Logger: slog.New(slog.NewJSONHandler(os.Stdout, nil)),
 	}
 
 	redis, addr := setupIntegration(t, *handler)
@@ -133,6 +137,7 @@ func TestProcessSendEmail_Success_taskIsProcessed(t *testing.T) {
 				return nil
 			},
 		},
+		Logger: slog.New(slog.NewJSONHandler(os.Stdout, nil)),
 	}
 
 	redis, addr := setupIntegration(t, *handler)

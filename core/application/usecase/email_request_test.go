@@ -12,6 +12,7 @@ import (
 func TestWhenMessageIsInvalid_RequestIsRejected(t *testing.T) {
 	request := usecase.RequestSendEmailUseCase{
 		Publisher: publisherSuccessFake{},
+		Logger:    fakeLogger{},
 	}
 
 	err := request.Request(invalidMessage)
@@ -28,7 +29,10 @@ func TestWhenMessageIsInvalid_RequestIsRejected(t *testing.T) {
 }
 
 func TestWhenPublisherFails_RequestFails(t *testing.T) {
-	request := usecase.RequestSendEmailUseCase{Publisher: publishFailureFake{}}
+	request := usecase.RequestSendEmailUseCase{
+		Publisher: publishFailureFake{},
+		Logger:    fakeLogger{},
+	}
 	err := request.Request(messageCorrect)
 
 	require.Error(t, err,
@@ -40,7 +44,10 @@ func TestWhenPublisherFails_RequestFails(t *testing.T) {
 }
 
 func TestSuccessfulRequest(t *testing.T) {
-	request := usecase.RequestSendEmailUseCase{Publisher: publisherSuccessFake{}}
+	request := usecase.RequestSendEmailUseCase{
+		Publisher: publisherSuccessFake{},
+		Logger:    fakeLogger{},
+	}
 	err := request.Request(messageCorrect)
 
 	assert.NoError(t, err,

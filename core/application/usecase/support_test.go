@@ -26,27 +26,33 @@ var messageCorrect *emailmessage.ActivationCode = emailmessage.NewActivationCode
 	"fake@fake.com", "fake", "fake", "fake", "fake", "fake",
 )
 
-type FakeRenderer struct {
+type fakeRenderer struct {
 	Body string
 	Err  error
 }
 
-func (f FakeRenderer) Render(message emailmessage.EmailMessage) (string, error) {
+func (f fakeRenderer) Render(message emailmessage.EmailMessage) (string, error) {
 	return f.Body, f.Err
 }
 
-type FakeSender struct {
+type fakeSender struct {
 	Err error
 }
 
-func (f FakeSender) SendEmail(to, subject, body string) error {
+func (f fakeSender) SendEmail(to, subject, body string) error {
 	return f.Err
 }
 
-type FakeEmailMessage struct{}
+type fakeLogger struct {
+}
 
-func (FakeEmailMessage) ValidateData() error  { return nil }
-func (FakeEmailMessage) GetEmailType() string { return "anytype" }
-func (FakeEmailMessage) GetTo() string        { return "to" }
-func (FakeEmailMessage) GetSubject() string   { return "subject" }
-func (FakeEmailMessage) GetBodyData() any     { return nil }
+func (fakeLogger) Info(msg string, fields ...any)             {}
+func (fakeLogger) Error(msg string, err error, fields ...any) {}
+
+type fakeEmailMessage struct{}
+
+func (fakeEmailMessage) ValidateData() error  { return nil }
+func (fakeEmailMessage) GetEmailType() string { return "anytype" }
+func (fakeEmailMessage) GetTo() string        { return "to" }
+func (fakeEmailMessage) GetSubject() string   { return "subject" }
+func (fakeEmailMessage) GetBodyData() any     { return nil }

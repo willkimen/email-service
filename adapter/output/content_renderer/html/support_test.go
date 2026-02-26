@@ -1,8 +1,14 @@
 package renderer_test
 
-import "emailservice/adapter/output/content_renderer/html"
+import (
+	"emailservice/adapter/output/content_renderer/html"
+	"log/slog"
+	"os"
+)
 
-var rendererAdapter = &renderer.HTMLEmailContentRendererAdapter{}
+var logger = slog.New(slog.NewJSONHandler(os.Stdout, nil))
+
+var rendererAdapter = &renderer.HTMLEmailContentRendererAdapter{Logger: logger}
 
 type FakeEmailMessageWithEmailTypeNotExist struct{}
 
@@ -16,8 +22,10 @@ type FakeEmailMessageWithDataInvalid struct {
 	FieldNotExist string
 }
 
+var emailTypeExists = "activation_code"
+
 func (FakeEmailMessageWithDataInvalid) ValidateData() error  { return nil }
-func (FakeEmailMessageWithDataInvalid) GetEmailType() string { return "activation_code" }
+func (FakeEmailMessageWithDataInvalid) GetEmailType() string { return emailTypeExists }
 func (FakeEmailMessageWithDataInvalid) GetTo() string        { return "to" }
 func (FakeEmailMessageWithDataInvalid) GetSubject() string   { return "subject" }
 func (FakeEmailMessageWithDataInvalid) GetBodyData() any     { return nil }

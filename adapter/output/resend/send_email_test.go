@@ -3,6 +3,8 @@ package emailsender
 import (
 	"emailservice/core/application/email_errors"
 	"errors"
+	"log/slog"
+	"os"
 	"testing"
 
 	"github.com/resend/resend-go/v3"
@@ -30,6 +32,7 @@ func TestSendEmail_TemporaryFailure(t *testing.T) {
 	adapter := &ResendEmailSenderAdapter{
 		Emails: mock,
 		From:   "test@example.com",
+		Logger: slog.New(slog.NewJSONHandler(os.Stdout, nil)),
 	}
 
 	err := adapter.SendEmail("user@test.com", "subject", "<p>body</p>")
@@ -49,6 +52,7 @@ func TestSendEmail_PermanentFailure(t *testing.T) {
 	adapter := &ResendEmailSenderAdapter{
 		Emails: mock,
 		From:   "test@example.com",
+		Logger: slog.New(slog.NewJSONHandler(os.Stdout, nil)),
 	}
 
 	err := adapter.SendEmail("user@test.com", "subject", "<p>body</p>")
@@ -68,10 +72,10 @@ func TestSendEmail_Success(t *testing.T) {
 	adapter := &ResendEmailSenderAdapter{
 		Emails: mock,
 		From:   "test@example.com",
+		Logger: slog.New(slog.NewJSONHandler(os.Stdout, nil)),
 	}
 
 	err := adapter.SendEmail("user@test.com", "subject", "<p>body</p>")
 
 	require.NoError(t, err, "expected no error when email is sent successfully")
 }
-

@@ -16,7 +16,7 @@ import (
 
 func TestNotifyDeletionHandler_WhenRequestBodyIsInvalidJSON_ShouldReturnBadRequest(t *testing.T) {
 	usecaseMock := new(RequestEmailUseCaseMock)
-	handler := rest.NewSendEmailHandler(usecaseMock)
+	handler := rest.NewSendEmailHandler(usecaseMock, logger)
 
 	r := httptest.NewRequest(
 		http.MethodPost,
@@ -45,7 +45,7 @@ func TestNotifyDeletionHandler_WhenValidationFails_ShouldReturnUnprocessableEnti
 		On("Request", mock.Anything).
 		Return(emailmessage.NewEmptyFieldError("to"))
 
-	handler := rest.NewSendEmailHandler(usecaseMock)
+	handler := rest.NewSendEmailHandler(usecaseMock, logger)
 
 	body := `{
 		"to": "",
@@ -80,7 +80,7 @@ func TestNotifyDeletionHandler_WhenRequestIsValid_ShouldReturnAccepted(t *testin
 		On("Request", mock.Anything).
 		Return(nil)
 
-	handler := rest.NewSendEmailHandler(usecaseMock)
+	handler := rest.NewSendEmailHandler(usecaseMock, logger)
 
 	body := `{
 		"to": "user@test.com",
@@ -115,7 +115,7 @@ func TestNotifyDeletionHandler_WhenUnexpectedErrorOccurs_ShouldReturnInternalSer
 		On("Request", mock.Anything).
 		Return(errors.New("failed to request email sending"))
 
-	handler := rest.NewSendEmailHandler(usecaseMock)
+	handler := rest.NewSendEmailHandler(usecaseMock, logger)
 
 	body := `{
 		"to": "user@test.com",

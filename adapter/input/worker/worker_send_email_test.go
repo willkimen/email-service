@@ -3,6 +3,8 @@ package worker_test
 import (
 	"context"
 	"errors"
+	"log/slog"
+	"os"
 	"testing"
 
 	"emailservice/adapter/input/worker"
@@ -16,6 +18,7 @@ import (
 func TestProcessSendEmail_InvalidPayload_ReturnsSkipRetry(t *testing.T) {
 	handler := &worker.SendEmailTaskHandler{
 		UseCase: &mockUseCase{},
+		Logger:  slog.New(slog.NewJSONHandler(os.Stdout, nil)),
 	}
 
 	task := asynq.NewTask("send:email", []byte("invalid-json"))
@@ -33,6 +36,7 @@ func TestProcessSendEmail_TemporaryFailure_ReturnsError(t *testing.T) {
 				return emailerrors.ErrTemporaryFailure
 			},
 		},
+		Logger: slog.New(slog.NewJSONHandler(os.Stdout, nil)),
 	}
 
 	task := validTask(t)
@@ -50,6 +54,7 @@ func TestProcessSendEmail_NonTemporaryError_ReturnsSkipRetry(t *testing.T) {
 				return errors.New("permanent failure")
 			},
 		},
+		Logger: slog.New(slog.NewJSONHandler(os.Stdout, nil)),
 	}
 
 	task := validTask(t)
@@ -67,6 +72,7 @@ func TestProcessSendEmail_Success_ReturnsNil(t *testing.T) {
 				return nil
 			},
 		},
+		Logger: slog.New(slog.NewJSONHandler(os.Stdout, nil)),
 	}
 
 	task := validTask(t)
