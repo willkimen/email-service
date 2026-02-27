@@ -23,6 +23,72 @@ import (
 	"github.com/resend/resend-go/v3"
 )
 
+func rootComposition(baseLogger *slog.Logger) (*http.Server, *asynq.Server, *asynq.ServeMux) {
+	// ===== ASYNQ CLIENT (publisher) =====
+	redisOpt := asynq.RedisClientOpt{
+		Addr: os.Getenv("BROKER_ADDR"),
+	}
+
+	asynqClient := asynq.NewClient(redisOpt)
+	defer asynqClient.Close()
+
+	// ===== RESEND CLIENT =====
+	resendClient := resend.NewClient(os.Getenv("RESEND_API_KEY"))
+
+	// ===== OUTPUT ADAPTERS =====
+	publisherOutputAdapter := emailpublisher.NewAsynqEmailPublisherAdapter(
+		asynqClient,
+		baseLogger,
+	)
+	rendererOutputAdapter := renderer.NewHTMLEmailContentRendererAdapter(baseLogger)
+	senderOutputAdapter := emailsender.NewResendEmailSenderAdapter(
+		resendClient,
+		os.Getenv("FROM_EMAIL"),
+		baseLogger,
+	)
+	loggerOutputAdapter := sloglogger.NewSlogLogger(baseLogger)
+
+	// ===== USE CASES =====
+	requestUsecase := usecase.NewRequestSendEmailUseCase(
+		publisherOutputAdapter,
+		loggerOutputAdapter,
+	)
+	executeUsecase := usecase.NewExecuteSendEmailUseCase(
+		senderOutputAdapter,
+		rendererOutputAdapter,
+		loggerOutputAdapter,
+	)
+
+	// ===== INPUT ADAPTER: HTTP SERVER =====
+	httpHandlerInputAdapter := rest.NewSendEmailHandler(requestUsecase, baseLogger)
+
+	httpServer := &http.Server{
+		Addr:    ":4000",
+		Handler: httpHandlerInputAdapter.Routes(),
+	}
+
+	// ===== INPUT ADAPTER: ASYNQ SERVER (worker) =====
+	asynqMux := asynq.NewServeMux()
+	asynqHandlerInputAdapter := worker.NewSendEmailTaskHandler(
+		executeUsecase,
+		baseLogger,
+	)
+
+	asynqMux.HandleFunc(
+		"email:send",
+		asynqHandlerInputAdapter.ProcessSendEmail,
+	)
+
+	asynqServer := asynq.NewServer(
+		redisOpt,
+		asynq.Config{
+			Concurrency: 5,
+		},
+	)
+
+	return httpServer, asynqServer, asynqMux
+}
+
 func main() {
 	baseLogger := slog.New(slog.NewJSONHandler(os.Stdout, nil))
 
@@ -39,64 +105,7 @@ func main() {
 	)
 	defer stop()
 
-	// ===== ASYNQ CLIENT (publisher) =====
-	redisOpt := asynq.RedisClientOpt{
-		Addr: os.Getenv("BROKER_ADDR"),
-	}
-
-	asynqClient := asynq.NewClient(redisOpt)
-	defer asynqClient.Close()
-
-	// ===== RESEND CLIENTS =====
-	resendClient := resend.NewClient(os.Getenv("RESEND_API_KEY"))
-
-	// ===== OUTPUT ADAPTERS =====
-	publisherAdapter := emailpublisher.NewAsynqEmailPublisherAdapter(asynqClient, baseLogger)
-	rendererAdapter := renderer.NewHTMLEmailContentRendererAdapter(baseLogger)
-	senderAdapter := emailsender.NewResendEmailSenderAdapter(
-		resendClient,
-		os.Getenv("FROM_EMAIL"),
-		baseLogger,
-	)
-	loggerAdapter := sloglogger.New(baseLogger)
-
-	// ===== USE CASES =====
-	requestUsecase := usecase.NewRequestSendEmailUseCase(
-		publisherAdapter,
-		loggerAdapter,
-	)
-	executeUsecase := usecase.NewExecuteSendEmailUseCase(
-		senderAdapter,
-		rendererAdapter,
-		loggerAdapter,
-	)
-
-	// ===== INPUT ADAPTER: HTTP SERVER =====
-	httpHandler := rest.NewSendEmailHandler(requestUsecase, baseLogger)
-
-	httpServer := &http.Server{
-		Addr:    ":4000",
-		Handler: httpHandler.Routes(),
-	}
-
-	// ===== INPUT ADAPTER: ASYNQ SERVER (worker) =====
-	asynqMux := asynq.NewServeMux()
-	asynqHandler := worker.NewSendEmailTaskHandler(
-		executeUsecase,
-		baseLogger,
-	)
-
-	asynqMux.HandleFunc(
-		"email:send",
-		asynqHandler.ProcessSendEmail,
-	)
-
-	asynqServer := asynq.NewServer(
-		redisOpt,
-		asynq.Config{
-			Concurrency: 5,
-		},
-	)
+	httpServer, asynqServer, asynqMux := rootComposition(baseLogger)
 
 	httpErrCh := make(chan error, 1)
 	asynqErrCh := make(chan error, 1)

@@ -8,7 +8,7 @@ type SlogLogger struct {
 	logger *slog.Logger
 }
 
-func New(logger *slog.Logger) *SlogLogger {
+func NewSlogLogger(logger *slog.Logger) *SlogLogger {
 	return &SlogLogger{logger: logger}
 }
 
