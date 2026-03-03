@@ -41,3 +41,19 @@ logs-email-live:
 
 logs-redis-live:
 	docker compose logs -f --timestamps redis-broker
+
+# Run default tests (unit + local integration, no containers, no external calls)
+test:
+	go test ./...
+
+# Run integration tests using testcontainers (slower, requires Docker)
+test-lazy:
+	go test -tags=lazy ./...
+
+# Run email integration tests (calls Resend API, requires valid credentials)
+test-email:
+	go test -tags=email ./...
+
+test-all:
+	go test -tags=email,lazy ./...
+
