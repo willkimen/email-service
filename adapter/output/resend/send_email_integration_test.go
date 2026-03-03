@@ -4,12 +4,12 @@ package emailsender_test
 
 import (
 	"emailservice/adapter/output/resend"
+	"github.com/joho/godotenv"
+	"github.com/resend/resend-go/v3"
+	"github.com/stretchr/testify/require"
 	"log/slog"
 	"os"
 	"testing"
-
-	"github.com/resend/resend-go/v3"
-	"github.com/stretchr/testify/require"
 )
 
 func TestResendEmailSenderAdapter_SendEmail_Integration(t *testing.T) {
@@ -20,6 +20,12 @@ func TestResendEmailSenderAdapter_SendEmail_Integration(t *testing.T) {
 	// since those results are handled asynchronously via webhooks.
 	// The goal here is only to ensure that configuration, authentication,
 	// and request formatting are correct.
+	err := godotenv.Load("../../../.env")
+	require.NoError(
+		t,
+		err,
+		"expected .env file to load successfully for integration test",
+	)
 	require.NotEmpty(
 		t,
 		os.Getenv("RESEND_API_KEY"),
