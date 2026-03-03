@@ -19,7 +19,6 @@ import (
 	"emailservice/core/application/usecase"
 
 	"github.com/hibiken/asynq"
-	"github.com/joho/godotenv"
 	"github.com/resend/resend-go/v3"
 )
 
@@ -93,10 +92,6 @@ func main() {
 	baseLogger := slog.New(slog.NewJSONHandler(os.Stdout, nil))
 
 	baseLogger.Info("starting email service")
-
-	if err := godotenv.Load(".env"); err != nil {
-		baseLogger.Warn("could not load .env file")
-	}
 
 	ctx, stop := signal.NotifyContext(
 		context.Background(),

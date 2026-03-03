@@ -1,0 +1,6 @@
+.env.example
+.env
+.git/
+.gitignore
+.vscode/
+.idea
