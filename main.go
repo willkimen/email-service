@@ -22,14 +22,14 @@ import (
 	"github.com/resend/resend-go/v3"
 )
 
-func rootComposition(baseLogger *slog.Logger) (*http.Server, *asynq.Server, *asynq.ServeMux) {
+func rootComposition(baseLogger *slog.Logger) (
+	*http.Server, *asynq.Server, *asynq.ServeMux, *asynq.Client) {
 	// ===== ASYNQ CLIENT (publisher) =====
 	redisOpt := asynq.RedisClientOpt{
 		Addr: os.Getenv("BROKER_ADDR"),
 	}
 
 	asynqClient := asynq.NewClient(redisOpt)
-	defer asynqClient.Close()
 
 	// ===== RESEND CLIENT =====
 	resendClient := resend.NewClient(os.Getenv("RESEND_API_KEY"))
@@ -62,7 +62,7 @@ func rootComposition(baseLogger *slog.Logger) (*http.Server, *asynq.Server, *asy
 	httpHandlerInputAdapter := rest.NewSendEmailHandler(requestUsecase, baseLogger)
 
 	httpServer := &http.Server{
-		Addr:     ":4000",
+		Addr:     ":8080",
 		Handler:  httpHandlerInputAdapter.Routes(),
 		ErrorLog: slog.NewLogLogger(baseLogger.Handler(), slog.LevelError),
 	}
@@ -86,7 +86,7 @@ func rootComposition(baseLogger *slog.Logger) (*http.Server, *asynq.Server, *asy
 		},
 	)
 
-	return httpServer, asynqServer, asynqMux
+	return httpServer, asynqServer, asynqMux, asynqClient
 }
 
 func main() {
@@ -101,14 +101,15 @@ func main() {
 	)
 	defer stop()
 
-	httpServer, asynqServer, asynqMux := rootComposition(baseLogger)
+	httpServer, asynqServer, asynqMux, asynqClient := rootComposition(baseLogger)
+	defer asynqClient.Close()
 
 	httpErrCh := make(chan error, 1)
 	asynqErrCh := make(chan error, 1)
 
 	// ===== START HTTP SERVER =====
 	go func() {
-		baseLogger.Info("http server starting", "addr", ":4000")
+		baseLogger.Info("http server starting", "addr", ":8080")
 		if err := httpServer.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			httpErrCh <- err
 		}
