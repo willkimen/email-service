@@ -397,6 +397,34 @@ FROM_EMAIL
 
 Default sender name and email address used for outgoing emails. In development environments this can use the default domain provided by the email service, but in production it should use a verified domain such as `no-reply@yourdomain.com`.
 
+### Resend Sandbox Mode
+
+When using **Resend** without a verified domain, the account operates in **sandbox mode**.
+
+In this mode there are two important restrictions.
+
+First, the **recipient (`To`) must be the same email address used in the Resend account**. Attempts to send emails to other addresses will be rejected by the API.
+
+Second, the **sender (`From`) must use the default testing address provided by Resend**, typically:
+
+Dev <onboarding@resend.dev>
+
+For this reason, during local development the service is configured with:
+
+FROM_EMAIL="Dev <onboarding@resend.dev>"
+
+This allows testing the integration, templates, and email workflow without configuring a domain.
+
+### Using a Verified Domain
+
+After verifying a domain in the Resend dashboard, these restrictions are removed.
+
+The `From` address must then use an email belonging to the verified domain, for example:
+
+MyApp <noreply@mydomain.com>
+
+Once a domain is verified, emails can be sent to **any recipient address**, and the service operates as a normal email delivery system.
+
 ```bash
 BROKER_ADDR
 ```
