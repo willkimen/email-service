@@ -151,8 +151,8 @@ func (r *ResetPasswordCodeDTO) ToEmailMessage() emailmessage.EmailMessage {
 		r.To,
 		r.Subject,
 		r.VerificationCode,
-		r.CodeExpirationHours,
 		r.ResetPasswordLink,
+		r.CodeExpirationHours,
 	)
 }
 
