@@ -10,10 +10,7 @@ import (
 // due to a validation rule, not an infrastructure failure.
 type FieldValidationError interface {
 	error
-
-	// isFieldValidationError is a marker method used to distinguish
-	// validation errors from other error types.
-	isFieldValidationError()
+	GetField() string
 }
 
 // EmailInvalidFormatError represents a validation error indicating
@@ -26,9 +23,9 @@ func (e *EmailInvalidFormatError) Error() string {
 	return e.text
 }
 
-// isFieldValidationError marks EmailInvalidFormatError as a
-// validation error.
-func (EmailInvalidFormatError) isFieldValidationError() {}
+func (e *EmailInvalidFormatError) GetField() string {
+	return ""
+}
 
 func NewEmailInvalidFormatError() error {
 	return &EmailInvalidFormatError{
@@ -47,9 +44,9 @@ func (e *EmptyFieldError) Error() string {
 	return e.text
 }
 
-// isFieldValidationError marks EmptyFieldError as a
-// validation error.
-func (EmptyFieldError) isFieldValidationError() {}
+func (e *EmptyFieldError) GetField() string {
+	return e.Field
+}
 
 func NewEmptyFieldError(field string) error {
 	text := fmt.Sprintf("%s field is required", strings.ToLower(field))

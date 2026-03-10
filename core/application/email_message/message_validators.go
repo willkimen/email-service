@@ -19,12 +19,12 @@ import (
 const (
 	FieldTo                     = "to"
 	FieldSubject                = "subject"
-	FieldVerificationCode       = "verificationCode"
-	FieldCodeExpirationHours    = "codeExpirationHours"
-	FieldActivationLink         = "activationLink"
-	FieldActivationDeadlineDays = "activationDeadlineDays"
-	FieldResetPasswordLink      = "resetPasswordLink"
-	FieldLoginLink              = "loginLink"
+	FieldVerificationCode       = "verification_code"
+	FieldCodeExpirationHours    = "code_expiration_hours"
+	FieldActivationLink         = "activation_link"
+	FieldActivationDeadlineDays = "activation_deadline_days"
+	FieldResetPasswordLink      = "reset_password_link"
+	FieldLoginLink              = "login_link"
 )
 
 // fieldRule binds a raw value to its logical field name,

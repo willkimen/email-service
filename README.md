@@ -129,7 +129,8 @@ Example:
 
 ```json
 {
-  "error": "verification_code must not be empty"
+  "error": "verification_code field is required",
+  "field": "name field"
 }
 ```
 

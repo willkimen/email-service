@@ -167,7 +167,10 @@ func (s *SendEmailHandler) handleEmailRequest(w http.ResponseWriter, r *http.Req
 				w,
 				r,
 				http.StatusUnprocessableEntity,
-				envelope{"error": err.Error()},
+				envelope{
+					"error": validationErr.Error(),
+					"field": validationErr.GetField(),
+				},
 			)
 			return
 		}
