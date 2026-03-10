@@ -22,7 +22,7 @@
   - [Delivery Status (Resend Webhooks)](#delivery-status-resend-webhooks)
   - [Logging](#logging)
 
-# Overview
+# 📌 Overview
 
 This service is responsible for handling transactional emails related to user account management.  
 Its primary role is to deliver emails required for essential account operations, such as account  verification, password reset requests, and security notifications.
@@ -41,7 +41,7 @@ Previously, this functionality existed within a monolithic backend built with Dj
 
 Although the service is fully operational, additional improvements and features are planned for future iterations.
 
-# Architecture and flow
+# 🏗️ Architecture and flow
 
 The architecture used follows the Hexagonal pattern (Ports and Adapters), aiming to improve maintainability, extensibility, and testability.
 
@@ -89,7 +89,7 @@ Concrete implementations of these ports are provided by the adapters layer and u
 
 This structure allows external integrations to be replaced without modifying the application logic.
 
-# Endpoints
+# 🔗 Endpoints
 
 All endpoints follow the same behavior pattern. The API receives a request describing an email operation and enqueues the email delivery task for asynchronous processing.
 
@@ -378,7 +378,7 @@ All endpoints behave the same way internally:
 The actual email delivery is handled asynchronously by a worker process.
 
 
-# Configuration and Running the Service
+# ⚙️ Configuration and Running the Service
 
 This service requires a small set of environment variables and external dependencies in order to run correctly. The configuration is provided through environment variables, which define credentials, default email settings, and the address of the message broker responsible for background job processing.
 
@@ -538,7 +538,7 @@ go test -tags=email,lazy ./...
 The Makefile provides shortcuts for these commands to simplify execution during development.
 
 
-# Current Limitations
+# ⚠️ Current Limitations
 
 ## Delivery Status (Resend Webhooks)
 
