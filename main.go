@@ -62,8 +62,9 @@ func rootComposition(baseLogger *slog.Logger) (*http.Server, *asynq.Server, *asy
 	httpHandlerInputAdapter := rest.NewSendEmailHandler(requestUsecase, baseLogger)
 
 	httpServer := &http.Server{
-		Addr:    ":4000",
-		Handler: httpHandlerInputAdapter.Routes(),
+		Addr:     ":4000",
+		Handler:  httpHandlerInputAdapter.Routes(),
+		ErrorLog: slog.NewLogLogger(baseLogger.Handler(), slog.LevelError),
 	}
 
 	// ===== INPUT ADAPTER: ASYNQ SERVER (worker) =====
