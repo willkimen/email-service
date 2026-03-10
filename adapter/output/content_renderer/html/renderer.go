@@ -3,11 +3,15 @@ package renderer
 import (
 	"bytes"
 	"emailservice/core/application/email_message"
+	"embed"
 	"errors"
 	"fmt"
 	"html/template"
 	"log/slog"
 )
+
+//go:embed templates/*.html
+var templatesFS embed.FS
 
 // HTMLEmailContentRendererAdapter is responsible for rendering
 // the HTML body of an email message.
@@ -53,7 +57,7 @@ func (r *HTMLEmailContentRendererAdapter) Render(
 		"template_path", path,
 	)
 
-	tmpl, err := template.ParseFiles(path)
+	tmpl, err := template.ParseFS(templatesFS, path)
 	if err != nil {
 		r.Logger.Error(
 			"failed to parse email template",
