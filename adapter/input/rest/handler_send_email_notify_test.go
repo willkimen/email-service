@@ -27,18 +27,8 @@ func TestNotifyActivationHandler_WhenRequestBodyIsInvalidJSON_ShouldReturnBadReq
 	w := httptest.NewRecorder()
 
 	handler.NotifyActivationHandler(w, r)
-	response := w.Result()
 
-	assert.Equal(t,
-		http.StatusBadRequest,
-		response.StatusCode,
-		"expected status 400 when request body contains invalid JSON",
-	)
-
-	usecaseMock.AssertNotCalled(t,
-		"Request",
-		mock.Anything,
-	)
+	assertBadRequest(t, w.Result(), usecaseMock)
 }
 
 func TestNotifyActivationHandler_WhenValidationFails_ShouldReturnUnprocessableEntity(t *testing.T) {
@@ -65,18 +55,8 @@ func TestNotifyActivationHandler_WhenValidationFails_ShouldReturnUnprocessableEn
 	w := httptest.NewRecorder()
 
 	handler.NotifyActivationHandler(w, r)
-	response := w.Result()
 
-	assert.Equal(t,
-		http.StatusUnprocessableEntity,
-		response.StatusCode,
-		"expected status 422 when validation error occurs",
-	)
-
-	usecaseMock.AssertCalled(t,
-		"Request",
-		mock.Anything,
-	)
+	assertUnprocessableEntity(t, w.Result(), usecaseMock)
 }
 
 func TestNotifyActivationHandler_WhenRequestIsValid_ShouldReturnAccepted(t *testing.T) {
@@ -103,18 +83,8 @@ func TestNotifyActivationHandler_WhenRequestIsValid_ShouldReturnAccepted(t *test
 	w := httptest.NewRecorder()
 
 	handler.NotifyActivationHandler(w, r)
-	response := w.Result()
 
-	assert.Equal(t,
-		http.StatusAccepted,
-		response.StatusCode,
-		"expected status 202 when request is successfully accepted",
-	)
-
-	usecaseMock.AssertCalled(t,
-		"Request",
-		mock.Anything,
-	)
+	assertAccepted(t, w.Result(), usecaseMock)
 }
 
 func TestNotifyActivationHandler_WhenUnexpectedErrorOccurs_ShouldReturnInternalServerError(t *testing.T) {
@@ -141,18 +111,81 @@ func TestNotifyActivationHandler_WhenUnexpectedErrorOccurs_ShouldReturnInternalS
 	w := httptest.NewRecorder()
 
 	handler.NotifyActivationHandler(w, r)
-	response := w.Result()
 
-	assert.Equal(t,
-		http.StatusInternalServerError,
-		response.StatusCode,
-		"expected status 500 when an unexpected error occurs",
-	)
+	assertInternalServerError(t, w.Result(), usecaseMock)
+}
 
-	usecaseMock.AssertCalled(t,
-		"Request",
-		mock.Anything,
-	)
+func TestNotifyActivationHandler_WhenEmptyField_ShouldReturnValidationError(t *testing.T) {
+	tests := []struct {
+		name          string
+		field         string
+		expectedError string
+	}{
+		{
+			name:          "missing to",
+			field:         "to",
+			expectedError: "to field is required",
+		},
+		{
+			name:          "missing subject",
+			field:         "subject",
+			expectedError: "subject field is required",
+		},
+		{
+			name:          "missing login_link",
+			field:         "login_link",
+			expectedError: "login_link field is required",
+		},
+	}
+
+	for _, tt := range tests {
+		tt := tt
+
+		t.Run(tt.name, func(t *testing.T) {
+
+			usecaseMock := new(RequestEmailUseCaseMock)
+
+			usecaseMock.
+				On("Request", mock.Anything).
+				Return(emailmessage.NewEmptyFieldError(tt.field))
+
+			handler := rest.NewSendEmailHandler(usecaseMock, logger)
+
+			body := `{
+				"to": "user@test.com",
+				"subject": "Activation",
+				"login_link": "https://example.com/login"
+			}`
+
+			r := httptest.NewRequest(
+				http.MethodPost,
+				"/emails/notify-activation",
+				strings.NewReader(body),
+			)
+
+			r.Header.Set("Content-Type", "application/json")
+
+			w := httptest.NewRecorder()
+
+			handler.NotifyActivationHandler(w, r)
+
+			res := w.Result()
+
+			assert.Equal(t, http.StatusUnprocessableEntity, res.StatusCode)
+
+			var response map[string]string
+			decodeJSONResponse(t, res, &response)
+
+			assertFieldValidationError(
+				t,
+				response,
+				tt.expectedError,
+				tt.field,
+			)
+
+			usecaseMock.AssertCalled(t, "Request", mock.Anything)
+		})
+	}
 }
 
 // =============== Notify change email tests ===============
@@ -168,16 +201,8 @@ func TestNotifyChangeEmailHandler_WhenRequestBodyIsInvalidJSON_ShouldReturnBadRe
 	w := httptest.NewRecorder()
 
 	handler.NotifyChangeEmailHandler(w, r)
-	response := w.Result()
 
-	assert.Equal(
-		t,
-		http.StatusBadRequest,
-		response.StatusCode,
-		"expected status 400 when request body contains invalid JSON",
-	)
-
-	usecaseMock.AssertNotCalled(t, "Request", mock.Anything)
+	assertBadRequest(t, w.Result(), usecaseMock)
 }
 
 func TestNotifyChangeEmailHandler_WhenValidationFails_ShouldReturnUnprocessableEntity(t *testing.T) {
@@ -204,16 +229,8 @@ func TestNotifyChangeEmailHandler_WhenValidationFails_ShouldReturnUnprocessableE
 	w := httptest.NewRecorder()
 
 	handler.NotifyChangeEmailHandler(w, r)
-	response := w.Result()
 
-	assert.Equal(
-		t,
-		http.StatusUnprocessableEntity,
-		response.StatusCode,
-		"expected status 422 when validation error occurs",
-	)
-
-	usecaseMock.AssertCalled(t, "Request", mock.Anything)
+	assertUnprocessableEntity(t, w.Result(), usecaseMock)
 }
 
 func TestNotifyChangeEmailHandler_WhenRequestIsValid_ShouldReturnAccepted(t *testing.T) {
@@ -240,16 +257,8 @@ func TestNotifyChangeEmailHandler_WhenRequestIsValid_ShouldReturnAccepted(t *tes
 	w := httptest.NewRecorder()
 
 	handler.NotifyChangeEmailHandler(w, r)
-	response := w.Result()
 
-	assert.Equal(
-		t,
-		http.StatusAccepted,
-		response.StatusCode,
-		"expected status 202 when request is successfully accepted",
-	)
-
-	usecaseMock.AssertCalled(t, "Request", mock.Anything)
+	assertAccepted(t, w.Result(), usecaseMock)
 }
 
 func TestNotifyChangeEmailHandler_WhenUnexpectedErrorOccurs_ShouldReturnInternalServerError(t *testing.T) {
@@ -276,16 +285,81 @@ func TestNotifyChangeEmailHandler_WhenUnexpectedErrorOccurs_ShouldReturnInternal
 	w := httptest.NewRecorder()
 
 	handler.NotifyChangeEmailHandler(w, r)
-	response := w.Result()
 
-	assert.Equal(
-		t,
-		http.StatusInternalServerError,
-		response.StatusCode,
-		"expected status 500 when an unexpected error occurs",
-	)
+	assertInternalServerError(t, w.Result(), usecaseMock)
+}
 
-	usecaseMock.AssertCalled(t, "Request", mock.Anything)
+func TestNotifyChangeEmailHandler_WhenEmptyField_ShouldReturnValidationError(t *testing.T) {
+	tests := []struct {
+		name          string
+		field         string
+		expectedError string
+	}{
+		{
+			name:          "missing to",
+			field:         "to",
+			expectedError: "to field is required",
+		},
+		{
+			name:          "missing subject",
+			field:         "subject",
+			expectedError: "subject field is required",
+		},
+		{
+			name:          "missing login_link",
+			field:         "login_link",
+			expectedError: "login_link field is required",
+		},
+	}
+
+	for _, tt := range tests {
+		tt := tt
+
+		t.Run(tt.name, func(t *testing.T) {
+
+			usecaseMock := new(RequestEmailUseCaseMock)
+
+			usecaseMock.
+				On("Request", mock.Anything).
+				Return(emailmessage.NewEmptyFieldError(tt.field))
+
+			handler := rest.NewSendEmailHandler(usecaseMock, logger)
+
+			body := `{
+				"to": "user@test.com",
+				"subject": "Change email",
+				"login_link": "https://example.com/login"
+			}`
+
+			r := httptest.NewRequest(
+				http.MethodPost,
+				"/emails/notify-change-email",
+				strings.NewReader(body),
+			)
+
+			r.Header.Set("Content-Type", "application/json")
+
+			w := httptest.NewRecorder()
+
+			handler.NotifyChangeEmailHandler(w, r)
+
+			res := w.Result()
+
+			assert.Equal(t, http.StatusUnprocessableEntity, res.StatusCode)
+
+			var response map[string]string
+			decodeJSONResponse(t, res, &response)
+
+			assertFieldValidationError(
+				t,
+				response,
+				tt.expectedError,
+				tt.field,
+			)
+
+			usecaseMock.AssertCalled(t, "Request", mock.Anything)
+		})
+	}
 }
 
 // =============== Notify change password tests ===============
@@ -301,16 +375,8 @@ func TestNotifyChangePasswordHandler_WhenRequestBodyIsInvalidJSON_ShouldReturnBa
 	w := httptest.NewRecorder()
 
 	handler.NotifyChangePasswordHandler(w, r)
-	response := w.Result()
 
-	assert.Equal(
-		t,
-		http.StatusBadRequest,
-		response.StatusCode,
-		"expected status 400 when request body contains invalid JSON",
-	)
-
-	usecaseMock.AssertNotCalled(t, "Request", mock.Anything)
+	assertBadRequest(t, w.Result(), usecaseMock)
 }
 
 func TestNotifyChangePasswordHandler_WhenValidationFails_ShouldReturnUnprocessableEntity(t *testing.T) {
@@ -337,16 +403,8 @@ func TestNotifyChangePasswordHandler_WhenValidationFails_ShouldReturnUnprocessab
 	w := httptest.NewRecorder()
 
 	handler.NotifyChangePasswordHandler(w, r)
-	response := w.Result()
 
-	assert.Equal(
-		t,
-		http.StatusUnprocessableEntity,
-		response.StatusCode,
-		"expected status 422 when validation error occurs",
-	)
-
-	usecaseMock.AssertCalled(t, "Request", mock.Anything)
+	assertUnprocessableEntity(t, w.Result(), usecaseMock)
 }
 
 func TestNotifyChangePasswordHandler_WhenRequestIsValid_ShouldReturnAccepted(t *testing.T) {
@@ -373,16 +431,8 @@ func TestNotifyChangePasswordHandler_WhenRequestIsValid_ShouldReturnAccepted(t *
 	w := httptest.NewRecorder()
 
 	handler.NotifyChangePasswordHandler(w, r)
-	response := w.Result()
 
-	assert.Equal(
-		t,
-		http.StatusAccepted,
-		response.StatusCode,
-		"expected status 202 when request is successfully accepted",
-	)
-
-	usecaseMock.AssertCalled(t, "Request", mock.Anything)
+	assertAccepted(t, w.Result(), usecaseMock)
 }
 
 func TestNotifyChangePasswordHandler_WhenUnexpectedErrorOccurs_ShouldReturnInternalServerError(t *testing.T) {
@@ -409,16 +459,81 @@ func TestNotifyChangePasswordHandler_WhenUnexpectedErrorOccurs_ShouldReturnInter
 	w := httptest.NewRecorder()
 
 	handler.NotifyChangePasswordHandler(w, r)
-	response := w.Result()
 
-	assert.Equal(
-		t,
-		http.StatusInternalServerError,
-		response.StatusCode,
-		"expected status 500 when an unexpected error occurs",
-	)
+	assertInternalServerError(t, w.Result(), usecaseMock)
+}
 
-	usecaseMock.AssertCalled(t, "Request", mock.Anything)
+func TestNotifyChangePasswordHandler_WhenEmptyField_ShouldReturnValidationError(t *testing.T) {
+	tests := []struct {
+		name          string
+		field         string
+		expectedError string
+	}{
+		{
+			name:          "missing to",
+			field:         "to",
+			expectedError: "to field is required",
+		},
+		{
+			name:          "missing subject",
+			field:         "subject",
+			expectedError: "subject field is required",
+		},
+		{
+			name:          "missing login_link",
+			field:         "login_link",
+			expectedError: "login_link field is required",
+		},
+	}
+
+	for _, tt := range tests {
+		tt := tt
+
+		t.Run(tt.name, func(t *testing.T) {
+
+			usecaseMock := new(RequestEmailUseCaseMock)
+
+			usecaseMock.
+				On("Request", mock.Anything).
+				Return(emailmessage.NewEmptyFieldError(tt.field))
+
+			handler := rest.NewSendEmailHandler(usecaseMock, logger)
+
+			body := `{
+				"to": "user@test.com",
+				"subject": "Password changed",
+				"login_link": "https://example.com/login"
+			}`
+
+			r := httptest.NewRequest(
+				http.MethodPost,
+				"/emails/notify-change-password",
+				strings.NewReader(body),
+			)
+
+			r.Header.Set("Content-Type", "application/json")
+
+			w := httptest.NewRecorder()
+
+			handler.NotifyChangePasswordHandler(w, r)
+
+			res := w.Result()
+
+			assert.Equal(t, http.StatusUnprocessableEntity, res.StatusCode)
+
+			var response map[string]string
+			decodeJSONResponse(t, res, &response)
+
+			assertFieldValidationError(
+				t,
+				response,
+				tt.expectedError,
+				tt.field,
+			)
+
+			usecaseMock.AssertCalled(t, "Request", mock.Anything)
+		})
+	}
 }
 
 // =============== Notify deletion tests ===============
@@ -434,16 +549,8 @@ func TestNotifyDeletionHandler_WhenRequestBodyIsInvalidJSON_ShouldReturnBadReque
 	w := httptest.NewRecorder()
 
 	handler.NotifyDeletionHandler(w, r)
-	response := w.Result()
 
-	assert.Equal(
-		t,
-		http.StatusBadRequest,
-		response.StatusCode,
-		"expected status 400 when request body contains invalid JSON",
-	)
-
-	usecaseMock.AssertNotCalled(t, "Request", mock.Anything)
+	assertBadRequest(t, w.Result(), usecaseMock)
 }
 
 func TestNotifyDeletionHandler_WhenValidationFails_ShouldReturnUnprocessableEntity(t *testing.T) {
@@ -469,16 +576,8 @@ func TestNotifyDeletionHandler_WhenValidationFails_ShouldReturnUnprocessableEnti
 	w := httptest.NewRecorder()
 
 	handler.NotifyDeletionHandler(w, r)
-	response := w.Result()
 
-	assert.Equal(
-		t,
-		http.StatusUnprocessableEntity,
-		response.StatusCode,
-		"expected status 422 when validation error occurs",
-	)
-
-	usecaseMock.AssertCalled(t, "Request", mock.Anything)
+	assertUnprocessableEntity(t, w.Result(), usecaseMock)
 }
 
 func TestNotifyDeletionHandler_WhenRequestIsValid_ShouldReturnAccepted(t *testing.T) {
@@ -504,16 +603,8 @@ func TestNotifyDeletionHandler_WhenRequestIsValid_ShouldReturnAccepted(t *testin
 	w := httptest.NewRecorder()
 
 	handler.NotifyDeletionHandler(w, r)
-	response := w.Result()
 
-	assert.Equal(
-		t,
-		http.StatusAccepted,
-		response.StatusCode,
-		"expected status 202 when request is successfully accepted",
-	)
-
-	usecaseMock.AssertCalled(t, "Request", mock.Anything)
+	assertAccepted(t, w.Result(), usecaseMock)
 }
 
 func TestNotifyDeletionHandler_WhenUnexpectedErrorOccurs_ShouldReturnInternalServerError(t *testing.T) {
@@ -539,16 +630,75 @@ func TestNotifyDeletionHandler_WhenUnexpectedErrorOccurs_ShouldReturnInternalSer
 	w := httptest.NewRecorder()
 
 	handler.NotifyDeletionHandler(w, r)
-	response := w.Result()
 
-	assert.Equal(
-		t,
-		http.StatusInternalServerError,
-		response.StatusCode,
-		"expected status 500 when an unexpected error occurs",
-	)
+	assertInternalServerError(t, w.Result(), usecaseMock)
+}
 
-	usecaseMock.AssertCalled(t, "Request", mock.Anything)
+func TestNotifyDeletionHandler_WhenEmptyField_ShouldReturnValidationError(t *testing.T) {
+	tests := []struct {
+		name          string
+		field         string
+		expectedError string
+	}{
+		{
+			name:          "missing to",
+			field:         "to",
+			expectedError: "to field is required",
+		},
+		{
+			name:          "missing subject",
+			field:         "subject",
+			expectedError: "subject field is required",
+		},
+	}
+
+	for _, tt := range tests {
+		tt := tt
+
+		t.Run(tt.name, func(t *testing.T) {
+
+			usecaseMock := new(RequestEmailUseCaseMock)
+
+			usecaseMock.
+				On("Request", mock.Anything).
+				Return(emailmessage.NewEmptyFieldError(tt.field))
+
+			handler := rest.NewSendEmailHandler(usecaseMock, logger)
+
+			body := `{
+				"to": "user@test.com",
+				"subject": "Account deleted"
+			}`
+
+			r := httptest.NewRequest(
+				http.MethodPost,
+				"/emails/notify-deletion",
+				strings.NewReader(body),
+			)
+
+			r.Header.Set("Content-Type", "application/json")
+
+			w := httptest.NewRecorder()
+
+			handler.NotifyDeletionHandler(w, r)
+
+			res := w.Result()
+
+			assert.Equal(t, http.StatusUnprocessableEntity, res.StatusCode)
+
+			var response map[string]string
+			decodeJSONResponse(t, res, &response)
+
+			assertFieldValidationError(
+				t,
+				response,
+				tt.expectedError,
+				tt.field,
+			)
+
+			usecaseMock.AssertCalled(t, "Request", mock.Anything)
+		})
+	}
 }
 
 // =============== Notify reset password tests ===============
@@ -564,16 +714,8 @@ func TestNotifyResetPasswordHandler_WhenRequestBodyIsInvalidJSON_ShouldReturnBad
 	w := httptest.NewRecorder()
 
 	handler.NotifyResetPasswordHandler(w, r)
-	response := w.Result()
 
-	assert.Equal(
-		t,
-		http.StatusBadRequest,
-		response.StatusCode,
-		"expected status 400 when request body contains invalid JSON",
-	)
-
-	usecaseMock.AssertNotCalled(t, "Request", mock.Anything)
+	assertBadRequest(t, w.Result(), usecaseMock)
 }
 
 func TestNotifyResetPasswordHandler_WhenValidationFails_ShouldReturnUnprocessableEntity(t *testing.T) {
@@ -600,16 +742,8 @@ func TestNotifyResetPasswordHandler_WhenValidationFails_ShouldReturnUnprocessabl
 	w := httptest.NewRecorder()
 
 	handler.NotifyResetPasswordHandler(w, r)
-	response := w.Result()
 
-	assert.Equal(
-		t,
-		http.StatusUnprocessableEntity,
-		response.StatusCode,
-		"expected status 422 when validation error occurs",
-	)
-
-	usecaseMock.AssertCalled(t, "Request", mock.Anything)
+	assertUnprocessableEntity(t, w.Result(), usecaseMock)
 }
 
 func TestNotifyResetPasswordHandler_WhenRequestIsValid_ShouldReturnAccepted(t *testing.T) {
@@ -636,16 +770,8 @@ func TestNotifyResetPasswordHandler_WhenRequestIsValid_ShouldReturnAccepted(t *t
 	w := httptest.NewRecorder()
 
 	handler.NotifyResetPasswordHandler(w, r)
-	response := w.Result()
 
-	assert.Equal(
-		t,
-		http.StatusAccepted,
-		response.StatusCode,
-		"expected status 202 when request is successfully accepted",
-	)
-
-	usecaseMock.AssertCalled(t, "Request", mock.Anything)
+	assertAccepted(t, w.Result(), usecaseMock)
 }
 
 func TestNotifyResetPasswordHandler_WhenUnexpectedErrorOccurs_ShouldReturnInternalServerError(t *testing.T) {
@@ -672,14 +798,79 @@ func TestNotifyResetPasswordHandler_WhenUnexpectedErrorOccurs_ShouldReturnIntern
 	w := httptest.NewRecorder()
 
 	handler.NotifyResetPasswordHandler(w, r)
-	response := w.Result()
 
-	assert.Equal(
-		t,
-		http.StatusInternalServerError,
-		response.StatusCode,
-		"expected status 500 when an unexpected error occurs",
-	)
+	assertInternalServerError(t, w.Result(), usecaseMock)
+}
 
-	usecaseMock.AssertCalled(t, "Request", mock.Anything)
+func TestNotifyResetPasswordHandler_WhenEmptyField_ShouldReturnValidationError(t *testing.T) {
+	tests := []struct {
+		name          string
+		field         string
+		expectedError string
+	}{
+		{
+			name:          "missing to",
+			field:         "to",
+			expectedError: "to field is required",
+		},
+		{
+			name:          "missing subject",
+			field:         "subject",
+			expectedError: "subject field is required",
+		},
+		{
+			name:          "missing login_link",
+			field:         "login_link",
+			expectedError: "login_link field is required",
+		},
+	}
+
+	for _, tt := range tests {
+		tt := tt
+
+		t.Run(tt.name, func(t *testing.T) {
+
+			usecaseMock := new(RequestEmailUseCaseMock)
+
+			usecaseMock.
+				On("Request", mock.Anything).
+				Return(emailmessage.NewEmptyFieldError(tt.field))
+
+			handler := rest.NewSendEmailHandler(usecaseMock, logger)
+
+			body := `{
+				"to": "user@test.com",
+				"subject": "Password reset",
+				"login_link": "https://example.com/login"
+			}`
+
+			r := httptest.NewRequest(
+				http.MethodPost,
+				"/emails/notify-reset-password",
+				strings.NewReader(body),
+			)
+
+			r.Header.Set("Content-Type", "application/json")
+
+			w := httptest.NewRecorder()
+
+			handler.NotifyResetPasswordHandler(w, r)
+
+			res := w.Result()
+
+			assert.Equal(t, http.StatusUnprocessableEntity, res.StatusCode)
+
+			var response map[string]string
+			decodeJSONResponse(t, res, &response)
+
+			assertFieldValidationError(
+				t,
+				response,
+				tt.expectedError,
+				tt.field,
+			)
+
+			usecaseMock.AssertCalled(t, "Request", mock.Anything)
+		})
+	}
 }

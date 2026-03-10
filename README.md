@@ -509,7 +509,7 @@ Examples include retrieving logs for the email service, the Redis broker, or all
 
 ## Running Tests
 
-The project includes multiple test modes.
+The project includes multiple test modes. To date, it includes 193 tests + subtests.
 
 Default tests (unit tests and local integrations):
 

@@ -14,51 +14,50 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
-func assertBadRequest(t *testing.T, response *http.Response, usecaseMock *RequestEmailUseCaseMock) {
-	t.Helper()
+// ======================= Test invalid email format ==============================
+func TestWhenEmailFormatIsInvalid_ShouldReturnValidationError(t *testing.T) {
+	usecaseMock := new(RequestEmailUseCaseMock)
 
-	assert.Equal(t,
-		http.StatusBadRequest,
-		response.StatusCode,
-		"expected status code to be 400 when request body contains invalid JSON",
+	usecaseMock.
+		On("Request", mock.Anything).
+		Return(emailmessage.NewEmailInvalidFormatError())
+
+	handler := rest.NewSendEmailHandler(usecaseMock, logger)
+
+	body := `{
+		"to": "invalid-email",
+		"subject": "Activate your account",
+		"verification_code": "123456",
+		"code_expiration_hours": "2",
+		"activation_link": "https://example.com/activate",
+		"activation_deadline_days": "7"
+	}`
+
+	r := httptest.NewRequest(
+		http.MethodPost,
+		"/emails/activation-code",
+		strings.NewReader(body),
 	)
 
-	usecaseMock.AssertNotCalled(t, "Request", mock.Anything)
-}
+	r.Header.Set("Content-Type", "application/json")
 
-func assertUnprocessableEntity(t *testing.T, response *http.Response, usecaseMock *RequestEmailUseCaseMock) {
-	t.Helper()
+	w := httptest.NewRecorder()
 
-	assert.Equal(t,
-		http.StatusUnprocessableEntity,
-		response.StatusCode,
-		"expected status code to be 422 when validation fails",
+	handler.SendActivationCodeHandler(w, r)
+
+	res := w.Result()
+
+	assert.Equal(t, http.StatusUnprocessableEntity, res.StatusCode)
+
+	var response map[string]string
+	decodeJSONResponse(t, res, &response)
+
+	assertFieldValidationError(
+		t,
+		response,
+		"email format is invalid",
+		"",
 	)
-
-	usecaseMock.AssertCalled(t, "Request", mock.Anything)
-}
-func assertAccepted(t *testing.T, response *http.Response, usecaseMock *RequestEmailUseCaseMock) {
-	t.Helper()
-
-	assert.Equal(t,
-		http.StatusAccepted,
-		response.StatusCode,
-		"expected status code to be 202 when request is valid",
-	)
-
-	usecaseMock.AssertCalled(t, "Request", mock.Anything)
-}
-
-func assertInternalServerError(t *testing.T, response *http.Response, usecaseMock *RequestEmailUseCaseMock) {
-	t.Helper()
-
-	assert.Equal(t,
-		http.StatusInternalServerError,
-		response.StatusCode,
-		"expected status code to be 500 when unexpected error occurs",
-	)
-
-	usecaseMock.AssertCalled(t, "Request", mock.Anything)
 }
 
 // =============== Activation code tests ===============
@@ -158,6 +157,95 @@ func TestSendActivationCodeHandler_WhenUnexpectedErrorOccurs_ShouldReturnInterna
 	handler.SendActivationCodeHandler(w, r)
 
 	assertInternalServerError(t, w.Result(), usecaseMock)
+}
+
+func TestSendActivationCodeHandler_WhenEmptyField_ShouldReturnValidationError(t *testing.T) {
+	tests := []struct {
+		name          string
+		field         string
+		expectedError string
+	}{
+		{
+			name:          "missing to",
+			field:         "to",
+			expectedError: "to field is required",
+		},
+		{
+			name:          "missing subject",
+			field:         "subject",
+			expectedError: "subject field is required",
+		},
+		{
+			name:          "missing verification_code",
+			field:         "verification_code",
+			expectedError: "verification_code field is required",
+		},
+		{
+			name:          "missing code_expiration_hours",
+			field:         "code_expiration_hours",
+			expectedError: "code_expiration_hours field is required",
+		},
+		{
+			name:          "missing activation_link",
+			field:         "activation_link",
+			expectedError: "activation_link field is required",
+		},
+		{
+			name:          "missing activation_deadline_days",
+			field:         "activation_deadline_days",
+			expectedError: "activation_deadline_days field is required",
+		},
+	}
+
+	for _, tt := range tests {
+		tt := tt
+
+		t.Run(tt.name, func(t *testing.T) {
+
+			usecaseMock := new(RequestEmailUseCaseMock)
+
+			usecaseMock.
+				On("Request", mock.Anything).
+				Return(emailmessage.NewEmptyFieldError(tt.field))
+
+			handler := rest.NewSendEmailHandler(usecaseMock, logger)
+
+			body := `{
+				"to": "user@test.com",
+				"subject": "Activate your account",
+				"verification_code": "123456",
+				"code_expiration_hours": "2",
+				"activation_link": "https://example.com/activate",
+				"activation_deadline_days": "7"
+			}`
+
+			r := httptest.NewRequest(
+				http.MethodPost,
+				"/emails/activation-code",
+				strings.NewReader(body),
+			)
+
+			r.Header.Set("Content-Type", "application/json")
+
+			w := httptest.NewRecorder()
+
+			handler.SendActivationCodeHandler(w, r)
+
+			res := w.Result()
+
+			assert.Equal(t, http.StatusUnprocessableEntity, res.StatusCode)
+
+			var response map[string]string
+			decodeJSONResponse(t, res, &response)
+
+			assertFieldValidationError(
+				t,
+				response,
+				tt.expectedError,
+				tt.field,
+			)
+		})
+	}
 }
 
 // =============== Change email code tests ===============
@@ -266,6 +354,83 @@ func TestSendChangeEmailCodeHandler_WhenUnexpectedErrorOccurs_ShouldReturnIntern
 	assertInternalServerError(t, w.Result(), usecaseMock)
 }
 
+func TestSendChangeEmailCodeHandler_WhenEmptyField_ShouldReturnValidationError(t *testing.T) {
+	tests := []struct {
+		name          string
+		field         string
+		expectedError string
+	}{
+		{
+			name:          "missing to",
+			field:         "to",
+			expectedError: "to field is required",
+		},
+		{
+			name:          "missing subject",
+			field:         "subject",
+			expectedError: "subject field is required",
+		},
+		{
+			name:          "missing verification_code",
+			field:         "verification_code",
+			expectedError: "verification_code field is required",
+		},
+		{
+			name:          "missing code_expiration_hours",
+			field:         "code_expiration_hours",
+			expectedError: "code_expiration_hours field is required",
+		},
+	}
+
+	for _, tt := range tests {
+		tt := tt
+
+		t.Run(tt.name, func(t *testing.T) {
+
+			usecaseMock := new(RequestEmailUseCaseMock)
+
+			usecaseMock.
+				On("Request", mock.Anything).
+				Return(emailmessage.NewEmptyFieldError(tt.field))
+
+			handler := rest.NewSendEmailHandler(usecaseMock, logger)
+
+			body := `{
+				"to": "user@test.com",
+				"subject": "Change email",
+				"verification_code": "123456",
+				"code_expiration_hours": "2"
+			}`
+
+			r := httptest.NewRequest(
+				http.MethodPost,
+				"/emails/change-email-code",
+				strings.NewReader(body),
+			)
+
+			r.Header.Set("Content-Type", "application/json")
+
+			w := httptest.NewRecorder()
+
+			handler.SendChangeEmailCodeHandler(w, r)
+
+			res := w.Result()
+
+			assert.Equal(t, http.StatusUnprocessableEntity, res.StatusCode)
+
+			var response map[string]string
+			decodeJSONResponse(t, res, &response)
+
+			assertFieldValidationError(
+				t,
+				response,
+				tt.expectedError,
+				tt.field,
+			)
+		})
+	}
+}
+
 // =============== Change password code tests ===============
 func TestSendChangePasswordCodeHandler_WhenRequestBodyIsInvalidJSON_ShouldReturnBadRequest(t *testing.T) {
 	usecaseMock := new(RequestEmailUseCaseMock)
@@ -372,6 +537,83 @@ func TestSendChangePasswordCodeHandler_WhenUnexpectedErrorOccurs_ShouldReturnInt
 	assertInternalServerError(t, w.Result(), usecaseMock)
 }
 
+func TestSendChangePasswordCodeHandler_WhenEmptyField_ShouldReturnValidationError(t *testing.T) {
+	tests := []struct {
+		name          string
+		field         string
+		expectedError string
+	}{
+		{
+			name:          "missing to",
+			field:         "to",
+			expectedError: "to field is required",
+		},
+		{
+			name:          "missing subject",
+			field:         "subject",
+			expectedError: "subject field is required",
+		},
+		{
+			name:          "missing verification_code",
+			field:         "verification_code",
+			expectedError: "verification_code field is required",
+		},
+		{
+			name:          "missing code_expiration_hours",
+			field:         "code_expiration_hours",
+			expectedError: "code_expiration_hours field is required",
+		},
+	}
+
+	for _, tt := range tests {
+		tt := tt
+
+		t.Run(tt.name, func(t *testing.T) {
+
+			usecaseMock := new(RequestEmailUseCaseMock)
+
+			usecaseMock.
+				On("Request", mock.Anything).
+				Return(emailmessage.NewEmptyFieldError(tt.field))
+
+			handler := rest.NewSendEmailHandler(usecaseMock, logger)
+
+			body := `{
+				"to": "user@test.com",
+				"subject": "Change password",
+				"verification_code": "123456",
+				"code_expiration_hours": "2"
+			}`
+
+			r := httptest.NewRequest(
+				http.MethodPost,
+				"/emails/change-password-code",
+				strings.NewReader(body),
+			)
+
+			r.Header.Set("Content-Type", "application/json")
+
+			w := httptest.NewRecorder()
+
+			handler.SendChangePasswordCodeHandler(w, r)
+
+			res := w.Result()
+
+			assert.Equal(t, http.StatusUnprocessableEntity, res.StatusCode)
+
+			var response map[string]string
+			decodeJSONResponse(t, res, &response)
+
+			assertFieldValidationError(
+				t,
+				response,
+				tt.expectedError,
+				tt.field,
+			)
+		})
+	}
+}
+
 // =============== Deletion code tests ===============
 func TestSendDeletionCodeHandler_WhenRequestBodyIsInvalidJSON_ShouldReturnBadRequest(t *testing.T) {
 	usecaseMock := new(RequestEmailUseCaseMock)
@@ -476,6 +718,83 @@ func TestSendDeletionCodeHandler_WhenUnexpectedErrorOccurs_ShouldReturnInternalS
 	handler.SendDeletionCodeHandler(w, r)
 
 	assertInternalServerError(t, w.Result(), usecaseMock)
+}
+
+func TestSendDeletionCodeHandler_WhenEmptyField_ShouldReturnValidationError(t *testing.T) {
+	tests := []struct {
+		name          string
+		field         string
+		expectedError string
+	}{
+		{
+			name:          "missing to",
+			field:         "to",
+			expectedError: "to field is required",
+		},
+		{
+			name:          "missing subject",
+			field:         "subject",
+			expectedError: "subject field is required",
+		},
+		{
+			name:          "missing verification_code",
+			field:         "verification_code",
+			expectedError: "verification_code field is required",
+		},
+		{
+			name:          "missing code_expiration_hours",
+			field:         "code_expiration_hours",
+			expectedError: "code_expiration_hours field is required",
+		},
+	}
+
+	for _, tt := range tests {
+		tt := tt
+
+		t.Run(tt.name, func(t *testing.T) {
+
+			usecaseMock := new(RequestEmailUseCaseMock)
+
+			usecaseMock.
+				On("Request", mock.Anything).
+				Return(emailmessage.NewEmptyFieldError(tt.field))
+
+			handler := rest.NewSendEmailHandler(usecaseMock, logger)
+
+			body := `{
+				"to": "user@test.com",
+				"subject": "Account deletion",
+				"verification_code": "123456",
+				"code_expiration_hours": "2"
+			}`
+
+			r := httptest.NewRequest(
+				http.MethodPost,
+				"/emails/deletion-code",
+				strings.NewReader(body),
+			)
+
+			r.Header.Set("Content-Type", "application/json")
+
+			w := httptest.NewRecorder()
+
+			handler.SendDeletionCodeHandler(w, r)
+
+			res := w.Result()
+
+			assert.Equal(t, http.StatusUnprocessableEntity, res.StatusCode)
+
+			var response map[string]string
+			decodeJSONResponse(t, res, &response)
+
+			assertFieldValidationError(
+				t,
+				response,
+				tt.expectedError,
+				tt.field,
+			)
+		})
+	}
 }
 
 // =============== Reset password code tests ===============
@@ -585,4 +904,87 @@ func TestSendResetPasswordCodeHandler_WhenUnexpectedErrorOccurs_ShouldReturnInte
 	handler.SendResetPasswordCodeHandler(w, r)
 
 	assertInternalServerError(t, w.Result(), usecaseMock)
+}
+
+func TestSendResetPasswordCodeHandler_WhenEmptyField_ShouldReturnValidationError(t *testing.T) {
+	tests := []struct {
+		name          string
+		field         string
+		expectedError string
+	}{
+		{
+			name:          "missing to",
+			field:         "to",
+			expectedError: "to field is required",
+		},
+		{
+			name:          "missing subject",
+			field:         "subject",
+			expectedError: "subject field is required",
+		},
+		{
+			name:          "missing verification_code",
+			field:         "verification_code",
+			expectedError: "verification_code field is required",
+		},
+		{
+			name:          "missing code_expiration_hours",
+			field:         "code_expiration_hours",
+			expectedError: "code_expiration_hours field is required",
+		},
+		{
+			name:          "missing reset_password_link",
+			field:         "reset_password_link",
+			expectedError: "reset_password_link field is required",
+		},
+	}
+
+	for _, tt := range tests {
+		tt := tt
+
+		t.Run(tt.name, func(t *testing.T) {
+
+			usecaseMock := new(RequestEmailUseCaseMock)
+
+			usecaseMock.
+				On("Request", mock.Anything).
+				Return(emailmessage.NewEmptyFieldError(tt.field))
+
+			handler := rest.NewSendEmailHandler(usecaseMock, logger)
+
+			body := `{
+				"to": "user@test.com",
+				"subject": "Reset password",
+				"verification_code": "123456",
+				"code_expiration_hours": "2",
+				"reset_password_link": "https://example.com/reset"
+			}`
+
+			r := httptest.NewRequest(
+				http.MethodPost,
+				"/emails/reset-password-code",
+				strings.NewReader(body),
+			)
+
+			r.Header.Set("Content-Type", "application/json")
+
+			w := httptest.NewRecorder()
+
+			handler.SendResetPasswordCodeHandler(w, r)
+
+			res := w.Result()
+
+			assert.Equal(t, http.StatusUnprocessableEntity, res.StatusCode)
+
+			var response map[string]string
+			decodeJSONResponse(t, res, &response)
+
+			assertFieldValidationError(
+				t,
+				response,
+				tt.expectedError,
+				tt.field,
+			)
+		})
+	}
 }
