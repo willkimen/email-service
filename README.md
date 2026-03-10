@@ -391,6 +391,8 @@ RESEND_API_KEY
 
 API key used to authenticate requests with the email service provider. This key is provided by the email platform and must be kept secret. It should never be committed to version control.
 
+---
+
 ```bash
 FROM_EMAIL
 ```
@@ -407,11 +409,13 @@ First, the **recipient (`To`) must be the same email address used in the Resend 
 
 Second, the **sender (`From`) must use the default testing address provided by Resend**, typically:
 
-Dev <onboarding@resend.dev>
+`Dev <onboarding@resend.dev>`
 
 For this reason, during local development the service is configured with:
 
+```bash
 FROM_EMAIL="Dev <onboarding@resend.dev>"
+```
 
 This allows testing the integration, templates, and email workflow without configuring a domain.
 
@@ -424,6 +428,8 @@ The `From` address must then use an email belonging to the verified domain, for 
 MyApp <noreply@mydomain.com>
 
 Once a domain is verified, emails can be sent to **any recipient address**, and the service operates as a normal email delivery system.
+
+---
 
 ```bash
 BROKER_ADDR
@@ -480,8 +486,6 @@ To rebuild and start containers:
 ```bash
 make build
 ```
-
-make build
 
 To start or stop existing containers:
 
