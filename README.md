@@ -1,8 +1,9 @@
 # Email Service
-# Table of Contents
+
+## Table of Contents
 
 - [Overview](#overview)
-- [Architecture and Flow](#architecture-e-flow)
+- [Architecture and Flow](#architecture-and-flow)
   - [Application Model](#application-model)
   - [Port Implementations](#port-implementations)
 - [Endpoints](#endpoints)
@@ -22,12 +23,15 @@
   - [Delivery Status (Resend Webhooks)](#delivery-status-resend-webhooks)
   - [Logging](#logging)
 
-# 📌 Overview
+## Overview
 
-This service is responsible for handling transactional emails related to user account management.  
-Its primary role is to deliver emails required for essential account operations, such as email verification, password reset requests, and security notifications.
+This service is responsible for handling transactional emails related to user
+account management.
+Its primary role is to deliver emails required for essential account operations,
+such as email verification, password reset requests, and security notifications.
 
-The service sends confirmation codes and notifications for user-related events, including:
+The service sends confirmation codes and notifications for user-related events,
+including:
 
 - Email verification
 - Email address change
@@ -35,73 +39,106 @@ The service sends confirmation codes and notifications for user-related events, 
 - Password reset requests
 - Account deletion confirmation
 
-This service is intended to operate as part of a broader system architecture. It will be integrated  with other backend services responsible for user management, particularly an authentication service  that handles account lifecycle operations.
+This service is intended to operate as part of a broader system architecture. It
+will be integrated  with other backend services responsible for user management,
+particularly an authentication service  that handles account lifecycle operations.
 
-Previously, this functionality existed within a monolithic backend built with Django REST, where both authentication  logic and email delivery were handled within the same application. In this implementation, the email functionality has  been extracted into a dedicated service written in Go, focusing exclusively on transactional email delivery.
+Previously, this functionality existed within a monolithic backend built with
+Django REST, where both authentication  logic and email delivery were handled
+within the same application. In this implementation, the email functionality has
+been extracted into a dedicated service written in Go, focusing exclusively on
+transactional email delivery.
 
-Although the service is fully operational, additional improvements and features are planned for future iterations.
+Although the service is fully operational, additional improvements and features
+are planned for future iterations.
 
-# 🏗️ Architecture and flow
+## Architecture and flow
 
-The architecture used follows the Hexagonal pattern (Ports and Adapters), aiming to improve maintainability, extensibility, and testability.
+The architecture used follows the Hexagonal pattern (Ports and Adapters), aiming
+to improve maintainability, extensibility, and testability.
 
 The flow is organized as follows:
 
 ![Flow Diagram](docs/images/flow.webp)
 
-The email delivery process is executed in two stages: request creation and asynchronous processing.
+The email delivery process is executed in two stages: request creation and
+asynchronous processing.
 
 1. A client service sends an HTTP request to the Email Service.
-2. The request is handled by `SendEmailHandler`, which acts as an input adapter. This component validates the request and forwards it to the application layer through the `RequestSendEmailInputPort`.
-3. The `RequestSendEmailInputPort` processes the request and publishes a job to the background queue using the `PublishEmailRequestOutputPort`.
-4. Once the job is successfully published, the API returns a response indicating that the request has been queued.
+2. The request is handled by `SendEmailHandler`, which acts as an input adapter.
+This component validates the request and forwards it to the application layer
+through the `RequestSendEmailInputPort`.
+3. The `RequestSendEmailInputPort` processes the request and publishes a job to
+the background queue using the `PublishEmailRequestOutputPort`.
+4. Once the job is successfully published, the API returns a response indicating
+that the request has been queued.
 
-At this stage, the service does not confirm whether the email was sent successfully. The response only indicates that the email request was accepted and scheduled for asynchronous processing.
+At this stage, the service does not confirm whether the email was sent
+successfully. The response only indicates that the email request was accepted
+and scheduled for asynchronous processing.
 
 1. The job is stored in the Redis queue and later consumed by a worker.
-2. The worker executes `SendEmailTaskHandler`, another input adapter responsible for processing queued email jobs.
-3. The worker triggers the `ExecuteSendEmailInputPort`, which is implemented by the `ExecuteEmailSendUseCase`.
+2. The worker executes `SendEmailTaskHandler`, another input adapter responsible
+for processing queued email jobs.
+3. The worker triggers the `ExecuteSendEmailInputPort`, which is implemented by
+the `ExecuteEmailSendUseCase`.
 4. The use case orchestrates the email delivery process by:
     - rendering the email content using `RenderEmailContentOutputPort`
     - sending the email using `SendEmailOutputPort`
-5. The email content is generated from HTML templates, and the final message is delivered through the configured email provider (`Resend API`).
+5. The email content is generated from HTML templates, and the final message is
+delivered through the configured email provider (`Resend API`).
 6. The user receives the email in their inbox.
 
-This approach allows the API to respond quickly while delegating the email delivery process to background workers.
+This approach allows the API to respond quickly while delegating the email
+delivery process to background workers.
 
-## Application Model
+### Application Model
 
-This service does not introduce a separate domain layer. The current scope of the system does not require complex domain rules, and introducing an additional domain abstraction would add unnecessary complexity.
+This service does not introduce a separate domain layer. The current scope of
+the system does not require complex domain rules, and introducing an additional
+domain abstraction would add unnecessary complexity.
 
 Instead, the application logic is concentrated in the application layer.
 
-The `emailmessage` package defines the structures that represent the different types of email messages. These structures also include the basic validations required to ensure that all necessary data is present before the request is processed.
+The `emailmessage` package defines the structures that represent the different
+types of email messages. These structures also include the basic validations
+required to ensure that all necessary data is present before the request is processed.
 
-These structures act as application-level models used during the email processing workflow.
+These structures act as application-level models used during the email
+processing workflow.
 
-## Port Implementations
+### Port Implementations
 
-The ports shown in the architecture diagram represent application abstractions. These interfaces define the capabilities required by the use cases without binding the application to specific implementations.
+The ports shown in the architecture diagram represent application abstractions.
+These interfaces define the capabilities required by the use cases without
+binding the application to specific implementations.
 
-Concrete implementations of these ports are provided by the adapters layer and use cases:
+Concrete implementations of these ports are provided by the adapters layer and
+use cases:
 
 ![Implementations](docs/images/implementation.webp)
 
-This structure allows external integrations to be replaced without modifying the application logic.
+This structure allows external integrations to be replaced without modifying the
+application logic.
 
-# 🔗 Endpoints
+## Endpoints
 
-All endpoints follow the same behavior pattern. The API receives a request describing an email operation and enqueues the email delivery task for asynchronous processing.
+All endpoints follow the same behavior pattern. The API receives a request
+describing an email operation and enqueues the email delivery task for
+asynchronous processing.
 
-The service does **not confirm whether the email was successfully delivered**. A successful response only indicates that the request was accepted and placed in the processing queue.
+The service does **not confirm whether the email was successfully delivered**.
+A successful response only indicates that the request was accepted and placed
+in the processing queue.
 
 All endpoints return JSON responses and share the same response semantics.
 
-## Common Response Codes
+### Common Response Codes
 
-### **202 Accepted**
+#### **202 Accepted**
 
-Returned when the request is successfully validated and the email task is queued for asynchronous processing.
+Returned when the request is successfully validated and the email task is queued
+for asynchronous processing.
 
 ```json
 {
@@ -109,9 +146,10 @@ Returned when the request is successfully validated and the email task is queued
 }
 ```
 
-### **400 Bad Request**
+#### **400 Bad Request**
 
-Returned when the request body contains malformed JSON or violates the JSON parsing rules (invalid syntax, unknown fields, empty body, wrong types, etc.).
+Returned when the request body contains malformed JSON or violates the JSON
+parsing rules (invalid syntax, unknown fields, empty body, wrong types, etc.).
 
 Example:
 
@@ -121,9 +159,10 @@ Example:
 }
 ```
 
-### **422 Unprocessable Entity**
+#### **422 Unprocessable Entity**
 
-Returned when the JSON payload is syntactically valid but fails field validation during email message construction.
+Returned when the JSON payload is syntactically valid but fails field validation
+during email message construction.
 
 Example:
 
@@ -134,7 +173,7 @@ Example:
 }
 ```
 
-### **500 Internal Server Error**
+#### **500 Internal Server Error**
 
 Returned when an unexpected internal failure occurs.
 
@@ -148,11 +187,11 @@ Example:
 
 ---
 
-## Email Verification
+### Email Verification
 
-### Send Email Verification Code
+#### Send Email Verification Code
 
-```
+```bash
 POST /api/v1/email/verification/code
 ```
 
@@ -173,9 +212,9 @@ Request body:
 
 ---
 
-### Notify Email Verification
+#### Notify Email Verification
 
-```
+```bash
 POST /api/v1/email/verification/notify
 ```
 
@@ -193,11 +232,11 @@ Request body:
 
 ---
 
-## Change Email
+### Change Email
 
-### Send Change Email Code
+#### Send Change Email Code
 
-```
+```bash
 POST /api/v1/email/change-email/code
 ```
 
@@ -216,9 +255,9 @@ Request body:
 
 ---
 
-### Notify Change Email
+#### Notify Change Email
 
-```
+```bash
 POST /api/v1/email/change-email/notify
 ```
 
@@ -236,11 +275,11 @@ Request body:
 
 ---
 
-## Change Password
+### Change Password
 
-### Send Change Password Code
+#### Send Change Password Code
 
-```
+```bash
 POST /api/v1/email/change-password/code
 ```
 
@@ -259,9 +298,9 @@ Request body:
 
 ---
 
-### Notify Change Password
+#### Notify Change Password
 
-```
+```bash
 POST /api/v1/email/change-password/notify
 ```
 
@@ -279,11 +318,11 @@ Request body:
 
 ---
 
-## Reset Password
+### Reset Password
 
-### Send Reset Password Code
+#### Send Reset Password Code
 
-```
+```bash
 POST /api/v1/email/reset-password/code
 ```
 
@@ -303,9 +342,9 @@ Request body:
 
 ---
 
-### Notify Reset Password
+#### Notify Reset Password
 
-```
+```bash
 POST /api/v1/email/reset-password/notify
 ```
 
@@ -323,11 +362,11 @@ Request body:
 
 ---
 
-## Account Deletion
+### Account Deletion
 
-### Send Deletion Code
+#### Send Deletion Code
 
-```
+```bash
 POST /api/v1/email/deletion/code
 ```
 
@@ -346,9 +385,9 @@ Request body:
 
 ---
 
-### Notify Deletion
+#### Notify Deletion
 
-```
+```bash
 POST /api/v1/email/deletion/notify
 ```
 
@@ -365,7 +404,7 @@ Request body:
 
 ---
 
-## Important Behavior
+### Important Behavior
 
 All endpoints behave the same way internally:
 
@@ -377,12 +416,14 @@ All endpoints behave the same way internally:
 
 The actual email delivery is handled asynchronously by a worker process.
 
+## Configuration and Running the Service
 
-# ⚙️ Configuration and Running the Service
+This service requires a small set of environment variables and external
+dependencies in order to run correctly. The configuration is provided through
+environment variables, which define credentials, default email settings, and the
+address of the message broker responsible for background job processing.
 
-This service requires a small set of environment variables and external dependencies in order to run correctly. The configuration is provided through environment variables, which define credentials, default email settings, and the address of the message broker responsible for background job processing.
-
-## Environment Variables
+### Environment Variables
 
 The following variables must be configured before running the service:
 
@@ -390,7 +431,9 @@ The following variables must be configured before running the service:
 RESEND_API_KEY
 ```
 
-API key used to authenticate requests with the email service provider. This key is provided by the email platform and must be kept secret. It should never be committed to version control.
+API key used to authenticate requests with the email service provider. This key
+is provided by the email platform and must be kept secret. It should never be
+committed to version control.
 
 ---
 
@@ -398,17 +441,22 @@ API key used to authenticate requests with the email service provider. This key 
 FROM_EMAIL
 ```
 
-Default sender name and email address used for outgoing emails. In development environments this can use the default domain provided by the email service, but in production it should use a verified domain such as `no-reply@yourdomain.com`.
+Default sender name and email address used for outgoing emails. In development environments
+this can use the default domain provided by the email service, but in production
+it should use a verified domain such as `no-reply@yourdomain.com`.
 
-### Resend Sandbox Mode
+#### Resend Sandbox Mode
 
-When using **Resend** without a verified domain, the account operates in **sandbox mode**.
+When using **Resend** without a verified domain, the account operates in
+**sandbox mode**.
 
 In this mode there are two important restrictions.
 
-First, the **recipient (`To`) must be the same email address used in the Resend account**. Attempts to send emails to other addresses will be rejected by the API.
+First, the **recipient (`To`) must be the same email address used in the Resend
+account**. Attempts to send emails to other addresses will be rejected by the API.
 
-Second, the **sender (`From`) must use the default testing address provided by Resend**, typically:
+Second, the **sender (`From`) must use the default testing address provided by
+Resend**, typically:
 
 `Dev <onboarding@resend.dev>`
 
@@ -418,17 +466,20 @@ For this reason, during local development the service is configured with:
 FROM_EMAIL="Dev <onboarding@resend.dev>"
 ```
 
-This allows testing the integration, templates, and email workflow without configuring a domain.
+This allows testing the integration, templates, and email workflow without
+configuring a domain.
 
-### Using a Verified Domain
+#### Using a Verified Domain
 
 After verifying a domain in the Resend dashboard, these restrictions are removed.
 
-The `From` address must then use an email belonging to the verified domain, for example:
+The `From` address must then use an email belonging to the verified domain,
+for example:
 
 MyApp <noreply@mydomain.com>
 
-Once a domain is verified, emails can be sent to **any recipient address**, and the service operates as a normal email delivery system.
+Once a domain is verified, emails can be sent to **any recipient address**, and
+the service operates as a normal email delivery system.
 
 ---
 
@@ -446,7 +497,9 @@ When running the application locally outside Docker, use:
 BROKER_ADDR=localhost:6379
 ```
 
-When running inside Docker Compose, **do not use localhost**. Inside containers, `localhost` refers to the container itself. Instead, the service name defined in `docker-compose.yml` must be used.
+When running inside Docker Compose, **do not use localhost**. Inside containers,
+`localhost` refers to the container itself. Instead, the service name defined in
+`docker-compose.yml` must be used.
 
 Example:
 
@@ -454,9 +507,10 @@ Example:
 BROKER_ADDR=redis:6379
 ```
 
-In production environments, the Redis instance should be secured and not publicly exposed.
+In production environments, the Redis instance should be secured and not
+publicly exposed.
 
-## Required Dependencies
+### Required Dependencies
 
 The service depends on the following tools:
 
@@ -466,15 +520,16 @@ The service depends on the following tools:
 
 Docker installation instructions can be found at:
 
-- https://docs.docker.com/get-docker/
+- [Docker Installation](https://docs.docker.com/get-docker/)
 
 A Resend account can be created at:
 
-- [https://resend.com](https://resend.com/)
+- [Resend](https://resend.com/)
 
-## Running the Application
+### Running the Application
 
-The repository includes a `Makefile` that simplifies common development tasks such as starting containers, rebuilding services, viewing logs, and running tests.
+The repository includes a `Makefile` that simplifies common development tasks
+such as starting containers, rebuilding services, viewing logs, and running tests.
 
 To start the containers:
 
@@ -501,13 +556,16 @@ To list containers:
 make list
 ```
 
-## Logs
+### Logs
 
-Logs can be collected or streamed directly from the containers using the provided commands. These commands allow exporting logs to files, retrieving recent logs, or following logs in real time.
+Logs can be collected or streamed directly from the containers using the
+provided commands. These commands allow exporting logs to files, retrieving
+recent logs, or following logs in real time.
 
-Examples include retrieving logs for the email service, the Redis broker, or all services, either as static files or live streams.
+Examples include retrieving logs for the email service, the Redis broker, or
+all services, either as static files or live streams.
 
-## Running Tests
+### Running Tests
 
 The project includes multiple test modes. To date, it includes 193 tests + subtests.
 
@@ -535,29 +593,51 @@ To run all tests:
 go test -tags=email,lazy ./...
 ```
 
-The Makefile provides shortcuts for these commands to simplify execution during development.
+The Makefile provides shortcuts for these commands to simplify execution during
+development.
 
+## Current Limitations
 
-# ⚠️ Current Limitations
+### Delivery Status (Resend Webhooks)
 
-## Delivery Status (Resend Webhooks)
+This service sends emails using **Resend**. When a request to send an email is
+made, the provider only confirms that the message was accepted for processing.
+The response does not indicate whether the email was ultimately delivered to
+the recipient.
 
-This service sends emails using **Resend**. When a request to send an email is made, the provider only confirms that the message was accepted for processing. The response does not indicate whether the email was ultimately delivered to the recipient.
+Final delivery events such as `delivered`, `bounced`, `complained`, or
+`suppressed` are generated asynchronously by the provider. These events are
+exposed through webhooks, which require a publicly accessible HTTP endpoint
+capable of receiving callbacks from the provider.
 
-Final delivery events such as `delivered`, `bounced`, `complained`, or `suppressed` are generated asynchronously by the provider. These events are exposed through webhooks, which require a publicly accessible HTTP endpoint capable of receiving callbacks from the provider.
+In a Hexagonal Architecture, this would be implemented as an additional input
+adapter responsible for receiving webhook requests and translating them into
+commands or events processed by the application core.
 
-In a Hexagonal Architecture, this would be implemented as an additional input adapter responsible for receiving webhook requests and translating them into commands or events processed by the application core.
+This project does not implement webhook handling because the service currently
+runs only in a local development environment and does not expose any public
+endpoint that could receive webhook callbacks. As a result, the system can
+confirm that an email request was accepted by the provider, but it cannot
+automatically determine the final delivery status of the message.
 
-This project does not implement webhook handling because the service currently runs only in a local development environment and does not expose any public endpoint that could receive webhook callbacks. As a result, the system can confirm that an email request was accepted by the provider, but it cannot automatically determine the final delivery status of the message.
+During development, the delivery status can still be inspected through the
+**Resend dashboard**, which provides visibility into message delivery events.
 
-During development, the delivery status can still be inspected through the **Resend dashboard**, which provides visibility into message delivery events.
+### Logging
 
-## Logging
+The application generates logs at the HTTP layer, background worker, and
+external service adapters. These logs provide visibility into request handling,
+job execution, and interactions with external services.
 
-The application generates logs at the HTTP layer, background worker, and external service adapters. These logs provide visibility into request handling, job execution, and interactions with external services.
+Logs are written to container output and can be inspected using Docker logs or
+exported to files using commands available in the `Makefile`.
 
-Logs are written to container output and can be inspected using Docker logs or exported to files using commands available in the `Makefile`.
+This approach has some limitations. Logs are ephemeral because they are not
+stored in a centralized logging system, meaning they may be lost if containers
+are removed or recreated. In addition, there is no log aggregation or indexing
+system in place, which would normally be used in production environments for
+persistent storage, querying, and cross-service correlation.
 
-This approach has some limitations. Logs are ephemeral because they are not stored in a centralized logging system, meaning they may be lost if containers are removed or recreated. In addition, there is no log aggregation or indexing system in place, which would normally be used in production environments for persistent storage, querying, and cross-service correlation.
-
-For the scope of this project, the current logging approach is sufficient for development and debugging, while a production system would typically integrate with a centralized logging platform.
+For the scope of this project, the current logging approach is sufficient for
+development and debugging, while a production system would typically integrate
+with a centralized logging platform.
