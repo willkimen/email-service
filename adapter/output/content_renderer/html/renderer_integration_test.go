@@ -28,12 +28,12 @@ func TestRender_WhenTemplateDataIsInvalid_ShouldReturnError(t *testing.T) {
 		"failed to execute email template", "expected error to mention template execution failure")
 }
 
-func TestRender_ShouldRender_ActivationCodeTemplate_Correctly(t *testing.T) {
-	message := emailmessage.NewActivationCode(
+func TestRender_ShouldRender_EmailVerificationCodeTemplate_Correctly(t *testing.T) {
+	message := emailmessage.NewEmailVerificationCode(
 		"user@test.com",
 		"subject-test",
 		"123456",
-		"https://example.com/activate",
+		"https://example.com/verify",
 		"2",
 		"7",
 	)
@@ -41,21 +41,21 @@ func TestRender_ShouldRender_ActivationCodeTemplate_Correctly(t *testing.T) {
 	html, err := rendererAdapter.Render(message)
 
 	require.NoError(t, err,
-		"expected Render to succeed for ActivationCode template")
+		"expected Render to succeed for EmailVerificationCode template")
 	assert.NotEmpty(t, html,
 		"expected rendered HTML to be non-empty")
 	assert.Contains(t, html,
-		"123456", "expected HTML to contain activation code")
+		"123456", "expected HTML to contain email verification code")
 	assert.Contains(t, html,
-		"https://example.com/activate", "expected HTML to contain activation link")
+		"https://example.com/verify", "expected HTML to contain email verification link")
 	assert.Contains(t, html, "7 days",
 		"expected HTML to contain expiration days information")
 	assert.Contains(t, html, "2 hours",
 		"expected HTML to contain expiration hours information")
 }
 
-func TestRender_ShouldRender_NotifyActivationTemplate_Correctly(t *testing.T) {
-	message := emailmessage.NewNotifiyActivation(
+func TestRender_ShouldRender_NotifyEmailVerificationTemplate_Correctly(t *testing.T) {
+	message := emailmessage.NewNotifyEmailVerification(
 		"user@test.com",
 		"subject-test",
 		"https://example.com/login",
@@ -64,7 +64,7 @@ func TestRender_ShouldRender_NotifyActivationTemplate_Correctly(t *testing.T) {
 	html, err := rendererAdapter.Render(message)
 
 	require.NoError(t, err,
-		"expected Render to succeed for NotifyActivation template")
+		"expected Render to succeed for NotifyEmailVerification template")
 	assert.NotEmpty(t, html,
 		"expected rendered HTML to be non-empty")
 	assert.Contains(t, html,

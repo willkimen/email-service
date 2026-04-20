@@ -18,13 +18,13 @@
 
 package emailmessage
 
-type ActivationCodeBody struct {
+type EmailVerificationCodeBody struct {
 	BaseCodeMessage
-	// ActivationLink is the URL the user must access to activate the account.
-	ActivationLink string
+	// EmailVerificationLink is the URL the user must access to verify the email.
+	EmailVerificationLink string
 
-	// ActivationDeadlineDays defines how many days the activation remains valid.
-	ActivationDeadlineDays string
+	// EmailVerificationDeadlineDays defines how many days the email verification remains valid.
+	EmailVerificationDeadlineDays string
 }
 
 type ChangeEmailCodeBody struct {
@@ -47,8 +47,8 @@ type ResetPasswordCodeBody struct {
 	ResetPasswordLink string
 }
 
-type NotifyActivationBody struct {
-	// LoginLink defines the URL the user should access after activation.
+type NotifyEmailVerificationBody struct {
+	// LoginLink defines the URL the user should access after email verification.
 	LoginLink string
 }
 

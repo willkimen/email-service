@@ -27,39 +27,39 @@ type BaseCodeDTO struct {
 	CodeExpirationHours string `json:"code_expiration_hours"`
 }
 
-// ========= Activation code =========
+// ========= Email verification code =========
 
-// ActivationCodeDTO represents the payload required to send
-// an account activation verification code.
-type ActivationCodeDTO struct {
+// EmailVerificationCodeDTO represents the payload required to send
+// an email verification code.
+type EmailVerificationCodeDTO struct {
 	BaseDTO
 	BaseCodeDTO
-	ActivationLink         string `json:"activation_link"`
-	ActivationDeadlineDays string `json:"activation_deadline_days"`
+	EmailVerificationLink         string `json:"email_verification_link"`
+	EmailVerificationDeadlineDays string `json:"email_verification_deadline_days"`
 }
 
-func (a *ActivationCodeDTO) ToEmailMessage() emailmessage.EmailMessage {
-	return emailmessage.NewActivationCode(
+func (a *EmailVerificationCodeDTO) ToEmailMessage() emailmessage.EmailMessage {
+	return emailmessage.NewEmailVerificationCode(
 		a.To,
 		a.Subject,
 		a.VerificationCode,
-		a.ActivationLink,
+		a.EmailVerificationLink,
 		a.CodeExpirationHours,
-		a.ActivationDeadlineDays,
+		a.EmailVerificationDeadlineDays,
 	)
 }
 
-// ========= Notify activation =========
+// ========= Notify email verification =========
 
-// NotifyActivationDTO represents the payload for notifying
-// that an account has been successfully activated.
-type NotifyActivationDTO struct {
+// NotifyEmailVerificationDTO represents the payload for notifying
+// that an email has been successfully verified.
+type NotifyEmailVerificationDTO struct {
 	BaseDTO
 	LoginLink string `json:"login_link"`
 }
 
-func (n *NotifyActivationDTO) ToEmailMessage() emailmessage.EmailMessage {
-	return emailmessage.NewNotifiyActivation(
+func (n *NotifyEmailVerificationDTO) ToEmailMessage() emailmessage.EmailMessage {
+	return emailmessage.NewNotifyEmailVerification(
 		n.To,
 		n.Subject,
 		n.LoginLink,

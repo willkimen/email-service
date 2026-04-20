@@ -18,11 +18,11 @@ func (publisherSuccessFake) Publish(message emailmessage.EmailMessage) error {
 
 }
 
-var invalidMessage *emailmessage.ActivationCode = emailmessage.NewActivationCode(
+var invalidMessage *emailmessage.EmailVerificationCode = emailmessage.NewEmailVerificationCode(
 	"fake@fake.com", "", "fake", "fake", "fake", "fake",
 )
 
-var messageCorrect *emailmessage.ActivationCode = emailmessage.NewActivationCode(
+var messageCorrect *emailmessage.EmailVerificationCode = emailmessage.NewEmailVerificationCode(
 	"fake@fake.com", "fake", "fake", "fake", "fake", "fake",
 )
 

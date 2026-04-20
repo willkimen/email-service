@@ -10,18 +10,18 @@ const (
 	verificationCode       = "1234"
 	codeExpiratinoHours    = "2"
 	link                   = "www.some.com/some"
-	activationDeadlineDays = "7"
+	emailVerificationDeadlineDays = "7"
 )
 
-func validActivationCode() *emailmessage.ActivationCode {
-	return emailmessage.NewActivationCode(
+func validEmailVerificationCode() *emailmessage.EmailVerificationCode {
+	return emailmessage.NewEmailVerificationCode(
 		to, subject, verificationCode, link,
-		codeExpiratinoHours, activationDeadlineDays,
+		codeExpiratinoHours, emailVerificationDeadlineDays,
 	)
 }
 
-func validNotifyActivation() *emailmessage.NotifyActivation {
-	return emailmessage.NewNotifiyActivation(
+func validNotifyEmailVerification() *emailmessage.NotifyEmailVerification {
+	return emailmessage.NewNotifyEmailVerification(
 		to, subject, link,
 	)
 }

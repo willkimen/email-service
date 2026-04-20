@@ -8,81 +8,81 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-// ============ ActivationCode tests ============
-func TestActivationCode_IsCreatedCorrectly(t *testing.T) {
-	actualActivation := validActivationCode()
+// ============ EmailVerificationCode tests ============
+func TestEmailVerificationCode_IsCreatedCorrectly(t *testing.T) {
+	actualEmailVerification := validEmailVerificationCode()
 
-	_, ok := actualActivation.GetBodyData().(emailmessage.ActivationCodeBody)
-	require.True(t, ok, "expected body data to be of type ActivationCodeBody")
+	_, ok := actualEmailVerification.GetBodyData().(emailmessage.EmailVerificationCodeBody)
+	require.True(t, ok, "expected body data to be of type EmailVerificationCodeBody")
 
-	assert.Equal(t, to, actualActivation.To,
+	assert.Equal(t, to, actualEmailVerification.To,
 		"expected To to match the provided value")
-	assert.Equal(t, subject, actualActivation.Subject,
+	assert.Equal(t, subject, actualEmailVerification.Subject,
 		"expected Subject to match the provided value")
-	assert.Equal(t, verificationCode, actualActivation.VerificationCode,
+	assert.Equal(t, verificationCode, actualEmailVerification.VerificationCode,
 		"expected VerificationCode to match the provided value")
-	assert.Equal(t, link, actualActivation.ActivationLink,
-		"expected ActivationLink to match the provided value")
-	assert.Equal(t, codeExpiratinoHours, actualActivation.CodeExpirationHours,
+	assert.Equal(t, link, actualEmailVerification.EmailVerificationLink,
+		"expected EmailVerificationLink to match the provided value")
+	assert.Equal(t, codeExpiratinoHours, actualEmailVerification.CodeExpirationHours,
 		"expected CodeExpirationHours to match the provided value")
-	assert.Equal(t, activationDeadlineDays, actualActivation.ActivationDeadlineDays,
-		"expected ActivationDeadlineDays to match the provided value")
-	assert.Equal(t, emailmessage.EmailTypeActivationCode, actualActivation.GetEmailType(),
-		"expected email type to be ActivationCode")
-	assert.Nil(t, actualActivation.ValidateData(),
-		"expected ValidateData to return nil for a valid ActivationCode")
+	assert.Equal(t, emailVerificationDeadlineDays, actualEmailVerification.EmailVerificationDeadlineDays,
+		"expected EmailVerificationDeadlineDays to match the provided value")
+	assert.Equal(t, emailmessage.EmailTypeEmailVerificationCode, actualEmailVerification.GetEmailType(),
+		"expected email type to be EmailVerificationCode")
+	assert.Nil(t, actualEmailVerification.ValidateData(),
+		"expected ValidateData to return nil for a valid EmailVerificationCode")
 
 }
 
-func TestActivationCode_EmptyField_ReturnError(t *testing.T) {
+func TestEmailVerificationCode_EmptyField_ReturnError(t *testing.T) {
 	tests := []struct {
 		name  string
-		setup func(p *emailmessage.ActivationCode)
+		setup func(p *emailmessage.EmailVerificationCode)
 	}{
 		{
 			name: "empty To",
-			setup: func(p *emailmessage.ActivationCode) {
+			setup: func(p *emailmessage.EmailVerificationCode) {
 				p.To = ""
 			},
 		},
 		{
 			name: "empty Subject",
-			setup: func(p *emailmessage.ActivationCode) {
+			setup: func(p *emailmessage.EmailVerificationCode) {
 				p.Subject = ""
 			},
 		},
 		{
 			name: "empty VerificationCode",
-			setup: func(p *emailmessage.ActivationCode) {
+			setup: func(p *emailmessage.EmailVerificationCode) {
 				p.VerificationCode = ""
 			},
 		},
 		{
 			name: "empty CodeExpirationHours",
-			setup: func(p *emailmessage.ActivationCode) {
+			setup: func(p *emailmessage.EmailVerificationCode) {
 				p.CodeExpirationHours = ""
 			},
 		},
 		{
-			name: "empty ActivationLink",
-			setup: func(p *emailmessage.ActivationCode) {
-				p.ActivationLink = ""
+			name: "empty EmailVerificationLink",
+			setup: func(p *emailmessage.EmailVerificationCode) {
+				p.EmailVerificationLink = ""
 			},
 		},
 		{
-			name: "empty ActivationDeadlineDays",
-			setup: func(p *emailmessage.ActivationCode) {
-				p.ActivationDeadlineDays = ""
+			name: "empty EmailVerificationDeadlineDays",
+			setup: func(p *emailmessage.EmailVerificationCode) {
+				p.EmailVerificationDeadlineDays = ""
 			},
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			actualActivation := validActivationCode()
-			tt.setup(actualActivation)
+			actualEmailVerification := validEmailVerificationCode()
+			tt.setup(actualEmailVerification)
 
-			require.Error(t, actualActivation.ValidateData(),
+			require.Error(t, actualEmailVerification.ValidateData(),
 				"expected ValidateData to return an error when %s is empty", tt.name)
 		})
 	}

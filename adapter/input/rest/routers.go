@@ -5,8 +5,8 @@ import "net/http"
 func (s *SendEmailHandler) Routes() http.Handler {
 	mux := http.NewServeMux()
 
-	mux.HandleFunc("POST /api/v1/email/activation/code", s.SendActivationCodeHandler)
-	mux.HandleFunc("POST /api/v1/email/activation/notify", s.NotifyActivationHandler)
+	mux.HandleFunc("POST /api/v1/email/verification/code", s.SendEmailVerificationCodeHandler)
+	mux.HandleFunc("POST /api/v1/email/verification/notify", s.NotifyEmailVerificationHandler)
 
 	mux.HandleFunc("POST /api/v1/email/change-email/code", s.SendChangeEmailCodeHandler)
 	mux.HandleFunc("POST /api/v1/email/change-email/notify", s.NotifyChangeEmailHandler)

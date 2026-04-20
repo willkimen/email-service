@@ -4,16 +4,16 @@ import (
 	"net/http"
 )
 
-// SendActivationCodeHandler handles HTTP requests for sending
-// an activation code email.
+// SendEmailVerificationCodeHandler handles HTTP requests for sending
+// an email verification code email.
 //
 // This handler is responsible only for HTTP-level concerns.
 // It delegates JSON parsing, validation, interaction
 // and response mapping to the shared helper.
-func (s *SendEmailHandler) SendActivationCodeHandler(w http.ResponseWriter, r *http.Request) {
-	// ActivationCodeDTO represents the expected payload
-	// for requesting an activation code email.
-	var dto ActivationCodeDTO
+func (s *SendEmailHandler) SendEmailVerificationCodeHandler(w http.ResponseWriter, r *http.Request) {
+	// EmailVerificationCodeDTO represents the expected payload
+	// for requesting an email verification code email.
+	var dto EmailVerificationCodeDTO
 
 	// Delegate the full request lifecycle to the shared helper:
 	// - read and validate the request body

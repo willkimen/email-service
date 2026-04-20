@@ -26,16 +26,16 @@ func TestWhenEmailFormatIsInvalid_ShouldReturnValidationError(t *testing.T) {
 
 	body := `{
 		"to": "invalid-email",
-		"subject": "Activate your account",
+		"subject": "Verify your email",
 		"verification_code": "123456",
 		"code_expiration_hours": "2",
-		"activation_link": "https://example.com/activate",
-		"activation_deadline_days": "7"
+		"email_verification_link": "https://example.com/verify",
+		"email_verification_deadline_days": "7"
 	}`
 
 	r := httptest.NewRequest(
 		http.MethodPost,
-		"/emails/activation-code",
+		"/emails/verification-code",
 		strings.NewReader(body),
 	)
 
@@ -43,7 +43,7 @@ func TestWhenEmailFormatIsInvalid_ShouldReturnValidationError(t *testing.T) {
 
 	w := httptest.NewRecorder()
 
-	handler.SendActivationCodeHandler(w, r)
+	handler.SendEmailVerificationCodeHandler(w, r)
 
 	res := w.Result()
 
@@ -60,25 +60,25 @@ func TestWhenEmailFormatIsInvalid_ShouldReturnValidationError(t *testing.T) {
 	)
 }
 
-// =============== Activation code tests ===============
-func TestSendActivationCodeHandler_WhenRequestBodyIsInvalidJSON_ShouldReturnBadRequest(t *testing.T) {
+// =============== Email verification code tests ===============
+func TestSendEmailVerificationCodeHandler_WhenRequestBodyIsInvalidJSON_ShouldReturnBadRequest(t *testing.T) {
 	usecaseMock := new(RequestEmailUseCaseMock)
 
 	handler := rest.NewSendEmailHandler(usecaseMock, logger)
 
 	r := httptest.NewRequest(
 		http.MethodPost,
-		"/emails/activation-code",
+		"/emails/verification-code",
 		strings.NewReader("{invalid-json"),
 	)
 	w := httptest.NewRecorder()
 
-	handler.SendActivationCodeHandler(w, r)
+	handler.SendEmailVerificationCodeHandler(w, r)
 
 	assertBadRequest(t, w.Result(), usecaseMock)
 }
 
-func TestSendActivationCodeHandler_WhenValidationFails_ShouldReturnUnprocessableEntity(t *testing.T) {
+func TestSendEmailVerificationCodeHandler_WhenValidationFails_ShouldReturnUnprocessableEntity(t *testing.T) {
 	usecaseMock := new(RequestEmailUseCaseMock)
 
 	usecaseMock.
@@ -89,23 +89,23 @@ func TestSendActivationCodeHandler_WhenValidationFails_ShouldReturnUnprocessable
 
 	body := `{
 		"to": "",
-		"subject": "Activation",
+		"subject": "Email Verification",
 		"verification_code": "123456",
 		"code_expiration_hours": "2",
-		"activation_link": "https://example.com",
-		"activation_deadline_days": "7"
+		"email_verification_link": "https://example.com",
+		"email_verification_deadline_days": "7"
 	}`
 
-	r := httptest.NewRequest(http.MethodPost, "/emails/activation-code", strings.NewReader(body))
+	r := httptest.NewRequest(http.MethodPost, "/emails/verification-code", strings.NewReader(body))
 	r.Header.Set("Content-Type", "application/json")
 	w := httptest.NewRecorder()
 
-	handler.SendActivationCodeHandler(w, r)
+	handler.SendEmailVerificationCodeHandler(w, r)
 
 	assertUnprocessableEntity(t, w.Result(), usecaseMock)
 }
 
-func TestSendActivationCodeHandler_WhenRequestIsValid_ShouldReturnAccepted(t *testing.T) {
+func TestSendEmailVerificationCodeHandler_WhenRequestIsValid_ShouldReturnAccepted(t *testing.T) {
 	usecaseMock := new(RequestEmailUseCaseMock)
 
 	usecaseMock.
@@ -116,23 +116,23 @@ func TestSendActivationCodeHandler_WhenRequestIsValid_ShouldReturnAccepted(t *te
 
 	body := `{
 		"to": "user@test.com",
-		"subject": "Activation",
+		"subject": "Email Verification",
 		"verification_code": "123456",
 		"code_expiration_hours": "2",
-		"activation_link": "https://example.com",
-		"activation_deadline_days": "7"
+		"email_verification_link": "https://example.com",
+		"email_verification_deadline_days": "7"
 	}`
 
-	r := httptest.NewRequest(http.MethodPost, "/emails/activation-code", strings.NewReader(body))
+	r := httptest.NewRequest(http.MethodPost, "/emails/verification-code", strings.NewReader(body))
 	r.Header.Set("Content-Type", "application/json")
 	w := httptest.NewRecorder()
 
-	handler.SendActivationCodeHandler(w, r)
+	handler.SendEmailVerificationCodeHandler(w, r)
 
 	assertAccepted(t, w.Result(), usecaseMock)
 }
 
-func TestSendActivationCodeHandler_WhenUnexpectedErrorOccurs_ShouldReturnInternalServerError(t *testing.T) {
+func TestSendEmailVerificationCodeHandler_WhenUnexpectedErrorOccurs_ShouldReturnInternalServerError(t *testing.T) {
 	usecaseMock := new(RequestEmailUseCaseMock)
 
 	usecaseMock.
@@ -143,23 +143,23 @@ func TestSendActivationCodeHandler_WhenUnexpectedErrorOccurs_ShouldReturnInterna
 
 	body := `{
 		"to": "user@test.com",
-		"subject": "Activation",
+		"subject": "Email Verification",
 		"verification_code": "123456",
 		"code_expiration_hours": "2",
-		"activation_link": "https://example.com",
-		"activation_deadline_days": "7"
+		"email_verification_link": "https://example.com",
+		"email_verification_deadline_days": "7"
 	}`
 
-	r := httptest.NewRequest(http.MethodPost, "/emails/activation-code", strings.NewReader(body))
+	r := httptest.NewRequest(http.MethodPost, "/emails/verification-code", strings.NewReader(body))
 	r.Header.Set("Content-Type", "application/json")
 	w := httptest.NewRecorder()
 
-	handler.SendActivationCodeHandler(w, r)
+	handler.SendEmailVerificationCodeHandler(w, r)
 
 	assertInternalServerError(t, w.Result(), usecaseMock)
 }
 
-func TestSendActivationCodeHandler_WhenEmptyField_ShouldReturnValidationError(t *testing.T) {
+func TestSendEmailVerificationCodeHandler_WhenEmptyField_ShouldReturnValidationError(t *testing.T) {
 	tests := []struct {
 		name          string
 		field         string
@@ -186,14 +186,14 @@ func TestSendActivationCodeHandler_WhenEmptyField_ShouldReturnValidationError(t 
 			expectedError: "code_expiration_hours field is required",
 		},
 		{
-			name:          "missing activation_link",
-			field:         "activation_link",
-			expectedError: "activation_link field is required",
+			name:          "missing email_verification_link",
+			field:         "email_verification_link",
+			expectedError: "email_verification_link field is required",
 		},
 		{
-			name:          "missing activation_deadline_days",
-			field:         "activation_deadline_days",
-			expectedError: "activation_deadline_days field is required",
+			name:          "missing email_verification_deadline_days",
+			field:         "email_verification_deadline_days",
+			expectedError: "email_verification_deadline_days field is required",
 		},
 	}
 
@@ -212,16 +212,16 @@ func TestSendActivationCodeHandler_WhenEmptyField_ShouldReturnValidationError(t 
 
 			body := `{
 				"to": "user@test.com",
-				"subject": "Activate your account",
+				"subject": "Verify your email",
 				"verification_code": "123456",
 				"code_expiration_hours": "2",
-				"activation_link": "https://example.com/activate",
-				"activation_deadline_days": "7"
+				"email_verification_link": "https://example.com/verify",
+				"email_verification_deadline_days": "7"
 			}`
 
 			r := httptest.NewRequest(
 				http.MethodPost,
-				"/emails/activation-code",
+				"/emails/verification-code",
 				strings.NewReader(body),
 			)
 
@@ -229,7 +229,7 @@ func TestSendActivationCodeHandler_WhenEmptyField_ShouldReturnValidationError(t 
 
 			w := httptest.NewRecorder()
 
-			handler.SendActivationCodeHandler(w, r)
+			handler.SendEmailVerificationCodeHandler(w, r)
 
 			res := w.Result()
 

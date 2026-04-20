@@ -31,13 +31,13 @@ func (m *mockUseCase) ExecuteSend(message emailmessage.EmailMessage) error {
 func validTask(t *testing.T) *asynq.Task {
 	payload, err := json.Marshal(map[string]any{
 		"To":        "user@test.com",
-		"Subject":   "Activation",
-		"EmailType": emailmessage.EmailTypeActivationCode,
+		"Subject":   "Email Verification",
+		"EmailType": emailmessage.EmailTypeEmailVerificationCode,
 		"BodyData": map[string]any{
 			"VerificationCode":       "123456",
-			"ActivationLink":         "http://link",
+			"EmailVerificationLink":         "http://link",
 			"CodeExpirationHours":    "2",
-			"ActivationDeadlineDays": "3",
+			"EmailVerificationDeadlineDays": "3",
 		},
 	})
 	require.NoError(

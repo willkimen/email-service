@@ -6,7 +6,7 @@
   - [Application Model](#application-model)
   - [Port Implementations](#port-implementations)
 - [Endpoints](#endpoints)
-  - [Activation](#activation)
+  - [Email Verification](#email-verification)
   - [Change Email](#change-email)
   - [Change Password](#change-password)
   - [Reset Password](#reset-password)
@@ -25,11 +25,11 @@
 # 📌 Overview
 
 This service is responsible for handling transactional emails related to user account management.  
-Its primary role is to deliver emails required for essential account operations, such as account  verification, password reset requests, and security notifications.
+Its primary role is to deliver emails required for essential account operations, such as email verification, password reset requests, and security notifications.
 
 The service sends confirmation codes and notifications for user-related events, including:
 
-- Account registration confirmation
+- Email verification
 - Email address change
 - Password change
 - Password reset requests
@@ -148,45 +148,45 @@ Example:
 
 ---
 
-## Activation
+## Email Verification
 
-### Send Activation Code
+### Send Email Verification Code
 
 ```
-POST /api/v1/email/activation/code
+POST /api/v1/email/verification/code
 ```
 
-Sends an account activation verification code.
+Sends an email verification code.
 
 Request body:
 
 ```json
 {
   "to": "user@example.com",
-  "subject": "Activate your account",
+  "subject": "Verify your email",
   "verification_code": "123456",
   "code_expiration_hours": "2",
-  "activation_link": "https://example.com/activate",
-  "activation_deadline_days": "7"
+  "email_verification_link": "https://example.com/verify",
+  "email_verification_deadline_days": "7"
 }
 ```
 
 ---
 
-### Notify Activation
+### Notify Email Verification
 
 ```
-POST /api/v1/email/activation/notify
+POST /api/v1/email/verification/notify
 ```
 
-Sends a notification confirming that the account has been successfully activated.
+Sends a notification confirming that the email has been successfully verified.
 
 Request body:
 
 ```json
 {
   "to": "user@example.com",
-  "subject": "Account activated",
+  "subject": "Email verified",
   "login_link": "https://example.com/login"
 }
 ```

@@ -38,28 +38,28 @@ func ToEmailMessage(payloadBytes []byte) (emailmessage.EmailMessage, error) {
 
 	switch raw.EmailType {
 
-	case emailmessage.EmailTypeActivationCode:
-		var body emailmessage.ActivationCodeBody
+	case emailmessage.EmailTypeEmailVerificationCode:
+		var body emailmessage.EmailVerificationCodeBody
 		if err := json.Unmarshal(raw.BodyData, &body); err != nil {
 			return nil, err
 		}
 
-		return emailmessage.NewActivationCode(
+		return emailmessage.NewEmailVerificationCode(
 			raw.To,
 			raw.Subject,
 			body.VerificationCode,
-			body.ActivationLink,
+			body.EmailVerificationLink,
 			body.CodeExpirationHours,
-			body.ActivationDeadlineDays,
+			body.EmailVerificationDeadlineDays,
 		), nil
 
-	case emailmessage.EmailTypeNotifyActivation:
-		var body emailmessage.NotifyActivationBody
+	case emailmessage.EmailTypeNotifyEmailVerification:
+		var body emailmessage.NotifyEmailVerificationBody
 		if err := json.Unmarshal(raw.BodyData, &body); err != nil {
 			return nil, err
 		}
 
-		return emailmessage.NewNotifiyActivation(
+		return emailmessage.NewNotifyEmailVerification(
 			raw.To,
 			raw.Subject,
 			body.LoginLink,

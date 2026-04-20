@@ -1,19 +1,19 @@
 package emailmessage
 
-func NewActivationCode(
-	to, subject, verificationCode, activationLink,
-	codeExpirationHours, activationDeadlineDays string,
-) *ActivationCode {
-	activationCode := &ActivationCode{}
+func NewEmailVerificationCode(
+	to, subject, verificationCode, emailVerificationLink,
+	codeExpirationHours, emailVerificationDeadlineDays string,
+) *EmailVerificationCode {
+	emailVerificationCode := &EmailVerificationCode{}
 
-	activationCode.To = to
-	activationCode.Subject = subject
-	activationCode.VerificationCode = verificationCode
-	activationCode.CodeExpirationHours = codeExpirationHours
-	activationCode.ActivationLink = activationLink
-	activationCode.ActivationDeadlineDays = activationDeadlineDays
+	emailVerificationCode.To = to
+	emailVerificationCode.Subject = subject
+	emailVerificationCode.VerificationCode = verificationCode
+	emailVerificationCode.CodeExpirationHours = codeExpirationHours
+	emailVerificationCode.EmailVerificationLink = emailVerificationLink
+	emailVerificationCode.EmailVerificationDeadlineDays = emailVerificationDeadlineDays
 
-	return activationCode
+	return emailVerificationCode
 }
 
 func NewChangeEmailCode(
@@ -69,10 +69,10 @@ func NewResetPasswordCode(
 	return reset
 }
 
-func NewNotifiyActivation(
+func NewNotifyEmailVerification(
 	to, subject, loginLink string,
-) *NotifyActivation {
-	notify := &NotifyActivation{}
+) *NotifyEmailVerification {
+	notify := &NotifyEmailVerification{}
 
 	notify.To = to
 	notify.Subject = subject

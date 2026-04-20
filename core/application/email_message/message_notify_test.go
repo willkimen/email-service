@@ -8,12 +8,12 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-// ============== NotifyActivation tests ==============
-func TestNotifyActivation_IsCreatedCorrectly(t *testing.T) {
-	actualNotify := validNotifyActivation()
+// ============== NotifyEmailVerification tests ==============
+func TestNotifyEmailVerification_IsCreatedCorrectly(t *testing.T) {
+	actualNotify := validNotifyEmailVerification()
 
-	_, ok := actualNotify.GetBodyData().(emailmessage.NotifyActivationBody)
-	require.True(t, ok, "expected body data to be of type NotifyActivationBody")
+	_, ok := actualNotify.GetBodyData().(emailmessage.NotifyEmailVerificationBody)
+	require.True(t, ok, "expected body data to be of type NotifyEmailVerificationBody")
 
 	assert.Equal(t, to, actualNotify.To,
 		"expected To to match the provided value")
@@ -21,32 +21,32 @@ func TestNotifyActivation_IsCreatedCorrectly(t *testing.T) {
 		"expected Subject to match the provided value")
 	assert.Equal(t, link, actualNotify.LoginLink,
 		"expected LoginLink to match the provided value")
-	assert.Equal(t, emailmessage.EmailTypeNotifyActivation, actualNotify.GetEmailType(),
-		"expected email type to be NotifyActivation")
+	assert.Equal(t, emailmessage.EmailTypeNotifyEmailVerification, actualNotify.GetEmailType(),
+		"expected email type to be NotifyEmailVerification")
 	assert.Nil(t, actualNotify.ValidateData(),
-		"expected ValidateData to return nil for a valid NotifyActivation")
+		"expected ValidateData to return nil for a valid NotifyEmailVerification")
 }
 
-func TestNotifyActivation_EmptyField_ReturnError(t *testing.T) {
+func TestNotifyEmailVerification_EmptyField_ReturnError(t *testing.T) {
 	tests := []struct {
 		name  string
-		setup func(p *emailmessage.NotifyActivation)
+		setup func(p *emailmessage.NotifyEmailVerification)
 	}{
 		{
 			name: "empty To",
-			setup: func(p *emailmessage.NotifyActivation) {
+			setup: func(p *emailmessage.NotifyEmailVerification) {
 				p.To = ""
 			},
 		},
 		{
 			name: "empty Subject",
-			setup: func(p *emailmessage.NotifyActivation) {
+			setup: func(p *emailmessage.NotifyEmailVerification) {
 				p.Subject = ""
 			},
 		},
 		{
 			name: "empty LoginLink",
-			setup: func(p *emailmessage.NotifyActivation) {
+			setup: func(p *emailmessage.NotifyEmailVerification) {
 				p.LoginLink = ""
 			},
 		},
@@ -54,7 +54,7 @@ func TestNotifyActivation_EmptyField_ReturnError(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			actualNotify := validNotifyActivation()
+			actualNotify := validNotifyEmailVerification()
 			tt.setup(actualNotify)
 
 			require.Error(t, actualNotify.ValidateData(),

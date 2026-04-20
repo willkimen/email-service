@@ -30,17 +30,17 @@ func TestToEmailMessage_UnknownType(t *testing.T) {
 	require.Nil(t, msg)
 }
 
-func TestToEmailMessage_ActivationCode(t *testing.T) {
-	var body emailmessage.ActivationCodeBody
+func TestToEmailMessage_EmailVerificationCode(t *testing.T) {
+	var body emailmessage.EmailVerificationCodeBody
 	body.VerificationCode = "123456"
-	body.ActivationLink = "https://example.com/activate"
+	body.EmailVerificationLink = "https://example.com/verify"
 	body.CodeExpirationHours = "2"
-	body.ActivationDeadlineDays = "3"
+	body.EmailVerificationDeadlineDays = "3"
 
 	payload := mustMarshal(t, map[string]any{
 		"To":        "user@test.com",
-		"Subject":   "Activate",
-		"EmailType": emailmessage.EmailTypeActivationCode,
+		"Subject":   "Verify",
+		"EmailType": emailmessage.EmailTypeEmailVerificationCode,
 		"BodyData":  body,
 	})
 
@@ -49,24 +49,24 @@ func TestToEmailMessage_ActivationCode(t *testing.T) {
 	require.NoError(t, err)
 	require.NotNil(t, msg)
 	require.Equal(t, "user@test.com", msg.GetTo())
-	require.Equal(t, "Activate", msg.GetSubject())
-	require.Equal(t, emailmessage.EmailTypeActivationCode, msg.GetEmailType())
+	require.Equal(t, "Verify", msg.GetSubject())
+	require.Equal(t, emailmessage.EmailTypeEmailVerificationCode, msg.GetEmailType())
 
-	result := msg.GetBodyData().(emailmessage.ActivationCodeBody)
+	result := msg.GetBodyData().(emailmessage.EmailVerificationCodeBody)
 	require.Equal(t, "123456", result.VerificationCode)
-	require.Equal(t, "https://example.com/activate", result.ActivationLink)
+	require.Equal(t, "https://example.com/verify", result.EmailVerificationLink)
 	require.Equal(t, "2", result.CodeExpirationHours)
-	require.Equal(t, "3", result.ActivationDeadlineDays)
+	require.Equal(t, "3", result.EmailVerificationDeadlineDays)
 }
 
-func TestToEmailMessage_NotifyActivation(t *testing.T) {
-	var body emailmessage.NotifyActivationBody
+func TestToEmailMessage_NotifyEmailVerification(t *testing.T) {
+	var body emailmessage.NotifyEmailVerificationBody
 	body.LoginLink = "https://example.com/login"
 
 	payload := mustMarshal(t, map[string]any{
 		"To":        "user@test.com",
-		"Subject":   "Activated",
-		"EmailType": emailmessage.EmailTypeNotifyActivation,
+		"Subject":   "Verified",
+		"EmailType": emailmessage.EmailTypeNotifyEmailVerification,
 		"BodyData":  body,
 	})
 
@@ -75,10 +75,10 @@ func TestToEmailMessage_NotifyActivation(t *testing.T) {
 	require.NoError(t, err)
 	require.NotNil(t, msg)
 	require.Equal(t, "user@test.com", msg.GetTo())
-	require.Equal(t, "Activated", msg.GetSubject())
-	require.Equal(t, emailmessage.EmailTypeNotifyActivation, msg.GetEmailType())
+	require.Equal(t, "Verified", msg.GetSubject())
+	require.Equal(t, emailmessage.EmailTypeNotifyEmailVerification, msg.GetEmailType())
 
-	result := msg.GetBodyData().(emailmessage.NotifyActivationBody)
+	result := msg.GetBodyData().(emailmessage.NotifyEmailVerificationBody)
 	require.Equal(t, "https://example.com/login", result.LoginLink)
 }
 

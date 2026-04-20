@@ -4,12 +4,12 @@ import (
 	"net/http"
 )
 
-// NotifyActivationHandler handles requests to send an activation notification email.
+// NotifyEmailVerificationHandler handles requests to send an email verification notification email.
 //
-// It decodes the incoming JSON payload into a NotifyActivationDTO and delegates
+// It decodes the incoming JSON payload into a NotifyEmailVerificationDTO and delegates
 // the request handling to the shared email request helper.
-func (s *SendEmailHandler) NotifyActivationHandler(w http.ResponseWriter, r *http.Request) {
-	var dto NotifyActivationDTO
+func (s *SendEmailHandler) NotifyEmailVerificationHandler(w http.ResponseWriter, r *http.Request) {
+	var dto NotifyEmailVerificationDTO
 	s.handleEmailRequest(w, r, &dto)
 }
 

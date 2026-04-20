@@ -15,7 +15,7 @@ import (
 const (
 	to        = "user@email.com"
 	subject   = "subject fake"
-	emailType = "activation"
+	emailType = "email verification"
 	bodyData  = "body data fake"
 )
 

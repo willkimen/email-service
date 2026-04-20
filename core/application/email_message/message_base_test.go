@@ -8,7 +8,7 @@ import (
 )
 
 func TestBaseMessage_InvalidEmailFormat_ReturnError(t *testing.T) {
-	p := validActivationCode()
+	p := validEmailVerificationCode()
 	p.To = "invalid-email"
 
 	err := p.ValidateData()

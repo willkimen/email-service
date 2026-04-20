@@ -8,22 +8,22 @@
 // These message types implement the EmailMessage contract by
 // exposing their EmailType identifier and the structured body
 // data used during template rendering or serialization.
-// ActivationCode represents the email message used to deliver an account
-// activation code and related activation details to the user.
+// EmailVerificationCode represents the email message used to deliver an email
+// email verification code and related email verification details to the user.
 
 package emailmessage
 
-type ActivationCode struct {
+type EmailVerificationCode struct {
 	BaseMessage
-	ActivationCodeBody
+	EmailVerificationCodeBody
 }
 
-func (ActivationCode) GetEmailType() string {
-	return EmailTypeActivationCode
+func (EmailVerificationCode) GetEmailType() string {
+	return EmailTypeEmailVerificationCode
 }
 
-func (a *ActivationCode) GetBodyData() any {
-	return a.ActivationCodeBody
+func (a *EmailVerificationCode) GetBodyData() any {
+	return a.EmailVerificationCodeBody
 }
 
 // ChangeEmailCode represents the data required to send an email

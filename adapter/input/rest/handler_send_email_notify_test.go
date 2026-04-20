@@ -14,24 +14,24 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
-// =============== Notify activation tests ===============
-func TestNotifyActivationHandler_WhenRequestBodyIsInvalidJSON_ShouldReturnBadRequest(t *testing.T) {
+// =============== Notify email verification tests ===============
+func TestNotifyEmailVerificationHandler_WhenRequestBodyIsInvalidJSON_ShouldReturnBadRequest(t *testing.T) {
 	usecaseMock := new(RequestEmailUseCaseMock)
 	handler := rest.NewSendEmailHandler(usecaseMock, logger)
 
 	r := httptest.NewRequest(
 		http.MethodPost,
-		"/emails/notify-activation",
+		"/emails/notify-verification",
 		strings.NewReader("{invalid-json"),
 	)
 	w := httptest.NewRecorder()
 
-	handler.NotifyActivationHandler(w, r)
+	handler.NotifyEmailVerificationHandler(w, r)
 
 	assertBadRequest(t, w.Result(), usecaseMock)
 }
 
-func TestNotifyActivationHandler_WhenValidationFails_ShouldReturnUnprocessableEntity(t *testing.T) {
+func TestNotifyEmailVerificationHandler_WhenValidationFails_ShouldReturnUnprocessableEntity(t *testing.T) {
 	usecaseMock := new(RequestEmailUseCaseMock)
 
 	usecaseMock.
@@ -42,24 +42,24 @@ func TestNotifyActivationHandler_WhenValidationFails_ShouldReturnUnprocessableEn
 
 	body := `{
 		"to": "user@test.com",
-		"subject": "Activation",
+		"subject": "Email Verification",
 		"login_link": ""
 	}`
 
 	r := httptest.NewRequest(
 		http.MethodPost,
-		"/emails/notify-activation",
+		"/emails/notify-verification",
 		strings.NewReader(body),
 	)
 	r.Header.Set("Content-Type", "application/json")
 	w := httptest.NewRecorder()
 
-	handler.NotifyActivationHandler(w, r)
+	handler.NotifyEmailVerificationHandler(w, r)
 
 	assertUnprocessableEntity(t, w.Result(), usecaseMock)
 }
 
-func TestNotifyActivationHandler_WhenRequestIsValid_ShouldReturnAccepted(t *testing.T) {
+func TestNotifyEmailVerificationHandler_WhenRequestIsValid_ShouldReturnAccepted(t *testing.T) {
 	usecaseMock := new(RequestEmailUseCaseMock)
 
 	usecaseMock.
@@ -70,24 +70,24 @@ func TestNotifyActivationHandler_WhenRequestIsValid_ShouldReturnAccepted(t *test
 
 	body := `{
 		"to": "user@test.com",
-		"subject": "Activation",
+		"subject": "Email Verification",
 		"login_link": "https://example.com/login"
 	}`
 
 	r := httptest.NewRequest(
 		http.MethodPost,
-		"/emails/notify-activation",
+		"/emails/notify-verification",
 		strings.NewReader(body),
 	)
 	r.Header.Set("Content-Type", "application/json")
 	w := httptest.NewRecorder()
 
-	handler.NotifyActivationHandler(w, r)
+	handler.NotifyEmailVerificationHandler(w, r)
 
 	assertAccepted(t, w.Result(), usecaseMock)
 }
 
-func TestNotifyActivationHandler_WhenUnexpectedErrorOccurs_ShouldReturnInternalServerError(t *testing.T) {
+func TestNotifyEmailVerificationHandler_WhenUnexpectedErrorOccurs_ShouldReturnInternalServerError(t *testing.T) {
 	usecaseMock := new(RequestEmailUseCaseMock)
 
 	usecaseMock.
@@ -98,24 +98,24 @@ func TestNotifyActivationHandler_WhenUnexpectedErrorOccurs_ShouldReturnInternalS
 
 	body := `{
 		"to": "user@test.com",
-		"subject": "Account activated",
+		"subject": "Email verified",
 		"login_link": "https://example.com/login"
 	}`
 
 	r := httptest.NewRequest(
 		http.MethodPost,
-		"/emails/notify-activation",
+		"/emails/notify-verification",
 		strings.NewReader(body),
 	)
 	r.Header.Set("Content-Type", "application/json")
 	w := httptest.NewRecorder()
 
-	handler.NotifyActivationHandler(w, r)
+	handler.NotifyEmailVerificationHandler(w, r)
 
 	assertInternalServerError(t, w.Result(), usecaseMock)
 }
 
-func TestNotifyActivationHandler_WhenEmptyField_ShouldReturnValidationError(t *testing.T) {
+func TestNotifyEmailVerificationHandler_WhenEmptyField_ShouldReturnValidationError(t *testing.T) {
 	tests := []struct {
 		name          string
 		field         string
@@ -153,13 +153,13 @@ func TestNotifyActivationHandler_WhenEmptyField_ShouldReturnValidationError(t *t
 
 			body := `{
 				"to": "user@test.com",
-				"subject": "Activation",
+				"subject": "Email Verification",
 				"login_link": "https://example.com/login"
 			}`
 
 			r := httptest.NewRequest(
 				http.MethodPost,
-				"/emails/notify-activation",
+				"/emails/notify-verification",
 				strings.NewReader(body),
 			)
 
@@ -167,7 +167,7 @@ func TestNotifyActivationHandler_WhenEmptyField_ShouldReturnValidationError(t *t
 
 			w := httptest.NewRecorder()
 
-			handler.NotifyActivationHandler(w, r)
+			handler.NotifyEmailVerificationHandler(w, r)
 
 			res := w.Result()
 

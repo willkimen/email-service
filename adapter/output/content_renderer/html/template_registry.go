@@ -17,8 +17,8 @@ import "emailservice/core/application/email_message"
 // 2. Define a new EmailType constant.
 // 3. Register the EmailType and its template path in this map.
 var pathTemplates = map[string]string{
-	emailmessage.EmailTypeActivationCode:   "templates/activation_code.html",
-	emailmessage.EmailTypeNotifyActivation: "templates/notify_activation.html",
+	emailmessage.EmailTypeEmailVerificationCode:   "templates/email_verification_code.html",
+	emailmessage.EmailTypeNotifyEmailVerification: "templates/notify_email_verification.html",
 
 	emailmessage.EmailTypeChangeEmailCode:   "templates/change_email_code.html",
 	emailmessage.EmailTypeNotifyChangeEmail: "templates/notify_change_email.html",

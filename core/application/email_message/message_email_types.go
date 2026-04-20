@@ -13,8 +13,8 @@ package emailmessage
 // Using explicit email types avoids hardcoded strings, improves
 // type safety, and provides a shared vocabulary between layers.
 const (
-	EmailTypeActivationCode   = "activation_code"
-	EmailTypeNotifyActivation = "notify_activation"
+	EmailTypeEmailVerificationCode   = "email_verification_code"
+	EmailTypeNotifyEmailVerification = "notify_email_verification"
 
 	EmailTypeChangeEmailCode   = "change_email_code"
 	EmailTypeNotifyChangeEmail = "notify_change_email"

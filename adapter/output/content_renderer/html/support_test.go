@@ -22,7 +22,7 @@ type FakeEmailMessageWithDataInvalid struct {
 	FieldNotExist string
 }
 
-var emailTypeExists = "activation_code"
+var emailTypeExists = "email_verification_code"
 
 func (FakeEmailMessageWithDataInvalid) ValidateData() error  { return nil }
 func (FakeEmailMessageWithDataInvalid) GetEmailType() string { return emailTypeExists }

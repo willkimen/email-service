@@ -21,8 +21,8 @@ const (
 	FieldSubject                = "subject"
 	FieldVerificationCode       = "verification_code"
 	FieldCodeExpirationHours    = "code_expiration_hours"
-	FieldActivationLink         = "activation_link"
-	FieldActivationDeadlineDays = "activation_deadline_days"
+	FieldEmailVerificationLink         = "email_verification_link"
+	FieldEmailVerificationDeadlineDays = "email_verification_deadline_days"
 	FieldResetPasswordLink      = "reset_password_link"
 	FieldLoginLink              = "login_link"
 )
@@ -81,7 +81,7 @@ func (b *BaseCodeMessage) ValidateData() error {
 	return nil
 }
 
-func (a *ActivationCode) ValidateData() error {
+func (a *EmailVerificationCode) ValidateData() error {
 	if err := a.BaseMessage.ValidateData(); err != nil {
 		return err
 	}
@@ -91,8 +91,8 @@ func (a *ActivationCode) ValidateData() error {
 	}
 
 	if err := validateRequiredFields(
-		fieldRule{a.ActivationLink, FieldActivationLink},
-		fieldRule{a.ActivationDeadlineDays, FieldActivationDeadlineDays},
+		fieldRule{a.EmailVerificationLink, FieldEmailVerificationLink},
+		fieldRule{a.EmailVerificationDeadlineDays, FieldEmailVerificationDeadlineDays},
 	); err != nil {
 		return err
 	}
@@ -154,7 +154,7 @@ func (c *ChangePasswordCode) ValidateData() error {
 	return nil
 }
 
-func (p *NotifyActivation) ValidateData() error {
+func (p *NotifyEmailVerification) ValidateData() error {
 	if err := p.BaseMessage.ValidateData(); err != nil {
 		return err
 	}

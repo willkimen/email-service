@@ -3,30 +3,30 @@
 //
 // Unlike code-based messages, these notifications do not request
 // further verification. They exist to inform the user that an
-// operation (such as activation, password change, or deletion)
+// operation (such as email verification, password change, or deletion)
 // has already been finalized.
 //
 // Each message composes BaseMessage with a specific body structure
 // and implements the EmailMessage contract by providing its type
 // identifier and template body data.
-// NotifyActivation represents an email notification sent after
-// an account has been successfully activated.
+// NotifyEmailVerification represents an email notification sent after
+// an email has been successfully verified.
 
 package emailmessage
 
-// This message is used to inform the user that the activation
+// This message is used to inform the user that the email verification
 // process is complete and provides a link to access the system.
-type NotifyActivation struct {
+type NotifyEmailVerification struct {
 	BaseMessage
-	NotifyActivationBody
+	NotifyEmailVerificationBody
 }
 
-func (NotifyActivation) GetEmailType() string {
-	return EmailTypeNotifyActivation
+func (NotifyEmailVerification) GetEmailType() string {
+	return EmailTypeNotifyEmailVerification
 }
 
-func (n *NotifyActivation) GetBodyData() any {
-	return n.NotifyActivationBody
+func (n *NotifyEmailVerification) GetBodyData() any {
+	return n.NotifyEmailVerificationBody
 }
 
 // NotifyChangeEmail represents an email notification sent after
