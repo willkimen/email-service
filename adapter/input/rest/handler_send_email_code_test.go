@@ -28,7 +28,7 @@ func TestWhenEmailFormatIsInvalid_ShouldReturnValidationError(t *testing.T) {
 		"to": "invalid-email",
 		"subject": "Verify your email",
 		"verification_code": "123456",
-		"code_expiration_hours": "2",
+		"code_expiration_time": "2",
 		"email_verification_link": "https://example.com/verify",
 		"email_verification_deadline_days": "7"
 	}`
@@ -91,7 +91,7 @@ func TestSendEmailVerificationCodeHandler_WhenValidationFails_ShouldReturnUnproc
 		"to": "",
 		"subject": "Email Verification",
 		"verification_code": "123456",
-		"code_expiration_hours": "2",
+		"code_expiration_time": "2",
 		"email_verification_link": "https://example.com",
 		"email_verification_deadline_days": "7"
 	}`
@@ -118,7 +118,7 @@ func TestSendEmailVerificationCodeHandler_WhenRequestIsValid_ShouldReturnAccepte
 		"to": "user@test.com",
 		"subject": "Email Verification",
 		"verification_code": "123456",
-		"code_expiration_hours": "2",
+		"code_expiration_time": "2",
 		"email_verification_link": "https://example.com",
 		"email_verification_deadline_days": "7"
 	}`
@@ -145,7 +145,7 @@ func TestSendEmailVerificationCodeHandler_WhenUnexpectedErrorOccurs_ShouldReturn
 		"to": "user@test.com",
 		"subject": "Email Verification",
 		"verification_code": "123456",
-		"code_expiration_hours": "2",
+		"code_expiration_time": "2",
 		"email_verification_link": "https://example.com",
 		"email_verification_deadline_days": "7"
 	}`
@@ -181,9 +181,9 @@ func TestSendEmailVerificationCodeHandler_WhenEmptyField_ShouldReturnValidationE
 			expectedError: "verification_code field is required",
 		},
 		{
-			name:          "missing code_expiration_hours",
-			field:         "code_expiration_hours",
-			expectedError: "code_expiration_hours field is required",
+			name:          "missing code_expiration_time",
+			field:         "code_expiration_time",
+			expectedError: "code_expiration_time field is required",
 		},
 		{
 			name:          "missing email_verification_link",
@@ -214,7 +214,7 @@ func TestSendEmailVerificationCodeHandler_WhenEmptyField_ShouldReturnValidationE
 				"to": "user@test.com",
 				"subject": "Verify your email",
 				"verification_code": "123456",
-				"code_expiration_hours": "2",
+				"code_expiration_time": "2",
 				"email_verification_link": "https://example.com/verify",
 				"email_verification_deadline_days": "7"
 			}`
@@ -279,7 +279,7 @@ func TestSendChangeEmailCodeHandler_WhenValidationFails_ShouldReturnUnprocessabl
 		"to": "user@test.com",
 		"subject": "Change email",
 		"verification_code": "",
-		"code_expiration_hours": "2"
+		"code_expiration_time": "2"
 	}`
 
 	r := httptest.NewRequest(
@@ -308,7 +308,7 @@ func TestSendChangeEmailCodeHandler_WhenRequestIsValid_ShouldReturnAccepted(t *t
 		"to": "user@test.com",
 		"subject": "Change email",
 		"verification_code": "123456",
-		"code_expiration_hours": "2"
+		"code_expiration_time": "2"
 	}`
 
 	r := httptest.NewRequest(
@@ -337,7 +337,7 @@ func TestSendChangeEmailCodeHandler_WhenUnexpectedErrorOccurs_ShouldReturnIntern
 		"to": "user@test.com",
 		"subject": "Change email",
 		"verification_code": "123456",
-		"code_expiration_hours": "2"
+		"code_expiration_time": "2"
 	}`
 
 	r := httptest.NewRequest(
@@ -376,9 +376,9 @@ func TestSendChangeEmailCodeHandler_WhenEmptyField_ShouldReturnValidationError(t
 			expectedError: "verification_code field is required",
 		},
 		{
-			name:          "missing code_expiration_hours",
-			field:         "code_expiration_hours",
-			expectedError: "code_expiration_hours field is required",
+			name:          "missing code_expiration_time",
+			field:         "code_expiration_time",
+			expectedError: "code_expiration_time field is required",
 		},
 	}
 
@@ -399,7 +399,7 @@ func TestSendChangeEmailCodeHandler_WhenEmptyField_ShouldReturnValidationError(t
 				"to": "user@test.com",
 				"subject": "Change email",
 				"verification_code": "123456",
-				"code_expiration_hours": "2"
+				"code_expiration_time": "2"
 			}`
 
 			r := httptest.NewRequest(
@@ -462,7 +462,7 @@ func TestSendChangePasswordCodeHandler_WhenValidationFails_ShouldReturnUnprocess
 		"to": "user@test.com",
 		"subject": "Change password",
 		"verification_code": "",
-		"code_expiration_hours": "2"
+		"code_expiration_time": "2"
 	}`
 
 	r := httptest.NewRequest(
@@ -491,7 +491,7 @@ func TestSendChangePasswordCodeHandler_WhenRequestIsValid_ShouldReturnAccepted(t
 		"to": "user@test.com",
 		"subject": "Change password",
 		"verification_code": "123456",
-		"code_expiration_hours": "2"
+		"code_expiration_time": "2"
 	}`
 
 	r := httptest.NewRequest(
@@ -520,7 +520,7 @@ func TestSendChangePasswordCodeHandler_WhenUnexpectedErrorOccurs_ShouldReturnInt
 		"to": "user@test.com",
 		"subject": "Change password",
 		"verification_code": "123456",
-		"code_expiration_hours": "2"
+		"code_expiration_time": "2"
 	}`
 
 	r := httptest.NewRequest(
@@ -559,9 +559,9 @@ func TestSendChangePasswordCodeHandler_WhenEmptyField_ShouldReturnValidationErro
 			expectedError: "verification_code field is required",
 		},
 		{
-			name:          "missing code_expiration_hours",
-			field:         "code_expiration_hours",
-			expectedError: "code_expiration_hours field is required",
+			name:          "missing code_expiration_time",
+			field:         "code_expiration_time",
+			expectedError: "code_expiration_time field is required",
 		},
 	}
 
@@ -582,7 +582,7 @@ func TestSendChangePasswordCodeHandler_WhenEmptyField_ShouldReturnValidationErro
 				"to": "user@test.com",
 				"subject": "Change password",
 				"verification_code": "123456",
-				"code_expiration_hours": "2"
+				"code_expiration_time": "2"
 			}`
 
 			r := httptest.NewRequest(
@@ -645,7 +645,7 @@ func TestSendDeletionCodeHandler_WhenValidationFails_ShouldReturnUnprocessableEn
 		"to": "user@test.com",
 		"subject": "Account deletion",
 		"verification_code": "",
-		"code_expiration_hours": "2"
+		"code_expiration_time": "2"
 	}`
 
 	r := httptest.NewRequest(
@@ -674,7 +674,7 @@ func TestSendDeletionCodeHandler_WhenRequestIsValid_ShouldReturnAccepted(t *test
 		"to": "user@test.com",
 		"subject": "Account deletion",
 		"verification_code": "123456",
-		"code_expiration_hours": "2"
+		"code_expiration_time": "2"
 	}`
 
 	r := httptest.NewRequest(
@@ -703,7 +703,7 @@ func TestSendDeletionCodeHandler_WhenUnexpectedErrorOccurs_ShouldReturnInternalS
 		"to": "user@test.com",
 		"subject": "Account deletion",
 		"verification_code": "123456",
-		"code_expiration_hours": "2"
+		"code_expiration_time": "2"
 	}`
 
 	r := httptest.NewRequest(
@@ -742,9 +742,9 @@ func TestSendDeletionCodeHandler_WhenEmptyField_ShouldReturnValidationError(t *t
 			expectedError: "verification_code field is required",
 		},
 		{
-			name:          "missing code_expiration_hours",
-			field:         "code_expiration_hours",
-			expectedError: "code_expiration_hours field is required",
+			name:          "missing code_expiration_time",
+			field:         "code_expiration_time",
+			expectedError: "code_expiration_time field is required",
 		},
 	}
 
@@ -765,7 +765,7 @@ func TestSendDeletionCodeHandler_WhenEmptyField_ShouldReturnValidationError(t *t
 				"to": "user@test.com",
 				"subject": "Account deletion",
 				"verification_code": "123456",
-				"code_expiration_hours": "2"
+				"code_expiration_time": "2"
 			}`
 
 			r := httptest.NewRequest(
@@ -828,7 +828,7 @@ func TestSendResetPasswordCodeHandler_WhenValidationFails_ShouldReturnUnprocessa
 		"to": "user@test.com",
 		"subject": "Reset password",
 		"verification_code": "123456",
-		"code_expiration_hours": "2",
+		"code_expiration_time": "2",
 		"reset_password_link": ""
 	}`
 
@@ -858,7 +858,7 @@ func TestSendResetPasswordCodeHandler_WhenRequestIsValid_ShouldReturnAccepted(t 
 		"to": "user@test.com",
 		"subject": "Reset password",
 		"verification_code": "123456",
-		"code_expiration_hours": "2",
+		"code_expiration_time": "2",
 		"reset_password_link": "https://example.com/reset"
 	}`
 
@@ -888,7 +888,7 @@ func TestSendResetPasswordCodeHandler_WhenUnexpectedErrorOccurs_ShouldReturnInte
 		"to": "user@test.com",
 		"subject": "Reset password",
 		"verification_code": "123456",
-		"code_expiration_hours": "2",
+		"code_expiration_time": "2",
 		"reset_password_link": "https://example.com/reset"
 	}`
 
@@ -928,9 +928,9 @@ func TestSendResetPasswordCodeHandler_WhenEmptyField_ShouldReturnValidationError
 			expectedError: "verification_code field is required",
 		},
 		{
-			name:          "missing code_expiration_hours",
-			field:         "code_expiration_hours",
-			expectedError: "code_expiration_hours field is required",
+			name:          "missing code_expiration_time",
+			field:         "code_expiration_time",
+			expectedError: "code_expiration_time field is required",
 		},
 		{
 			name:          "missing reset_password_link",
@@ -956,7 +956,7 @@ func TestSendResetPasswordCodeHandler_WhenEmptyField_ShouldReturnValidationError
 				"to": "user@test.com",
 				"subject": "Reset password",
 				"verification_code": "123456",
-				"code_expiration_hours": "2",
+				"code_expiration_time": "2",
 				"reset_password_link": "https://example.com/reset"
 			}`
 

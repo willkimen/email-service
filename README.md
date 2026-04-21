@@ -204,7 +204,7 @@ Request body:
   "to": "user@example.com",
   "subject": "Verify your email",
   "verification_code": "123456",
-  "code_expiration_hours": "2",
+  "code_expiration_time": "2 minutes | hours | days",
   "email_verification_link": "https://example.com/verify",
   "email_verification_deadline_days": "7"
 }
@@ -249,7 +249,7 @@ Request body:
   "to": "user@example.com",
   "subject": "Confirm email change",
   "verification_code": "123456",
-  "code_expiration_hours": "2"
+  "code_expiration_time": "2 minutes | hours | days",
 }
 ```
 
@@ -292,7 +292,7 @@ Request body:
   "to": "user@example.com",
   "subject": "Confirm password change",
   "verification_code": "123456",
-  "code_expiration_hours": "2"
+  "code_expiration_time": "2 minutes | hours | days"
 }
 ```
 
@@ -335,7 +335,7 @@ Request body:
   "to": "user@example.com",
   "subject": "Reset your password",
   "verification_code": "123456",
-  "code_expiration_hours": "2",
+  "code_expiration_time": "2 minutes | hours | days",
   "reset_password_link": "https://example.com/reset-password"
 }
 ```
@@ -379,7 +379,7 @@ Request body:
   "to": "user@example.com",
   "subject": "Confirm account deletion",
   "verification_code": "123456",
-  "code_expiration_hours": "2"
+  "code_expiration_time": "2 minutes | hours | days"
 }
 ```
 

@@ -23,8 +23,8 @@ func TestEmailVerificationCode_IsCreatedCorrectly(t *testing.T) {
 		"expected VerificationCode to match the provided value")
 	assert.Equal(t, link, actualEmailVerification.EmailVerificationLink,
 		"expected EmailVerificationLink to match the provided value")
-	assert.Equal(t, codeExpiratinoHours, actualEmailVerification.CodeExpirationHours,
-		"expected CodeExpirationHours to match the provided value")
+	assert.Equal(t, codeExpirationTime, actualEmailVerification.CodeExpirationTime,
+		"expected CodeExpirationTime to match the provided value")
 	assert.Equal(t, emailVerificationDeadlineDays, actualEmailVerification.EmailVerificationDeadlineDays,
 		"expected EmailVerificationDeadlineDays to match the provided value")
 	assert.Equal(t, emailmessage.EmailTypeEmailVerificationCode, actualEmailVerification.GetEmailType(),
@@ -58,9 +58,9 @@ func TestEmailVerificationCode_EmptyField_ReturnError(t *testing.T) {
 			},
 		},
 		{
-			name: "empty CodeExpirationHours",
+			name: "empty CodeExpirationTime",
 			setup: func(p *emailmessage.EmailVerificationCode) {
-				p.CodeExpirationHours = ""
+				p.CodeExpirationTime = ""
 			},
 		},
 		{
@@ -101,8 +101,8 @@ func TestChangeEmailCode_IsCreatedCorrectly(t *testing.T) {
 		"expected Subject to match the provided value")
 	assert.Equal(t, verificationCode, actualChange.VerificationCode,
 		"expected VerificationCode to match the provided value")
-	assert.Equal(t, codeExpiratinoHours, actualChange.CodeExpirationHours,
-		"expected CodeExpirationHours to match the provided value")
+	assert.Equal(t, codeExpirationTime, actualChange.CodeExpirationTime,
+		"expected CodeExpirationTime to match the provided value")
 	assert.Equal(t, emailmessage.EmailTypeChangeEmailCode, actualChange.GetEmailType(),
 		"expected email type to be ChangeEmailCode")
 	assert.Nil(t, actualChange.ValidateData(),
@@ -133,9 +133,9 @@ func TestChangeEmailCode_EmptyField_ReturnError(t *testing.T) {
 			},
 		},
 		{
-			name: "empty CodeExpirationHours",
+			name: "empty CodeExpirationTime",
 			setup: func(p *emailmessage.ChangeEmailCode) {
-				p.CodeExpirationHours = ""
+				p.CodeExpirationTime = ""
 			},
 		},
 	}
@@ -164,8 +164,8 @@ func TestChangePasswordCode_IsCreatedCorrectly(t *testing.T) {
 		"expected Subject to match the provided value")
 	assert.Equal(t, verificationCode, actualChange.VerificationCode,
 		"expected VerificationCode to match the provided value")
-	assert.Equal(t, codeExpiratinoHours, actualChange.CodeExpirationHours,
-		"expected CodeExpirationHours to match the provided value")
+	assert.Equal(t, codeExpirationTime, actualChange.CodeExpirationTime,
+		"expected CodeExpirationTime to match the provided value")
 	assert.Equal(t, emailmessage.EmailTypeChangePasswordCode, actualChange.GetEmailType(),
 		"expected email type to be ChangePasswordCode")
 	assert.Nil(t, actualChange.ValidateData(),
@@ -196,9 +196,9 @@ func TestChangePasswordCode_EmptyField_ReturnError(t *testing.T) {
 			},
 		},
 		{
-			name: "empty CodeExpirationHours",
+			name: "empty CodeExpirationTime",
 			setup: func(p *emailmessage.ChangePasswordCode) {
-				p.CodeExpirationHours = ""
+				p.CodeExpirationTime = ""
 			},
 		},
 	}
@@ -227,8 +227,8 @@ func TestDeletionCode_IsCreatedCorrectly(t *testing.T) {
 		"expected Subject to match the provided value")
 	assert.Equal(t, verificationCode, actualDeletion.VerificationCode,
 		"expected VerificationCode to match the provided value")
-	assert.Equal(t, codeExpiratinoHours, actualDeletion.CodeExpirationHours,
-		"expected CodeExpirationHours to match the provided value")
+	assert.Equal(t, codeExpirationTime, actualDeletion.CodeExpirationTime,
+		"expected CodeExpirationTime to match the provided value")
 	assert.Equal(t, emailmessage.EmailTypeDeletionCode, actualDeletion.GetEmailType(),
 		"expected email type to be DeletionCode")
 	assert.Nil(t, actualDeletion.ValidateData(),
@@ -259,9 +259,9 @@ func TestDeletionCode_EmptyField_ReturnError(t *testing.T) {
 			},
 		},
 		{
-			name: "empty CodeExpirationHours",
+			name: "empty CodeExpirationTime",
 			setup: func(p *emailmessage.DeletionCode) {
-				p.CodeExpirationHours = ""
+				p.CodeExpirationTime = ""
 			},
 		},
 	}
@@ -292,8 +292,8 @@ func TestResetPasswordCode_IsCreatedCorrectly(t *testing.T) {
 		"expected VerificationCode to match the provided value")
 	assert.Equal(t, link, actualReset.ResetPasswordLink,
 		"expected ResetPasswordLink to match the provided value")
-	assert.Equal(t, codeExpiratinoHours, actualReset.CodeExpirationHours,
-		"expected CodeExpirationHours to match the provided value")
+	assert.Equal(t, codeExpirationTime, actualReset.CodeExpirationTime,
+		"expected CodeExpirationTime to match the provided value")
 	assert.Equal(t, emailmessage.EmailTypeResetPasswordCode, actualReset.GetEmailType(),
 		"expected email type to be ResetPasswordCode")
 	assert.Nil(t, actualReset.ValidateData(),
@@ -330,9 +330,9 @@ func TestResetPasswordCode_EmptyField_ReturnError(t *testing.T) {
 			},
 		},
 		{
-			name: "empty CodeExpirationHours",
+			name: "empty CodeExpirationTime",
 			setup: func(p *emailmessage.ResetPasswordCode) {
-				p.CodeExpirationHours = ""
+				p.CodeExpirationTime = ""
 			},
 		},
 	}

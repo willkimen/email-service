@@ -34,7 +34,7 @@ func TestToEmailMessage_EmailVerificationCode(t *testing.T) {
 	var body emailmessage.EmailVerificationCodeBody
 	body.VerificationCode = "123456"
 	body.EmailVerificationLink = "https://example.com/verify"
-	body.CodeExpirationHours = "2"
+	body.CodeExpirationTime = "2"
 	body.EmailVerificationDeadlineDays = "3"
 
 	payload := mustMarshal(t, map[string]any{
@@ -55,7 +55,7 @@ func TestToEmailMessage_EmailVerificationCode(t *testing.T) {
 	result := msg.GetBodyData().(emailmessage.EmailVerificationCodeBody)
 	require.Equal(t, "123456", result.VerificationCode)
 	require.Equal(t, "https://example.com/verify", result.EmailVerificationLink)
-	require.Equal(t, "2", result.CodeExpirationHours)
+	require.Equal(t, "2", result.CodeExpirationTime)
 	require.Equal(t, "3", result.EmailVerificationDeadlineDays)
 }
 
@@ -85,7 +85,7 @@ func TestToEmailMessage_NotifyEmailVerification(t *testing.T) {
 func TestToEmailMessage_ChangeEmailCode(t *testing.T) {
 	var body emailmessage.ChangeEmailCodeBody
 	body.VerificationCode = "999999"
-	body.CodeExpirationHours = "1"
+	body.CodeExpirationTime = "1"
 
 	payload := mustMarshal(t, map[string]any{
 		"To":        "user@test.com",
@@ -104,7 +104,7 @@ func TestToEmailMessage_ChangeEmailCode(t *testing.T) {
 
 	result := msg.GetBodyData().(emailmessage.ChangeEmailCodeBody)
 	require.Equal(t, "999999", result.VerificationCode)
-	require.Equal(t, "1", result.CodeExpirationHours)
+	require.Equal(t, "1", result.CodeExpirationTime)
 }
 
 func TestToEmailMessage_NotifyChangeEmail(t *testing.T) {
@@ -134,7 +134,7 @@ func TestToEmailMessage_ResetPasswordCode(t *testing.T) {
 	var body emailmessage.ResetPasswordCodeBody
 	body.VerificationCode = "555555"
 	body.ResetPasswordLink = "https://example.com/reset"
-	body.CodeExpirationHours = "4"
+	body.CodeExpirationTime = "4"
 
 	payload := mustMarshal(t, map[string]any{
 		"To":        "user@test.com",
@@ -154,7 +154,7 @@ func TestToEmailMessage_ResetPasswordCode(t *testing.T) {
 	result := msg.GetBodyData().(emailmessage.ResetPasswordCodeBody)
 	require.Equal(t, "555555", result.VerificationCode)
 	require.Equal(t, "https://example.com/reset", result.ResetPasswordLink)
-	require.Equal(t, "4", result.CodeExpirationHours)
+	require.Equal(t, "4", result.CodeExpirationTime)
 }
 
 func TestToEmailMessage_NotifyResetPassword(t *testing.T) {
@@ -183,7 +183,7 @@ func TestToEmailMessage_NotifyResetPassword(t *testing.T) {
 func TestToEmailMessage_ChangePasswordCode(t *testing.T) {
 	var body emailmessage.ChangePasswordCodeBody
 	body.VerificationCode = "777777"
-	body.CodeExpirationHours = "2"
+	body.CodeExpirationTime = "2"
 
 	payload := mustMarshal(t, map[string]any{
 		"To":        "user@test.com",
@@ -202,7 +202,7 @@ func TestToEmailMessage_ChangePasswordCode(t *testing.T) {
 
 	result := msg.GetBodyData().(emailmessage.ChangePasswordCodeBody)
 	require.Equal(t, "777777", result.VerificationCode)
-	require.Equal(t, "2", result.CodeExpirationHours)
+	require.Equal(t, "2", result.CodeExpirationTime)
 }
 
 func TestToEmailMessage_NotifyChangePassword(t *testing.T) {
@@ -231,7 +231,7 @@ func TestToEmailMessage_NotifyChangePassword(t *testing.T) {
 func TestToEmailMessage_DeletionCode(t *testing.T) {
 	var body emailmessage.DeletionCodeBody
 	body.VerificationCode = "888888"
-	body.CodeExpirationHours = "1"
+	body.CodeExpirationTime = "1"
 
 	payload := mustMarshal(t, map[string]any{
 		"To":        "user@test.com",
@@ -250,7 +250,7 @@ func TestToEmailMessage_DeletionCode(t *testing.T) {
 
 	result := msg.GetBodyData().(emailmessage.DeletionCodeBody)
 	require.Equal(t, "888888", result.VerificationCode)
-	require.Equal(t, "1", result.CodeExpirationHours)
+	require.Equal(t, "1", result.CodeExpirationTime)
 }
 
 func TestToEmailMessage_NotifyDeletion(t *testing.T) {

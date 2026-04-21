@@ -36,7 +36,7 @@ func validTask(t *testing.T) *asynq.Task {
 		"BodyData": map[string]any{
 			"VerificationCode":       "123456",
 			"EmailVerificationLink":         "http://link",
-			"CodeExpirationHours":    "2",
+			"CodeExpirationTime":    "2",
 			"EmailVerificationDeadlineDays": "3",
 		},
 	})

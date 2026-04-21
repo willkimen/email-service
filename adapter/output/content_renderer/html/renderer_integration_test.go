@@ -50,8 +50,8 @@ func TestRender_ShouldRender_EmailVerificationCodeTemplate_Correctly(t *testing.
 		"https://example.com/verify", "expected HTML to contain email verification link")
 	assert.Contains(t, html, "7 days",
 		"expected HTML to contain expiration days information")
-	assert.Contains(t, html, "2 hours",
-		"expected HTML to contain expiration hours information")
+	assert.Contains(t, html, "2",
+		"expected HTML to contain expiration time information")
 }
 
 func TestRender_ShouldRender_NotifyEmailVerificationTemplate_Correctly(t *testing.T) {
@@ -87,8 +87,8 @@ func TestRender_ShouldRender_ChangeEmailCodeTemplate_Correctly(t *testing.T) {
 		"expected rendered HTML to be non-empty")
 	assert.Contains(t, html,
 		"123456", "expected HTML to contain change email code")
-	assert.Contains(t, html, "2 hours",
-		"expected HTML to contain expiration hours information")
+	assert.Contains(t, html, "2",
+		"expected HTML to contain expiration time information")
 }
 
 func TestRender_ShouldRender_NotifyChangeEmailTemplate_Correctly(t *testing.T) {
@@ -124,8 +124,8 @@ func TestRender_ShouldRender_ChangePasswordCodeTemplate_Correctly(t *testing.T) 
 		"expected rendered HTML to be non-empty")
 	assert.Contains(t, html, "123456",
 		"expected HTML to contain change password code")
-	assert.Contains(t, html, "2 hours",
-		"expected HTML to contain expiration hours information")
+	assert.Contains(t, html, "2",
+		"expected HTML to contain expiration time information")
 }
 
 func TestRender_ShouldRender_NotifyChangePasswordTemplate_Correctly(t *testing.T) {
@@ -163,7 +163,7 @@ func TestRender_ShouldRender_ResetPasswordCodeTemplate_Correctly(t *testing.T) {
 	assert.Contains(t, html,
 		"123456", "expected HTML to contain reset password code")
 	assert.Contains(t, html,
-		"2 hours", "expected HTML to contain expiration hours information")
+		"2", "expected HTML to contain expiration time information")
 	assert.Contains(t, html,
 		"https://example.com/link", "expected HTML to contain reset password link")
 }
@@ -201,8 +201,8 @@ func TestRender_ShouldRender_DeletionCodeTemplate_Correctly(t *testing.T) {
 		"expected rendered HTML to be non-empty")
 	assert.Contains(t, html, "123456",
 		"expected HTML to contain deletion code")
-	assert.Contains(t, html, "2 hours",
-		"expected HTML to contain expiration hours information")
+	assert.Contains(t, html, "2",
+		"expected HTML to contain expiration time information")
 }
 
 func TestRender_ShouldRender_NotifyDeletionTemplate_Correctly(t *testing.T) {

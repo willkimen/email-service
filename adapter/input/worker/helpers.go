@@ -49,7 +49,7 @@ func ToEmailMessage(payloadBytes []byte) (emailmessage.EmailMessage, error) {
 			raw.Subject,
 			body.VerificationCode,
 			body.EmailVerificationLink,
-			body.CodeExpirationHours,
+			body.CodeExpirationTime,
 			body.EmailVerificationDeadlineDays,
 		), nil
 
@@ -75,7 +75,7 @@ func ToEmailMessage(payloadBytes []byte) (emailmessage.EmailMessage, error) {
 			raw.To,
 			raw.Subject,
 			body.VerificationCode,
-			body.CodeExpirationHours,
+			body.CodeExpirationTime,
 		), nil
 
 	case emailmessage.EmailTypeNotifyChangeEmail:
@@ -100,7 +100,7 @@ func ToEmailMessage(payloadBytes []byte) (emailmessage.EmailMessage, error) {
 			raw.To,
 			raw.Subject,
 			body.VerificationCode,
-			body.CodeExpirationHours,
+			body.CodeExpirationTime,
 		), nil
 
 	case emailmessage.EmailTypeNotifyChangePassword:
@@ -126,7 +126,7 @@ func ToEmailMessage(payloadBytes []byte) (emailmessage.EmailMessage, error) {
 			raw.Subject,
 			body.VerificationCode,
 			body.ResetPasswordLink,
-			body.CodeExpirationHours,
+			body.CodeExpirationTime,
 		), nil
 
 	case emailmessage.EmailTypeNotifyResetPassword:
@@ -151,7 +151,7 @@ func ToEmailMessage(payloadBytes []byte) (emailmessage.EmailMessage, error) {
 			raw.To,
 			raw.Subject,
 			body.VerificationCode,
-			body.CodeExpirationHours,
+			body.CodeExpirationTime,
 		), nil
 
 	case emailmessage.EmailTypeNotifyDeletion:

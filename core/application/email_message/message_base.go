@@ -53,5 +53,5 @@ func (b *BaseMessage) GetSubject() string {
 // It defines the code itself and how long the code remains valid.
 type BaseCodeMessage struct {
 	VerificationCode    string
-	CodeExpirationHours string
+	CodeExpirationTime string
 }

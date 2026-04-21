@@ -20,7 +20,7 @@ const (
 	FieldTo                     = "to"
 	FieldSubject                = "subject"
 	FieldVerificationCode       = "verification_code"
-	FieldCodeExpirationHours    = "code_expiration_hours"
+	FieldCodeExpirationTime    = "code_expiration_time"
 	FieldEmailVerificationLink         = "email_verification_link"
 	FieldEmailVerificationDeadlineDays = "email_verification_deadline_days"
 	FieldResetPasswordLink      = "reset_password_link"
@@ -73,7 +73,7 @@ func (b *BaseMessage) ValidateData() error {
 func (b *BaseCodeMessage) ValidateData() error {
 	if err := validateRequiredFields(
 		fieldRule{b.VerificationCode, FieldVerificationCode},
-		fieldRule{b.CodeExpirationHours, FieldCodeExpirationHours},
+		fieldRule{b.CodeExpirationTime, FieldCodeExpirationTime},
 	); err != nil {
 		return err
 	}

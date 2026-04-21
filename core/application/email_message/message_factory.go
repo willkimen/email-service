@@ -2,14 +2,14 @@ package emailmessage
 
 func NewEmailVerificationCode(
 	to, subject, verificationCode, emailVerificationLink,
-	codeExpirationHours, emailVerificationDeadlineDays string,
+	codeExpirationTime, emailVerificationDeadlineDays string,
 ) *EmailVerificationCode {
 	emailVerificationCode := &EmailVerificationCode{}
 
 	emailVerificationCode.To = to
 	emailVerificationCode.Subject = subject
 	emailVerificationCode.VerificationCode = verificationCode
-	emailVerificationCode.CodeExpirationHours = codeExpirationHours
+	emailVerificationCode.CodeExpirationTime = codeExpirationTime
 	emailVerificationCode.EmailVerificationLink = emailVerificationLink
 	emailVerificationCode.EmailVerificationDeadlineDays = emailVerificationDeadlineDays
 
@@ -17,53 +17,53 @@ func NewEmailVerificationCode(
 }
 
 func NewChangeEmailCode(
-	to, subject, verificationCode, codeExpirationHours string,
+	to, subject, verificationCode, codeExpirationTime string,
 ) *ChangeEmailCode {
 	changeEmail := &ChangeEmailCode{}
 
 	changeEmail.To = to
 	changeEmail.Subject = subject
 	changeEmail.VerificationCode = verificationCode
-	changeEmail.CodeExpirationHours = codeExpirationHours
+	changeEmail.CodeExpirationTime = codeExpirationTime
 
 	return changeEmail
 }
 
 func NewChangePasswordCode(
-	to, subject, verificationCode, codeExpirationHours string,
+	to, subject, verificationCode, codeExpirationTime string,
 ) *ChangePasswordCode {
 	changePassword := &ChangePasswordCode{}
 
 	changePassword.To = to
 	changePassword.Subject = subject
 	changePassword.VerificationCode = verificationCode
-	changePassword.CodeExpirationHours = codeExpirationHours
+	changePassword.CodeExpirationTime = codeExpirationTime
 
 	return changePassword
 }
 
 func NewDeletionCode(
-	to, subject, verificationCode, codeExpirationHours string,
+	to, subject, verificationCode, codeExpirationTime string,
 ) *DeletionCode {
 	deletion := &DeletionCode{}
 
 	deletion.To = to
 	deletion.Subject = subject
 	deletion.VerificationCode = verificationCode
-	deletion.CodeExpirationHours = codeExpirationHours
+	deletion.CodeExpirationTime = codeExpirationTime
 
 	return deletion
 }
 
 func NewResetPasswordCode(
-	to, subject, verificationCode, resetPasswordLink, codeExpirationHours string,
+	to, subject, verificationCode, resetPasswordLink, codeExpirationTime string,
 ) *ResetPasswordCode {
 	reset := &ResetPasswordCode{}
 
 	reset.To = to
 	reset.Subject = subject
 	reset.VerificationCode = verificationCode
-	reset.CodeExpirationHours = codeExpirationHours
+	reset.CodeExpirationTime = codeExpirationTime
 	reset.ResetPasswordLink = resetPasswordLink
 
 	return reset
