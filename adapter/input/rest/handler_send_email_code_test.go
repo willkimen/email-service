@@ -29,7 +29,6 @@ func TestWhenEmailFormatIsInvalid_ShouldReturnValidationError(t *testing.T) {
 		"subject": "Verify your email",
 		"verification_code": "123456",
 		"code_expiration_time": "2",
-		"email_verification_link": "https://example.com/verify",
 		"email_verification_deadline_days": "7"
 	}`
 
@@ -92,7 +91,6 @@ func TestSendEmailVerificationCodeHandler_WhenValidationFails_ShouldReturnUnproc
 		"subject": "Email Verification",
 		"verification_code": "123456",
 		"code_expiration_time": "2",
-		"email_verification_link": "https://example.com",
 		"email_verification_deadline_days": "7"
 	}`
 
@@ -119,7 +117,6 @@ func TestSendEmailVerificationCodeHandler_WhenRequestIsValid_ShouldReturnAccepte
 		"subject": "Email Verification",
 		"verification_code": "123456",
 		"code_expiration_time": "2",
-		"email_verification_link": "https://example.com",
 		"email_verification_deadline_days": "7"
 	}`
 
@@ -146,7 +143,6 @@ func TestSendEmailVerificationCodeHandler_WhenUnexpectedErrorOccurs_ShouldReturn
 		"subject": "Email Verification",
 		"verification_code": "123456",
 		"code_expiration_time": "2",
-		"email_verification_link": "https://example.com",
 		"email_verification_deadline_days": "7"
 	}`
 
@@ -186,11 +182,6 @@ func TestSendEmailVerificationCodeHandler_WhenEmptyField_ShouldReturnValidationE
 			expectedError: "code_expiration_time field is required",
 		},
 		{
-			name:          "missing email_verification_link",
-			field:         "email_verification_link",
-			expectedError: "email_verification_link field is required",
-		},
-		{
 			name:          "missing email_verification_deadline_days",
 			field:         "email_verification_deadline_days",
 			expectedError: "email_verification_deadline_days field is required",
@@ -215,7 +206,6 @@ func TestSendEmailVerificationCodeHandler_WhenEmptyField_ShouldReturnValidationE
 				"subject": "Verify your email",
 				"verification_code": "123456",
 				"code_expiration_time": "2",
-				"email_verification_link": "https://example.com/verify",
 				"email_verification_deadline_days": "7"
 			}`
 
@@ -820,7 +810,7 @@ func TestSendResetPasswordCodeHandler_WhenValidationFails_ShouldReturnUnprocessa
 
 	usecaseMock.
 		On("Request", mock.Anything).
-		Return(emailmessage.NewEmptyFieldError("reset_password_link"))
+		Return(emailmessage.NewEmptyFieldError("verification_code"))
 
 	handler := rest.NewSendEmailHandler(usecaseMock, logger)
 
@@ -828,8 +818,7 @@ func TestSendResetPasswordCodeHandler_WhenValidationFails_ShouldReturnUnprocessa
 		"to": "user@test.com",
 		"subject": "Reset password",
 		"verification_code": "123456",
-		"code_expiration_time": "2",
-		"reset_password_link": ""
+		"code_expiration_time": "2"
 	}`
 
 	r := httptest.NewRequest(
@@ -858,8 +847,7 @@ func TestSendResetPasswordCodeHandler_WhenRequestIsValid_ShouldReturnAccepted(t 
 		"to": "user@test.com",
 		"subject": "Reset password",
 		"verification_code": "123456",
-		"code_expiration_time": "2",
-		"reset_password_link": "https://example.com/reset"
+		"code_expiration_time": "2"
 	}`
 
 	r := httptest.NewRequest(
@@ -888,8 +876,7 @@ func TestSendResetPasswordCodeHandler_WhenUnexpectedErrorOccurs_ShouldReturnInte
 		"to": "user@test.com",
 		"subject": "Reset password",
 		"verification_code": "123456",
-		"code_expiration_time": "2",
-		"reset_password_link": "https://example.com/reset"
+		"code_expiration_time": "2"
 	}`
 
 	r := httptest.NewRequest(
@@ -932,11 +919,6 @@ func TestSendResetPasswordCodeHandler_WhenEmptyField_ShouldReturnValidationError
 			field:         "code_expiration_time",
 			expectedError: "code_expiration_time field is required",
 		},
-		{
-			name:          "missing reset_password_link",
-			field:         "reset_password_link",
-			expectedError: "reset_password_link field is required",
-		},
 	}
 
 	for _, tt := range tests {
@@ -956,8 +938,7 @@ func TestSendResetPasswordCodeHandler_WhenEmptyField_ShouldReturnValidationError
 				"to": "user@test.com",
 				"subject": "Reset password",
 				"verification_code": "123456",
-				"code_expiration_time": "2",
-				"reset_password_link": "https://example.com/reset"
+				"code_expiration_time": "2"
 			}`
 
 			r := httptest.NewRequest(

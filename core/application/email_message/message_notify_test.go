@@ -19,8 +19,6 @@ func TestNotifyEmailVerification_IsCreatedCorrectly(t *testing.T) {
 		"expected To to match the provided value")
 	assert.Equal(t, subject, actualNotify.Subject,
 		"expected Subject to match the provided value")
-	assert.Equal(t, link, actualNotify.LoginLink,
-		"expected LoginLink to match the provided value")
 	assert.Equal(t, emailmessage.EmailTypeNotifyEmailVerification, actualNotify.GetEmailType(),
 		"expected email type to be NotifyEmailVerification")
 	assert.Nil(t, actualNotify.ValidateData(),
@@ -42,12 +40,6 @@ func TestNotifyEmailVerification_EmptyField_ReturnError(t *testing.T) {
 			name: "empty Subject",
 			setup: func(p *emailmessage.NotifyEmailVerification) {
 				p.Subject = ""
-			},
-		},
-		{
-			name: "empty LoginLink",
-			setup: func(p *emailmessage.NotifyEmailVerification) {
-				p.LoginLink = ""
 			},
 		},
 	}
@@ -74,8 +66,6 @@ func TestNotifyChangeEmail_IsCreatedCorrectly(t *testing.T) {
 		"expected To to match the provided value")
 	assert.Equal(t, subject, actualNotify.Subject,
 		"expected Subject to match the provided value")
-	assert.Equal(t, link, actualNotify.LoginLink,
-		"expected LoginLink to match the provided value")
 	assert.Equal(t, emailmessage.EmailTypeNotifyChangeEmail, actualNotify.GetEmailType(),
 		"expected email type to be NotifyChangeEmail")
 	assert.Nil(t, actualNotify.ValidateData(),
@@ -97,12 +87,6 @@ func TestNotifyChangeEmail_EmptyField_ReturnError(t *testing.T) {
 			name: "empty Subject",
 			setup: func(p *emailmessage.NotifyChangeEmail) {
 				p.Subject = ""
-			},
-		},
-		{
-			name: "empty LoginLink",
-			setup: func(p *emailmessage.NotifyChangeEmail) {
-				p.LoginLink = ""
 			},
 		},
 	}
@@ -129,8 +113,6 @@ func TestNotifyChangePasswordEmail_IsCreatedCorrectly(t *testing.T) {
 		"expected To to match the provided value")
 	assert.Equal(t, subject, actualNotify.Subject,
 		"expected Subject to match the provided value")
-	assert.Equal(t, link, actualNotify.LoginLink,
-		"expected LoginLink to match the provided value")
 	assert.Equal(t, emailmessage.EmailTypeNotifyChangePassword, actualNotify.GetEmailType(),
 		"expected email type to be NotifyChangePassword")
 	assert.Nil(t, actualNotify.ValidateData(),
@@ -152,12 +134,6 @@ func TestNotifyChangePassword_EmptyField_ReturnError(t *testing.T) {
 			name: "empty Subject",
 			setup: func(p *emailmessage.NotifyChangePassword) {
 				p.Subject = ""
-			},
-		},
-		{
-			name: "empty LoginLink",
-			setup: func(p *emailmessage.NotifyChangePassword) {
-				p.LoginLink = ""
 			},
 		},
 	}
@@ -231,8 +207,6 @@ func TestNotifyResetPassword_IsCreatedCorrectly(t *testing.T) {
 		"expected To to match the provided value")
 	assert.Equal(t, subject, actualNotify.Subject,
 		"expected Subject to match the provided value")
-	assert.Equal(t, link, actualNotify.LoginLink,
-		"expected LoginLink to match the provided value")
 	assert.Equal(t, emailmessage.EmailTypeNotifyResetPassword, actualNotify.GetEmailType(),
 		"expected email type to be NotifyResetPassword")
 	assert.Nil(t, actualNotify.ValidateData(),
@@ -254,12 +228,6 @@ func TestNotifyResetPassword_EmptyField_ReturnError(t *testing.T) {
 			name: "empty Subject",
 			setup: func(p *emailmessage.NotifyResetPassword) {
 				p.Subject = ""
-			},
-		},
-		{
-			name: "empty LoginLink",
-			setup: func(p *emailmessage.NotifyResetPassword) {
-				p.LoginLink = ""
 			},
 		},
 	}

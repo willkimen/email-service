@@ -57,7 +57,7 @@ func (d *DeletionCode) GetBodyData() any {
 }
 
 // ResetPasswordCode represents the data required to send an email
-// containing a verification code and link for password reset.
+// containing a verification code.
 type ResetPasswordCode struct {
 	BaseMessage
 	ResetPasswordCodeBody

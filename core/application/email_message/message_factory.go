@@ -1,7 +1,7 @@
 package emailmessage
 
 func NewEmailVerificationCode(
-	to, subject, verificationCode, emailVerificationLink,
+	to, subject, verificationCode,
 	codeExpirationTime, emailVerificationDeadlineDays string,
 ) *EmailVerificationCode {
 	emailVerificationCode := &EmailVerificationCode{}
@@ -10,7 +10,6 @@ func NewEmailVerificationCode(
 	emailVerificationCode.Subject = subject
 	emailVerificationCode.VerificationCode = verificationCode
 	emailVerificationCode.CodeExpirationTime = codeExpirationTime
-	emailVerificationCode.EmailVerificationLink = emailVerificationLink
 	emailVerificationCode.EmailVerificationDeadlineDays = emailVerificationDeadlineDays
 
 	return emailVerificationCode
@@ -56,7 +55,7 @@ func NewDeletionCode(
 }
 
 func NewResetPasswordCode(
-	to, subject, verificationCode, resetPasswordLink, codeExpirationTime string,
+	to, subject, verificationCode, codeExpirationTime string,
 ) *ResetPasswordCode {
 	reset := &ResetPasswordCode{}
 
@@ -64,43 +63,39 @@ func NewResetPasswordCode(
 	reset.Subject = subject
 	reset.VerificationCode = verificationCode
 	reset.CodeExpirationTime = codeExpirationTime
-	reset.ResetPasswordLink = resetPasswordLink
 
 	return reset
 }
 
 func NewNotifyEmailVerification(
-	to, subject, loginLink string,
+	to, subject string,
 ) *NotifyEmailVerification {
 	notify := &NotifyEmailVerification{}
 
 	notify.To = to
 	notify.Subject = subject
-	notify.LoginLink = loginLink
 
 	return notify
 }
 
 func NewNotifyChangeEmail(
-	to, subject, loginLink string,
+	to, subject string,
 ) *NotifyChangeEmail {
 	notify := &NotifyChangeEmail{}
 
 	notify.To = to
 	notify.Subject = subject
-	notify.LoginLink = loginLink
 
 	return notify
 }
 
 func NewNotifyChangePassword(
-	to, subject, loginLink string,
+	to, subject string,
 ) *NotifyChangePassword {
 	notify := &NotifyChangePassword{}
 
 	notify.To = to
 	notify.Subject = subject
-	notify.LoginLink = loginLink
 
 	return notify
 }
@@ -117,13 +112,12 @@ func NewNotifyDeletion(
 }
 
 func NewNotifyResetPassword(
-	to, subject, loginLink string,
+	to, subject string,
 ) *NotifyResetPassword {
 	notify := &NotifyResetPassword{}
 
 	notify.To = to
 	notify.Subject = subject
-	notify.LoginLink = loginLink
 
 	return notify
 }

@@ -33,7 +33,6 @@ func TestToEmailMessage_UnknownType(t *testing.T) {
 func TestToEmailMessage_EmailVerificationCode(t *testing.T) {
 	var body emailmessage.EmailVerificationCodeBody
 	body.VerificationCode = "123456"
-	body.EmailVerificationLink = "https://example.com/verify"
 	body.CodeExpirationTime = "2"
 	body.EmailVerificationDeadlineDays = "3"
 
@@ -54,14 +53,12 @@ func TestToEmailMessage_EmailVerificationCode(t *testing.T) {
 
 	result := msg.GetBodyData().(emailmessage.EmailVerificationCodeBody)
 	require.Equal(t, "123456", result.VerificationCode)
-	require.Equal(t, "https://example.com/verify", result.EmailVerificationLink)
 	require.Equal(t, "2", result.CodeExpirationTime)
 	require.Equal(t, "3", result.EmailVerificationDeadlineDays)
 }
 
 func TestToEmailMessage_NotifyEmailVerification(t *testing.T) {
 	var body emailmessage.NotifyEmailVerificationBody
-	body.LoginLink = "https://example.com/login"
 
 	payload := mustMarshal(t, map[string]any{
 		"To":        "user@test.com",
@@ -77,9 +74,6 @@ func TestToEmailMessage_NotifyEmailVerification(t *testing.T) {
 	require.Equal(t, "user@test.com", msg.GetTo())
 	require.Equal(t, "Verified", msg.GetSubject())
 	require.Equal(t, emailmessage.EmailTypeNotifyEmailVerification, msg.GetEmailType())
-
-	result := msg.GetBodyData().(emailmessage.NotifyEmailVerificationBody)
-	require.Equal(t, "https://example.com/login", result.LoginLink)
 }
 
 func TestToEmailMessage_ChangeEmailCode(t *testing.T) {
@@ -109,7 +103,6 @@ func TestToEmailMessage_ChangeEmailCode(t *testing.T) {
 
 func TestToEmailMessage_NotifyChangeEmail(t *testing.T) {
 	var body emailmessage.NotifyChangeEmailBody
-	body.LoginLink = "https://example.com/login"
 
 	payload := mustMarshal(t, map[string]any{
 		"To":        "user@test.com",
@@ -125,15 +118,11 @@ func TestToEmailMessage_NotifyChangeEmail(t *testing.T) {
 	require.Equal(t, "user@test.com", msg.GetTo())
 	require.Equal(t, "Email Changed", msg.GetSubject())
 	require.Equal(t, emailmessage.EmailTypeNotifyChangeEmail, msg.GetEmailType())
-
-	result := msg.GetBodyData().(emailmessage.NotifyChangeEmailBody)
-	require.Equal(t, "https://example.com/login", result.LoginLink)
 }
 
 func TestToEmailMessage_ResetPasswordCode(t *testing.T) {
 	var body emailmessage.ResetPasswordCodeBody
 	body.VerificationCode = "555555"
-	body.ResetPasswordLink = "https://example.com/reset"
 	body.CodeExpirationTime = "4"
 
 	payload := mustMarshal(t, map[string]any{
@@ -153,13 +142,11 @@ func TestToEmailMessage_ResetPasswordCode(t *testing.T) {
 
 	result := msg.GetBodyData().(emailmessage.ResetPasswordCodeBody)
 	require.Equal(t, "555555", result.VerificationCode)
-	require.Equal(t, "https://example.com/reset", result.ResetPasswordLink)
 	require.Equal(t, "4", result.CodeExpirationTime)
 }
 
 func TestToEmailMessage_NotifyResetPassword(t *testing.T) {
 	var body emailmessage.NotifyResetPasswordBody
-	body.LoginLink = "https://example.com/login"
 
 	payload := mustMarshal(t, map[string]any{
 		"To":        "user@test.com",
@@ -175,9 +162,6 @@ func TestToEmailMessage_NotifyResetPassword(t *testing.T) {
 	require.Equal(t, "user@test.com", msg.GetTo())
 	require.Equal(t, "Password Reset", msg.GetSubject())
 	require.Equal(t, emailmessage.EmailTypeNotifyResetPassword, msg.GetEmailType())
-
-	result := msg.GetBodyData().(emailmessage.NotifyResetPasswordBody)
-	require.Equal(t, "https://example.com/login", result.LoginLink)
 }
 
 func TestToEmailMessage_ChangePasswordCode(t *testing.T) {
@@ -207,7 +191,6 @@ func TestToEmailMessage_ChangePasswordCode(t *testing.T) {
 
 func TestToEmailMessage_NotifyChangePassword(t *testing.T) {
 	var body emailmessage.NotifyChangePasswordBody
-	body.LoginLink = "https://example.com/login"
 
 	payload := mustMarshal(t, map[string]any{
 		"To":        "user@test.com",
@@ -223,9 +206,6 @@ func TestToEmailMessage_NotifyChangePassword(t *testing.T) {
 	require.Equal(t, "user@test.com", msg.GetTo())
 	require.Equal(t, "Password Changed", msg.GetSubject())
 	require.Equal(t, emailmessage.EmailTypeNotifyChangePassword, msg.GetEmailType())
-
-	result := msg.GetBodyData().(emailmessage.NotifyChangePasswordBody)
-	require.Equal(t, "https://example.com/login", result.LoginLink)
 }
 
 func TestToEmailMessage_DeletionCode(t *testing.T) {

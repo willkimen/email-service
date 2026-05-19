@@ -34,7 +34,6 @@ type BaseCodeDTO struct {
 type EmailVerificationCodeDTO struct {
 	BaseDTO
 	BaseCodeDTO
-	EmailVerificationLink         string `json:"email_verification_link"`
 	EmailVerificationDeadlineDays string `json:"email_verification_deadline_days"`
 }
 
@@ -43,7 +42,6 @@ func (a *EmailVerificationCodeDTO) ToEmailMessage() emailmessage.EmailMessage {
 		a.To,
 		a.Subject,
 		a.VerificationCode,
-		a.EmailVerificationLink,
 		a.CodeExpirationTime,
 		a.EmailVerificationDeadlineDays,
 	)
@@ -55,14 +53,12 @@ func (a *EmailVerificationCodeDTO) ToEmailMessage() emailmessage.EmailMessage {
 // that an email has been successfully verified.
 type NotifyEmailVerificationDTO struct {
 	BaseDTO
-	LoginLink string `json:"login_link"`
 }
 
 func (n *NotifyEmailVerificationDTO) ToEmailMessage() emailmessage.EmailMessage {
 	return emailmessage.NewNotifyEmailVerification(
 		n.To,
 		n.Subject,
-		n.LoginLink,
 	)
 }
 
@@ -90,14 +86,12 @@ func (c *ChangeEmailCodeDTO) ToEmailMessage() emailmessage.EmailMessage {
 // that the user's email has been changed.
 type NotifyChangeEmailDTO struct {
 	BaseDTO
-	LoginLink string `json:"login_link"`
 }
 
 func (n *NotifyChangeEmailDTO) ToEmailMessage() emailmessage.EmailMessage {
 	return emailmessage.NewNotifyChangeEmail(
 		n.To,
 		n.Subject,
-		n.LoginLink,
 	)
 }
 
@@ -125,14 +119,12 @@ func (r *ChangePasswordCodeDTO) ToEmailMessage() emailmessage.EmailMessage {
 // that the user's password has been changed.
 type NotifyChangePasswordDTO struct {
 	BaseDTO
-	LoginLink string `json:"login_link"`
 }
 
 func (n *NotifyChangePasswordDTO) ToEmailMessage() emailmessage.EmailMessage {
 	return emailmessage.NewNotifyChangePassword(
 		n.To,
 		n.Subject,
-		n.LoginLink,
 	)
 }
 
@@ -143,7 +135,6 @@ func (n *NotifyChangePasswordDTO) ToEmailMessage() emailmessage.EmailMessage {
 type ResetPasswordCodeDTO struct {
 	BaseDTO
 	BaseCodeDTO
-	ResetPasswordLink string `json:"reset_password_link"`
 }
 
 func (r *ResetPasswordCodeDTO) ToEmailMessage() emailmessage.EmailMessage {
@@ -151,7 +142,6 @@ func (r *ResetPasswordCodeDTO) ToEmailMessage() emailmessage.EmailMessage {
 		r.To,
 		r.Subject,
 		r.VerificationCode,
-		r.ResetPasswordLink,
 		r.CodeExpirationTime,
 	)
 }
@@ -162,14 +152,12 @@ func (r *ResetPasswordCodeDTO) ToEmailMessage() emailmessage.EmailMessage {
 // that the user's password has been reset.
 type NotifyResetPasswordDTO struct {
 	BaseDTO
-	LoginLink string `json:"login_link"`
 }
 
 func (n *NotifyResetPasswordDTO) ToEmailMessage() emailmessage.EmailMessage {
 	return emailmessage.NewNotifyResetPassword(
 		n.To,
 		n.Subject,
-		n.LoginLink,
 	)
 }
 

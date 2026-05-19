@@ -19,11 +19,11 @@ func (publisherSuccessFake) Publish(message emailmessage.EmailMessage) error {
 }
 
 var invalidMessage *emailmessage.EmailVerificationCode = emailmessage.NewEmailVerificationCode(
-	"fake@fake.com", "", "fake", "fake", "fake", "fake",
+	"fake@fake.com", "", "fake", "fake", "fake",
 )
 
 var messageCorrect *emailmessage.EmailVerificationCode = emailmessage.NewEmailVerificationCode(
-	"fake@fake.com", "fake", "fake", "fake", "fake", "fake",
+	"fake@fake.com", "fake", "fake", "fake", "fake",
 )
 
 type fakeRenderer struct {

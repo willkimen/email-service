@@ -15,7 +15,7 @@
 package emailmessage
 
 // This message is used to inform the user that the email verification
-// process is complete and provides a link to access the system.
+// process is complete.
 type NotifyEmailVerification struct {
 	BaseMessage
 	NotifyEmailVerificationBody
@@ -32,8 +32,7 @@ func (n *NotifyEmailVerification) GetBodyData() any {
 // NotifyChangeEmail represents an email notification sent after
 // a user's email address has been successfully changed.
 //
-// This message informs the user about the change and provides
-// a link to access the system.
+// This message informs the user about the change.
 type NotifyChangeEmail struct {
 	BaseMessage
 	NotifyChangeEmailBody
@@ -50,8 +49,7 @@ func (n *NotifyChangeEmail) GetBodyData() any {
 // NotifyChangePassword represents an email notification sent after
 // a user's password has been successfully changed.
 //
-// This message is used to inform the user about the password change
-// and provide a link to access the system.
+// This message is used to inform the user about the password change.
 type NotifyChangePassword struct {
 	BaseMessage
 	NotifyChangePasswordBody
@@ -87,7 +85,7 @@ func (n *NotifyDeletion) GetBodyData() any {
 // a password reset has been completed.
 //
 // This message is used to inform the user that the password
-// was successfully changed and provides a link for login.
+// was successfully changed.
 type NotifyResetPassword struct {
 	BaseMessage
 	NotifyResetPasswordBody

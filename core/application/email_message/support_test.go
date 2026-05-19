@@ -9,20 +9,19 @@ const (
 	subject                = "some subject"
 	verificationCode       = "1234"
 	codeExpirationTime    = "2"
-	link                   = "www.some.com/some"
 	emailVerificationDeadlineDays = "7"
 )
 
 func validEmailVerificationCode() *emailmessage.EmailVerificationCode {
 	return emailmessage.NewEmailVerificationCode(
-		to, subject, verificationCode, link,
+		to, subject, verificationCode,
 		codeExpirationTime, emailVerificationDeadlineDays,
 	)
 }
 
 func validNotifyEmailVerification() *emailmessage.NotifyEmailVerification {
 	return emailmessage.NewNotifyEmailVerification(
-		to, subject, link,
+		to, subject,
 	)
 }
 
@@ -34,19 +33,19 @@ func validChangeEmailCode() *emailmessage.ChangeEmailCode {
 
 func validNotifyChangeEmail() *emailmessage.NotifyChangeEmail {
 	return emailmessage.NewNotifyChangeEmail(
-		to, subject, link,
+		to, subject,
 	)
 }
 
 func validResetPasswordCode() *emailmessage.ResetPasswordCode {
 	return emailmessage.NewResetPasswordCode(
-		to, subject, verificationCode, link, codeExpirationTime,
+		to, subject, verificationCode, codeExpirationTime,
 	)
 }
 
 func validNotifyResetPassword() *emailmessage.NotifyResetPassword {
 	return emailmessage.NewNotifyResetPassword(
-		to, subject, link,
+		to, subject,
 	)
 }
 
@@ -70,6 +69,6 @@ func validChangePasswordCode() *emailmessage.ChangePasswordCode {
 
 func validNotifyChangePassword() *emailmessage.NotifyChangePassword {
 	return emailmessage.NewNotifyChangePassword(
-		to, subject, link,
+		to, subject,
 	)
 }

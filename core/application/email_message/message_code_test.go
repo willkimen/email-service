@@ -21,8 +21,6 @@ func TestEmailVerificationCode_IsCreatedCorrectly(t *testing.T) {
 		"expected Subject to match the provided value")
 	assert.Equal(t, verificationCode, actualEmailVerification.VerificationCode,
 		"expected VerificationCode to match the provided value")
-	assert.Equal(t, link, actualEmailVerification.EmailVerificationLink,
-		"expected EmailVerificationLink to match the provided value")
 	assert.Equal(t, codeExpirationTime, actualEmailVerification.CodeExpirationTime,
 		"expected CodeExpirationTime to match the provided value")
 	assert.Equal(t, emailVerificationDeadlineDays, actualEmailVerification.EmailVerificationDeadlineDays,
@@ -61,12 +59,6 @@ func TestEmailVerificationCode_EmptyField_ReturnError(t *testing.T) {
 			name: "empty CodeExpirationTime",
 			setup: func(p *emailmessage.EmailVerificationCode) {
 				p.CodeExpirationTime = ""
-			},
-		},
-		{
-			name: "empty EmailVerificationLink",
-			setup: func(p *emailmessage.EmailVerificationCode) {
-				p.EmailVerificationLink = ""
 			},
 		},
 		{
@@ -290,8 +282,6 @@ func TestResetPasswordCode_IsCreatedCorrectly(t *testing.T) {
 		"expected Subject to match the provided value")
 	assert.Equal(t, verificationCode, actualReset.VerificationCode,
 		"expected VerificationCode to match the provided value")
-	assert.Equal(t, link, actualReset.ResetPasswordLink,
-		"expected ResetPasswordLink to match the provided value")
 	assert.Equal(t, codeExpirationTime, actualReset.CodeExpirationTime,
 		"expected CodeExpirationTime to match the provided value")
 	assert.Equal(t, emailmessage.EmailTypeResetPasswordCode, actualReset.GetEmailType(),
@@ -321,12 +311,6 @@ func TestResetPasswordCode_EmptyField_ReturnError(t *testing.T) {
 			name: "empty VerificationCode",
 			setup: func(p *emailmessage.ResetPasswordCode) {
 				p.VerificationCode = ""
-			},
-		},
-		{
-			name: "empty ResetPasswordLink",
-			setup: func(p *emailmessage.ResetPasswordCode) {
-				p.ResetPasswordLink = ""
 			},
 		},
 		{

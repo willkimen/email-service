@@ -21,10 +21,7 @@ const (
 	FieldSubject                = "subject"
 	FieldVerificationCode       = "verification_code"
 	FieldCodeExpirationTime    = "code_expiration_time"
-	FieldEmailVerificationLink         = "email_verification_link"
 	FieldEmailVerificationDeadlineDays = "email_verification_deadline_days"
-	FieldResetPasswordLink      = "reset_password_link"
-	FieldLoginLink              = "login_link"
 )
 
 // fieldRule binds a raw value to its logical field name,
@@ -91,7 +88,6 @@ func (a *EmailVerificationCode) ValidateData() error {
 	}
 
 	if err := validateRequiredFields(
-		fieldRule{a.EmailVerificationLink, FieldEmailVerificationLink},
 		fieldRule{a.EmailVerificationDeadlineDays, FieldEmailVerificationDeadlineDays},
 	); err != nil {
 		return err
@@ -118,12 +114,6 @@ func (r *ResetPasswordCode) ValidateData() error {
 	}
 
 	if err := r.BaseCodeMessage.ValidateData(); err != nil {
-		return err
-	}
-
-	if err := validateRequiredFields(
-		fieldRule{r.ResetPasswordLink, FieldResetPasswordLink},
-	); err != nil {
 		return err
 	}
 
@@ -159,12 +149,6 @@ func (p *NotifyEmailVerification) ValidateData() error {
 		return err
 	}
 
-	if err := validateRequiredFields(
-		fieldRule{p.LoginLink, FieldLoginLink},
-	); err != nil {
-		return err
-	}
-
 	return nil
 }
 
@@ -173,23 +157,11 @@ func (n *NotifyChangeEmail) ValidateData() error {
 		return err
 	}
 
-	if err := validateRequiredFields(
-		fieldRule{n.LoginLink, FieldLoginLink},
-	); err != nil {
-		return err
-	}
-
 	return nil
 }
 
 func (n *NotifyResetPassword) ValidateData() error {
 	if err := n.BaseMessage.ValidateData(); err != nil {
-		return err
-	}
-
-	if err := validateRequiredFields(
-		fieldRule{n.LoginLink, FieldLoginLink},
-	); err != nil {
 		return err
 	}
 
@@ -206,12 +178,6 @@ func (n *NotifyDeletion) ValidateData() error {
 
 func (n *NotifyChangePassword) ValidateData() error {
 	if err := n.BaseMessage.ValidateData(); err != nil {
-		return err
-	}
-
-	if err := validateRequiredFields(
-		fieldRule{n.LoginLink, FieldLoginLink},
-	); err != nil {
 		return err
 	}
 

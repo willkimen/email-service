@@ -205,7 +205,6 @@ Request body:
   "subject": "Verify your email",
   "verification_code": "123456",
   "code_expiration_time": "2 minutes | hours | days",
-  "email_verification_link": "https://example.com/verify",
   "email_verification_deadline_days": "7"
 }
 ```
@@ -225,8 +224,7 @@ Request body:
 ```json
 {
   "to": "user@example.com",
-  "subject": "Email verified",
-  "login_link": "https://example.com/login"
+  "subject": "Email verified"
 }
 ```
 
@@ -268,8 +266,7 @@ Request body:
 ```json
 {
   "to": "user@example.com",
-  "subject": "Email changed",
-  "login_link": "https://example.com/login"
+  "subject": "Email changed"
 }
 ```
 
@@ -311,8 +308,7 @@ Request body:
 ```json
 {
   "to": "user@example.com",
-  "subject": "Password changed",
-  "login_link": "https://example.com/login"
+  "subject": "Password changed"
 }
 ```
 
@@ -335,8 +331,7 @@ Request body:
   "to": "user@example.com",
   "subject": "Reset your password",
   "verification_code": "123456",
-  "code_expiration_time": "2 minutes | hours | days",
-  "reset_password_link": "https://example.com/reset-password"
+  "code_expiration_time": "2 minutes | hours | days"
 }
 ```
 
@@ -355,8 +350,7 @@ Request body:
 ```json
 {
   "to": "user@example.com",
-  "subject": "Password reset successful",
-  "login_link": "https://example.com/login"
+  "subject": "Password reset successful"
 }
 ```
 

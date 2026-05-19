@@ -20,8 +20,6 @@ package emailmessage
 
 type EmailVerificationCodeBody struct {
 	BaseCodeMessage
-	// EmailVerificationLink is the URL the user must access to verify the email.
-	EmailVerificationLink string
 
 	// EmailVerificationDeadlineDays defines how many days the email verification remains valid.
 	EmailVerificationDeadlineDays string
@@ -41,34 +39,14 @@ type DeletionCodeBody struct {
 
 type ResetPasswordCodeBody struct {
 	BaseCodeMessage
-
-	// ResetPasswordLink is the URL the user must access to complete
-	// the password reset process.
-	ResetPasswordLink string
 }
 
-type NotifyEmailVerificationBody struct {
-	// LoginLink defines the URL the user should access after email verification.
-	LoginLink string
-}
+type NotifyEmailVerificationBody struct {}
 
-type NotifyChangeEmailBody struct {
-	// LoginLink defines the URL the user should use to access the system
-	// after the email change is completed.
-	LoginLink string
-}
+type NotifyChangeEmailBody struct {}
 
-type NotifyChangePasswordBody struct {
-	// LoginLink defines the URL the user should use to access the system
-	// after the password change is completed.
-	LoginLink string
-}
+type NotifyChangePasswordBody struct {}
 
-type NotifyDeletionBody struct {
-}
+type NotifyDeletionBody struct {}
 
-type NotifyResetPasswordBody struct {
-	// LoginLink defines the URL the user can use to access
-	// the application after resetting the password.
-	LoginLink string
-}
+type NotifyResetPasswordBody struct {}

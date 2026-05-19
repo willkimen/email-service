@@ -36,14 +36,13 @@ func TestNotifyEmailVerificationHandler_WhenValidationFails_ShouldReturnUnproces
 
 	usecaseMock.
 		On("Request", mock.Anything).
-		Return(emailmessage.NewEmptyFieldError("login_link"))
+		Return(emailmessage.NewEmptyFieldError("subject"))
 
 	handler := rest.NewSendEmailHandler(usecaseMock, logger)
 
 	body := `{
 		"to": "user@test.com",
-		"subject": "Email Verification",
-		"login_link": ""
+		"subject": "Email Verification"
 	}`
 
 	r := httptest.NewRequest(
@@ -70,8 +69,7 @@ func TestNotifyEmailVerificationHandler_WhenRequestIsValid_ShouldReturnAccepted(
 
 	body := `{
 		"to": "user@test.com",
-		"subject": "Email Verification",
-		"login_link": "https://example.com/login"
+		"subject": "Email Verification"
 	}`
 
 	r := httptest.NewRequest(
@@ -98,8 +96,7 @@ func TestNotifyEmailVerificationHandler_WhenUnexpectedErrorOccurs_ShouldReturnIn
 
 	body := `{
 		"to": "user@test.com",
-		"subject": "Email verified",
-		"login_link": "https://example.com/login"
+		"subject": "Email verified"
 	}`
 
 	r := httptest.NewRequest(
@@ -131,11 +128,6 @@ func TestNotifyEmailVerificationHandler_WhenEmptyField_ShouldReturnValidationErr
 			field:         "subject",
 			expectedError: "subject field is required",
 		},
-		{
-			name:          "missing login_link",
-			field:         "login_link",
-			expectedError: "login_link field is required",
-		},
 	}
 
 	for _, tt := range tests {
@@ -153,8 +145,7 @@ func TestNotifyEmailVerificationHandler_WhenEmptyField_ShouldReturnValidationErr
 
 			body := `{
 				"to": "user@test.com",
-				"subject": "Email Verification",
-				"login_link": "https://example.com/login"
+				"subject": "Email Verification"
 			}`
 
 			r := httptest.NewRequest(
@@ -210,14 +201,13 @@ func TestNotifyChangeEmailHandler_WhenValidationFails_ShouldReturnUnprocessableE
 
 	usecaseMock.
 		On("Request", mock.Anything).
-		Return(emailmessage.NewEmptyFieldError("login_link"))
+		Return(emailmessage.NewEmptyFieldError("subject"))
 
 	handler := rest.NewSendEmailHandler(usecaseMock, logger)
 
 	body := `{
 		"to": "user@test.com",
-		"subject": "Change email",
-		"login_link": ""
+		"subject": "Change email"
 	}`
 
 	r := httptest.NewRequest(
@@ -244,8 +234,7 @@ func TestNotifyChangeEmailHandler_WhenRequestIsValid_ShouldReturnAccepted(t *tes
 
 	body := `{
 		"to": "user@test.com",
-		"subject": "Change email",
-		"login_link": "https://example.com/login"
+		"subject": "Change email"
 	}`
 
 	r := httptest.NewRequest(
@@ -272,8 +261,7 @@ func TestNotifyChangeEmailHandler_WhenUnexpectedErrorOccurs_ShouldReturnInternal
 
 	body := `{
 		"to": "user@test.com",
-		"subject": "Email changed",
-		"login_link": "https://example.com/login"
+		"subject": "Email changed"
 	}`
 
 	r := httptest.NewRequest(
@@ -305,11 +293,6 @@ func TestNotifyChangeEmailHandler_WhenEmptyField_ShouldReturnValidationError(t *
 			field:         "subject",
 			expectedError: "subject field is required",
 		},
-		{
-			name:          "missing login_link",
-			field:         "login_link",
-			expectedError: "login_link field is required",
-		},
 	}
 
 	for _, tt := range tests {
@@ -327,8 +310,7 @@ func TestNotifyChangeEmailHandler_WhenEmptyField_ShouldReturnValidationError(t *
 
 			body := `{
 				"to": "user@test.com",
-				"subject": "Change email",
-				"login_link": "https://example.com/login"
+				"subject": "Change email"
 			}`
 
 			r := httptest.NewRequest(
@@ -384,14 +366,13 @@ func TestNotifyChangePasswordHandler_WhenValidationFails_ShouldReturnUnprocessab
 
 	usecaseMock.
 		On("Request", mock.Anything).
-		Return(emailmessage.NewEmptyFieldError("login_link"))
+		Return(emailmessage.NewEmptyFieldError("subject"))
 
 	handler := rest.NewSendEmailHandler(usecaseMock, logger)
 
 	body := `{
 		"to": "user@test.com",
-		"subject": "Password changed",
-		"login_link": ""
+		"subject": "Password changed"
 	}`
 
 	r := httptest.NewRequest(
@@ -418,8 +399,7 @@ func TestNotifyChangePasswordHandler_WhenRequestIsValid_ShouldReturnAccepted(t *
 
 	body := `{
 		"to": "user@test.com",
-		"subject": "Password changed",
-		"login_link": "https://example.com/login"
+		"subject": "Password changed"
 	}`
 
 	r := httptest.NewRequest(
@@ -446,8 +426,7 @@ func TestNotifyChangePasswordHandler_WhenUnexpectedErrorOccurs_ShouldReturnInter
 
 	body := `{
 		"to": "user@test.com",
-		"subject": "Password changed",
-		"login_link": "https://example.com/login"
+		"subject": "Password changed"
 	}`
 
 	r := httptest.NewRequest(
@@ -479,11 +458,6 @@ func TestNotifyChangePasswordHandler_WhenEmptyField_ShouldReturnValidationError(
 			field:         "subject",
 			expectedError: "subject field is required",
 		},
-		{
-			name:          "missing login_link",
-			field:         "login_link",
-			expectedError: "login_link field is required",
-		},
 	}
 
 	for _, tt := range tests {
@@ -501,8 +475,7 @@ func TestNotifyChangePasswordHandler_WhenEmptyField_ShouldReturnValidationError(
 
 			body := `{
 				"to": "user@test.com",
-				"subject": "Password changed",
-				"login_link": "https://example.com/login"
+				"subject": "Password changed"
 			}`
 
 			r := httptest.NewRequest(
@@ -723,14 +696,13 @@ func TestNotifyResetPasswordHandler_WhenValidationFails_ShouldReturnUnprocessabl
 
 	usecaseMock.
 		On("Request", mock.Anything).
-		Return(emailmessage.NewEmptyFieldError("login_link"))
+		Return(emailmessage.NewEmptyFieldError("subject"))
 
 	handler := rest.NewSendEmailHandler(usecaseMock, logger)
 
 	body := `{
 		"to": "user@test.com",
-		"subject": "Password reset",
-		"login_link": ""
+		"subject": "Password reset"
 	}`
 
 	r := httptest.NewRequest(
@@ -757,8 +729,7 @@ func TestNotifyResetPasswordHandler_WhenRequestIsValid_ShouldReturnAccepted(t *t
 
 	body := `{
 		"to": "user@test.com",
-		"subject": "Password reset",
-		"login_link": "https://example.com/login"
+		"subject": "Password reset"
 	}`
 
 	r := httptest.NewRequest(
@@ -785,8 +756,7 @@ func TestNotifyResetPasswordHandler_WhenUnexpectedErrorOccurs_ShouldReturnIntern
 
 	body := `{
 		"to": "user@test.com",
-		"subject": "Password reset",
-		"login_link": "https://example.com/login"
+		"subject": "Password reset"
 	}`
 
 	r := httptest.NewRequest(
@@ -818,11 +788,6 @@ func TestNotifyResetPasswordHandler_WhenEmptyField_ShouldReturnValidationError(t
 			field:         "subject",
 			expectedError: "subject field is required",
 		},
-		{
-			name:          "missing login_link",
-			field:         "login_link",
-			expectedError: "login_link field is required",
-		},
 	}
 
 	for _, tt := range tests {
@@ -840,8 +805,7 @@ func TestNotifyResetPasswordHandler_WhenEmptyField_ShouldReturnValidationError(t
 
 			body := `{
 				"to": "user@test.com",
-				"subject": "Password reset",
-				"login_link": "https://example.com/login"
+				"subject": "Password reset"
 			}`
 
 			r := httptest.NewRequest(

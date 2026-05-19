@@ -33,7 +33,6 @@ func TestRender_ShouldRender_EmailVerificationCodeTemplate_Correctly(t *testing.
 		"user@test.com",
 		"subject-test",
 		"123456",
-		"https://example.com/verify",
 		"2",
 		"7",
 	)
@@ -46,8 +45,6 @@ func TestRender_ShouldRender_EmailVerificationCodeTemplate_Correctly(t *testing.
 		"expected rendered HTML to be non-empty")
 	assert.Contains(t, html,
 		"123456", "expected HTML to contain email verification code")
-	assert.Contains(t, html,
-		"https://example.com/verify", "expected HTML to contain email verification link")
 	assert.Contains(t, html, "7 days",
 		"expected HTML to contain expiration days information")
 	assert.Contains(t, html, "2",
@@ -58,7 +55,6 @@ func TestRender_ShouldRender_NotifyEmailVerificationTemplate_Correctly(t *testin
 	message := emailmessage.NewNotifyEmailVerification(
 		"user@test.com",
 		"subject-test",
-		"https://example.com/login",
 	)
 
 	html, err := rendererAdapter.Render(message)
@@ -67,8 +63,6 @@ func TestRender_ShouldRender_NotifyEmailVerificationTemplate_Correctly(t *testin
 		"expected Render to succeed for NotifyEmailVerification template")
 	assert.NotEmpty(t, html,
 		"expected rendered HTML to be non-empty")
-	assert.Contains(t, html,
-		"https://example.com/login", "expected HTML to contain login link")
 }
 
 func TestRender_ShouldRender_ChangeEmailCodeTemplate_Correctly(t *testing.T) {
@@ -95,7 +89,6 @@ func TestRender_ShouldRender_NotifyChangeEmailTemplate_Correctly(t *testing.T) {
 	message := emailmessage.NewNotifyChangeEmail(
 		"user@test.com",
 		"subject-test",
-		"https://example.com/login",
 	)
 
 	html, err := rendererAdapter.Render(message)
@@ -104,8 +97,6 @@ func TestRender_ShouldRender_NotifyChangeEmailTemplate_Correctly(t *testing.T) {
 		"expected Render to succeed for NotifyChangeEmail template")
 	assert.NotEmpty(t, html,
 		"expected rendered HTML to be non-empty")
-	assert.Contains(t, html, "https://example.com/login",
-		"expected HTML to contain login link")
 }
 
 func TestRender_ShouldRender_ChangePasswordCodeTemplate_Correctly(t *testing.T) {
@@ -132,7 +123,6 @@ func TestRender_ShouldRender_NotifyChangePasswordTemplate_Correctly(t *testing.T
 	message := emailmessage.NewNotifyChangePassword(
 		"user@test.com",
 		"subject-test",
-		"https://example.com/login",
 	)
 
 	html, err := rendererAdapter.Render(message)
@@ -141,8 +131,6 @@ func TestRender_ShouldRender_NotifyChangePasswordTemplate_Correctly(t *testing.T
 		"expected Render to succeed for NotifyChangePassword template")
 	assert.NotEmpty(t, html,
 		"expected rendered HTML to be non-empty")
-	assert.Contains(t, html,
-		"https://example.com/login", "expected HTML to contain login link")
 }
 
 func TestRender_ShouldRender_ResetPasswordCodeTemplate_Correctly(t *testing.T) {
@@ -150,7 +138,6 @@ func TestRender_ShouldRender_ResetPasswordCodeTemplate_Correctly(t *testing.T) {
 		"user@test.com",
 		"subject-test",
 		"123456",
-		"https://example.com/link",
 		"2",
 	)
 
@@ -164,15 +151,12 @@ func TestRender_ShouldRender_ResetPasswordCodeTemplate_Correctly(t *testing.T) {
 		"123456", "expected HTML to contain reset password code")
 	assert.Contains(t, html,
 		"2", "expected HTML to contain expiration time information")
-	assert.Contains(t, html,
-		"https://example.com/link", "expected HTML to contain reset password link")
 }
 
 func TestRender_ShouldRender_NotifyResetPasswordTemplate_Correctly(t *testing.T) {
 	message := emailmessage.NewNotifyResetPassword(
 		"user@test.com",
 		"subject-test",
-		"https://example.com/login",
 	)
 
 	html, err := rendererAdapter.Render(message)
@@ -181,8 +165,6 @@ func TestRender_ShouldRender_NotifyResetPasswordTemplate_Correctly(t *testing.T)
 		"expected Render to succeed for NotifyResetPassword template")
 	assert.NotEmpty(t, html,
 		"expected rendered HTML to be non-empty")
-	assert.Contains(t, html, "https://example.com/login",
-		"expected HTML to contain login link")
 }
 
 func TestRender_ShouldRender_DeletionCodeTemplate_Correctly(t *testing.T) {
