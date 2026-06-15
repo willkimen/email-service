@@ -1,5 +1,11 @@
 # Email Service
 
+> [!WARNING]
+> **Upcoming Breaking Changes**  
+> This service will soon undergo major refactoring and modifications to better
+integrate with and adapt to the [Auth Service](https://github.com/willkimen/auth-service).
+Expect significant updates to the codebase and API contracts.
+
 ## Table of Contents
 
 - [Overview](#overview)
