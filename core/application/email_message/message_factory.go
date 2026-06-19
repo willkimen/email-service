@@ -1,68 +1,61 @@
 package emailmessage
 
 func NewEmailVerificationCode(
-	to, subject, verificationCode,
-	codeExpirationTime, emailVerificationDeadlineDays string,
+	to, subject, verificationCode string,
 ) *EmailVerificationCode {
 	emailVerificationCode := &EmailVerificationCode{}
 
 	emailVerificationCode.To = to
 	emailVerificationCode.Subject = subject
 	emailVerificationCode.VerificationCode = verificationCode
-	emailVerificationCode.CodeExpirationTime = codeExpirationTime
-	emailVerificationCode.EmailVerificationDeadlineDays = emailVerificationDeadlineDays
 
 	return emailVerificationCode
 }
 
 func NewChangeEmailCode(
-	to, subject, verificationCode, codeExpirationTime string,
+	to, subject, verificationCode string,
 ) *ChangeEmailCode {
 	changeEmail := &ChangeEmailCode{}
 
 	changeEmail.To = to
 	changeEmail.Subject = subject
 	changeEmail.VerificationCode = verificationCode
-	changeEmail.CodeExpirationTime = codeExpirationTime
 
 	return changeEmail
 }
 
 func NewChangePasswordCode(
-	to, subject, verificationCode, codeExpirationTime string,
+	to, subject, verificationCode string,
 ) *ChangePasswordCode {
 	changePassword := &ChangePasswordCode{}
 
 	changePassword.To = to
 	changePassword.Subject = subject
 	changePassword.VerificationCode = verificationCode
-	changePassword.CodeExpirationTime = codeExpirationTime
 
 	return changePassword
 }
 
 func NewDeletionCode(
-	to, subject, verificationCode, codeExpirationTime string,
+	to, subject, verificationCode string,
 ) *DeletionCode {
 	deletion := &DeletionCode{}
 
 	deletion.To = to
 	deletion.Subject = subject
 	deletion.VerificationCode = verificationCode
-	deletion.CodeExpirationTime = codeExpirationTime
 
 	return deletion
 }
 
 func NewResetPasswordCode(
-	to, subject, verificationCode, codeExpirationTime string,
+	to, subject, verificationCode string,
 ) *ResetPasswordCode {
 	reset := &ResetPasswordCode{}
 
 	reset.To = to
 	reset.Subject = subject
 	reset.VerificationCode = verificationCode
-	reset.CodeExpirationTime = codeExpirationTime
 
 	return reset
 }

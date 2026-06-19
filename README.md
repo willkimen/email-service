@@ -209,9 +209,7 @@ Request body:
 {
   "to": "user@example.com",
   "subject": "Verify your email",
-  "verification_code": "123456",
-  "code_expiration_time": "2 minutes | hours | days",
-  "email_verification_deadline_days": "7"
+  "verification_code": "123456"
 }
 ```
 
@@ -252,8 +250,7 @@ Request body:
 {
   "to": "user@example.com",
   "subject": "Confirm email change",
-  "verification_code": "123456",
-  "code_expiration_time": "2 minutes | hours | days",
+  "verification_code": "123456"
 }
 ```
 
@@ -294,8 +291,7 @@ Request body:
 {
   "to": "user@example.com",
   "subject": "Confirm password change",
-  "verification_code": "123456",
-  "code_expiration_time": "2 minutes | hours | days"
+  "verification_code": "123456"
 }
 ```
 
@@ -336,8 +332,7 @@ Request body:
 {
   "to": "user@example.com",
   "subject": "Reset your password",
-  "verification_code": "123456",
-  "code_expiration_time": "2 minutes | hours | days"
+  "verification_code": "123456"
 }
 ```
 
@@ -378,8 +373,7 @@ Request body:
 {
   "to": "user@example.com",
   "subject": "Confirm account deletion",
-  "verification_code": "123456",
-  "code_expiration_time": "2 minutes | hours | days"
+  "verification_code": "123456"
 }
 ```
 

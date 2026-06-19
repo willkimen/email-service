@@ -49,9 +49,6 @@ func (b *BaseMessage) GetSubject() string {
 
 // BaseCodeMessage represents shared data for email messages that rely
 // on verification codes.
-//
-// It defines the code itself and how long the code remains valid.
 type BaseCodeMessage struct {
 	VerificationCode    string
-	CodeExpirationTime string
 }

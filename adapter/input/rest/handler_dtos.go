@@ -21,10 +21,8 @@ type BaseDTO struct {
 }
 
 // BaseCodeDTO represents common fields used by verification code emails.
-// It defines the verification code and its expiration time.
 type BaseCodeDTO struct {
 	VerificationCode    string `json:"verification_code"`
-	CodeExpirationTime string `json:"code_expiration_time"`
 }
 
 // ========= Email verification code =========
@@ -34,7 +32,6 @@ type BaseCodeDTO struct {
 type EmailVerificationCodeDTO struct {
 	BaseDTO
 	BaseCodeDTO
-	EmailVerificationDeadlineDays string `json:"email_verification_deadline_days"`
 }
 
 func (a *EmailVerificationCodeDTO) ToEmailMessage() emailmessage.EmailMessage {
@@ -42,8 +39,6 @@ func (a *EmailVerificationCodeDTO) ToEmailMessage() emailmessage.EmailMessage {
 		a.To,
 		a.Subject,
 		a.VerificationCode,
-		a.CodeExpirationTime,
-		a.EmailVerificationDeadlineDays,
 	)
 }
 
@@ -76,7 +71,6 @@ func (c *ChangeEmailCodeDTO) ToEmailMessage() emailmessage.EmailMessage {
 		c.To,
 		c.Subject,
 		c.VerificationCode,
-		c.CodeExpirationTime,
 	)
 }
 
@@ -109,7 +103,6 @@ func (r *ChangePasswordCodeDTO) ToEmailMessage() emailmessage.EmailMessage {
 		r.To,
 		r.Subject,
 		r.VerificationCode,
-		r.CodeExpirationTime,
 	)
 }
 
@@ -142,7 +135,6 @@ func (r *ResetPasswordCodeDTO) ToEmailMessage() emailmessage.EmailMessage {
 		r.To,
 		r.Subject,
 		r.VerificationCode,
-		r.CodeExpirationTime,
 	)
 }
 
@@ -175,7 +167,6 @@ func (d *DeletionCodeDTO) ToEmailMessage() emailmessage.EmailMessage {
 		d.To,
 		d.Subject,
 		d.VerificationCode,
-		d.CodeExpirationTime,
 	)
 }
 

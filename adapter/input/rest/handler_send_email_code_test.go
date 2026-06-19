@@ -27,9 +27,7 @@ func TestWhenEmailFormatIsInvalid_ShouldReturnValidationError(t *testing.T) {
 	body := `{
 		"to": "invalid-email",
 		"subject": "Verify your email",
-		"verification_code": "123456",
-		"code_expiration_time": "2",
-		"email_verification_deadline_days": "7"
+		"verification_code": "123456"
 	}`
 
 	r := httptest.NewRequest(
@@ -89,9 +87,7 @@ func TestSendEmailVerificationCodeHandler_WhenValidationFails_ShouldReturnUnproc
 	body := `{
 		"to": "",
 		"subject": "Email Verification",
-		"verification_code": "123456",
-		"code_expiration_time": "2",
-		"email_verification_deadline_days": "7"
+		"verification_code": "123456"
 	}`
 
 	r := httptest.NewRequest(http.MethodPost, "/emails/verification-code", strings.NewReader(body))
@@ -115,9 +111,7 @@ func TestSendEmailVerificationCodeHandler_WhenRequestIsValid_ShouldReturnAccepte
 	body := `{
 		"to": "user@test.com",
 		"subject": "Email Verification",
-		"verification_code": "123456",
-		"code_expiration_time": "2",
-		"email_verification_deadline_days": "7"
+		"verification_code": "123456"
 	}`
 
 	r := httptest.NewRequest(http.MethodPost, "/emails/verification-code", strings.NewReader(body))
@@ -141,9 +135,7 @@ func TestSendEmailVerificationCodeHandler_WhenUnexpectedErrorOccurs_ShouldReturn
 	body := `{
 		"to": "user@test.com",
 		"subject": "Email Verification",
-		"verification_code": "123456",
-		"code_expiration_time": "2",
-		"email_verification_deadline_days": "7"
+		"verification_code": "123456"
 	}`
 
 	r := httptest.NewRequest(http.MethodPost, "/emails/verification-code", strings.NewReader(body))
@@ -176,16 +168,6 @@ func TestSendEmailVerificationCodeHandler_WhenEmptyField_ShouldReturnValidationE
 			field:         "verification_code",
 			expectedError: "verification_code field is required",
 		},
-		{
-			name:          "missing code_expiration_time",
-			field:         "code_expiration_time",
-			expectedError: "code_expiration_time field is required",
-		},
-		{
-			name:          "missing email_verification_deadline_days",
-			field:         "email_verification_deadline_days",
-			expectedError: "email_verification_deadline_days field is required",
-		},
 	}
 
 	for _, tt := range tests {
@@ -204,9 +186,7 @@ func TestSendEmailVerificationCodeHandler_WhenEmptyField_ShouldReturnValidationE
 			body := `{
 				"to": "user@test.com",
 				"subject": "Verify your email",
-				"verification_code": "123456",
-				"code_expiration_time": "2",
-				"email_verification_deadline_days": "7"
+				"verification_code": "123456"
 			}`
 
 			r := httptest.NewRequest(
@@ -268,8 +248,7 @@ func TestSendChangeEmailCodeHandler_WhenValidationFails_ShouldReturnUnprocessabl
 	body := `{
 		"to": "user@test.com",
 		"subject": "Change email",
-		"verification_code": "",
-		"code_expiration_time": "2"
+		"verification_code": ""
 	}`
 
 	r := httptest.NewRequest(
@@ -297,8 +276,7 @@ func TestSendChangeEmailCodeHandler_WhenRequestIsValid_ShouldReturnAccepted(t *t
 	body := `{
 		"to": "user@test.com",
 		"subject": "Change email",
-		"verification_code": "123456",
-		"code_expiration_time": "2"
+		"verification_code": "123456"
 	}`
 
 	r := httptest.NewRequest(
@@ -326,8 +304,7 @@ func TestSendChangeEmailCodeHandler_WhenUnexpectedErrorOccurs_ShouldReturnIntern
 	body := `{
 		"to": "user@test.com",
 		"subject": "Change email",
-		"verification_code": "123456",
-		"code_expiration_time": "2"
+		"verification_code": "123456"
 	}`
 
 	r := httptest.NewRequest(
@@ -365,11 +342,6 @@ func TestSendChangeEmailCodeHandler_WhenEmptyField_ShouldReturnValidationError(t
 			field:         "verification_code",
 			expectedError: "verification_code field is required",
 		},
-		{
-			name:          "missing code_expiration_time",
-			field:         "code_expiration_time",
-			expectedError: "code_expiration_time field is required",
-		},
 	}
 
 	for _, tt := range tests {
@@ -388,8 +360,7 @@ func TestSendChangeEmailCodeHandler_WhenEmptyField_ShouldReturnValidationError(t
 			body := `{
 				"to": "user@test.com",
 				"subject": "Change email",
-				"verification_code": "123456",
-				"code_expiration_time": "2"
+				"verification_code": "123456"
 			}`
 
 			r := httptest.NewRequest(
@@ -451,8 +422,7 @@ func TestSendChangePasswordCodeHandler_WhenValidationFails_ShouldReturnUnprocess
 	body := `{
 		"to": "user@test.com",
 		"subject": "Change password",
-		"verification_code": "",
-		"code_expiration_time": "2"
+		"verification_code": ""
 	}`
 
 	r := httptest.NewRequest(
@@ -480,8 +450,7 @@ func TestSendChangePasswordCodeHandler_WhenRequestIsValid_ShouldReturnAccepted(t
 	body := `{
 		"to": "user@test.com",
 		"subject": "Change password",
-		"verification_code": "123456",
-		"code_expiration_time": "2"
+		"verification_code": "123456"
 	}`
 
 	r := httptest.NewRequest(
@@ -509,8 +478,7 @@ func TestSendChangePasswordCodeHandler_WhenUnexpectedErrorOccurs_ShouldReturnInt
 	body := `{
 		"to": "user@test.com",
 		"subject": "Change password",
-		"verification_code": "123456",
-		"code_expiration_time": "2"
+		"verification_code": "123456"
 	}`
 
 	r := httptest.NewRequest(
@@ -548,11 +516,6 @@ func TestSendChangePasswordCodeHandler_WhenEmptyField_ShouldReturnValidationErro
 			field:         "verification_code",
 			expectedError: "verification_code field is required",
 		},
-		{
-			name:          "missing code_expiration_time",
-			field:         "code_expiration_time",
-			expectedError: "code_expiration_time field is required",
-		},
 	}
 
 	for _, tt := range tests {
@@ -571,8 +534,7 @@ func TestSendChangePasswordCodeHandler_WhenEmptyField_ShouldReturnValidationErro
 			body := `{
 				"to": "user@test.com",
 				"subject": "Change password",
-				"verification_code": "123456",
-				"code_expiration_time": "2"
+				"verification_code": "123456"
 			}`
 
 			r := httptest.NewRequest(
@@ -634,8 +596,7 @@ func TestSendDeletionCodeHandler_WhenValidationFails_ShouldReturnUnprocessableEn
 	body := `{
 		"to": "user@test.com",
 		"subject": "Account deletion",
-		"verification_code": "",
-		"code_expiration_time": "2"
+		"verification_code": ""
 	}`
 
 	r := httptest.NewRequest(
@@ -663,8 +624,7 @@ func TestSendDeletionCodeHandler_WhenRequestIsValid_ShouldReturnAccepted(t *test
 	body := `{
 		"to": "user@test.com",
 		"subject": "Account deletion",
-		"verification_code": "123456",
-		"code_expiration_time": "2"
+		"verification_code": "123456"
 	}`
 
 	r := httptest.NewRequest(
@@ -692,8 +652,7 @@ func TestSendDeletionCodeHandler_WhenUnexpectedErrorOccurs_ShouldReturnInternalS
 	body := `{
 		"to": "user@test.com",
 		"subject": "Account deletion",
-		"verification_code": "123456",
-		"code_expiration_time": "2"
+		"verification_code": "123456"
 	}`
 
 	r := httptest.NewRequest(
@@ -731,11 +690,6 @@ func TestSendDeletionCodeHandler_WhenEmptyField_ShouldReturnValidationError(t *t
 			field:         "verification_code",
 			expectedError: "verification_code field is required",
 		},
-		{
-			name:          "missing code_expiration_time",
-			field:         "code_expiration_time",
-			expectedError: "code_expiration_time field is required",
-		},
 	}
 
 	for _, tt := range tests {
@@ -754,8 +708,7 @@ func TestSendDeletionCodeHandler_WhenEmptyField_ShouldReturnValidationError(t *t
 			body := `{
 				"to": "user@test.com",
 				"subject": "Account deletion",
-				"verification_code": "123456",
-				"code_expiration_time": "2"
+				"verification_code": "123456"
 			}`
 
 			r := httptest.NewRequest(
@@ -817,8 +770,7 @@ func TestSendResetPasswordCodeHandler_WhenValidationFails_ShouldReturnUnprocessa
 	body := `{
 		"to": "user@test.com",
 		"subject": "Reset password",
-		"verification_code": "123456",
-		"code_expiration_time": "2"
+		"verification_code": "123456"
 	}`
 
 	r := httptest.NewRequest(
@@ -846,8 +798,7 @@ func TestSendResetPasswordCodeHandler_WhenRequestIsValid_ShouldReturnAccepted(t 
 	body := `{
 		"to": "user@test.com",
 		"subject": "Reset password",
-		"verification_code": "123456",
-		"code_expiration_time": "2"
+		"verification_code": "123456"
 	}`
 
 	r := httptest.NewRequest(
@@ -875,8 +826,7 @@ func TestSendResetPasswordCodeHandler_WhenUnexpectedErrorOccurs_ShouldReturnInte
 	body := `{
 		"to": "user@test.com",
 		"subject": "Reset password",
-		"verification_code": "123456",
-		"code_expiration_time": "2"
+		"verification_code": "123456"
 	}`
 
 	r := httptest.NewRequest(
@@ -914,11 +864,6 @@ func TestSendResetPasswordCodeHandler_WhenEmptyField_ShouldReturnValidationError
 			field:         "verification_code",
 			expectedError: "verification_code field is required",
 		},
-		{
-			name:          "missing code_expiration_time",
-			field:         "code_expiration_time",
-			expectedError: "code_expiration_time field is required",
-		},
 	}
 
 	for _, tt := range tests {
@@ -937,8 +882,7 @@ func TestSendResetPasswordCodeHandler_WhenEmptyField_ShouldReturnValidationError
 			body := `{
 				"to": "user@test.com",
 				"subject": "Reset password",
-				"verification_code": "123456",
-				"code_expiration_time": "2"
+				"verification_code": "123456"
 			}`
 
 			r := httptest.NewRequest(

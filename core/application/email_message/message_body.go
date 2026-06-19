@@ -10,7 +10,7 @@
 // components such as template renderers or background task serializers.
 //
 // Some body types embed shared structures (e.g., BaseCodeMessage)
-// to reuse common fields like verification codes and expiration metadata,
+// to reuse common fields like verification codes,
 // ensuring consistency across email variants.
 //
 // These types do not contain behavior. They exist solely to model
@@ -20,9 +20,6 @@ package emailmessage
 
 type EmailVerificationCodeBody struct {
 	BaseCodeMessage
-
-	// EmailVerificationDeadlineDays defines how many days the email verification remains valid.
-	EmailVerificationDeadlineDays string
 }
 
 type ChangeEmailCodeBody struct {

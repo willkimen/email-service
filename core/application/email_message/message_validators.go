@@ -20,8 +20,6 @@ const (
 	FieldTo                     = "to"
 	FieldSubject                = "subject"
 	FieldVerificationCode       = "verification_code"
-	FieldCodeExpirationTime    = "code_expiration_time"
-	FieldEmailVerificationDeadlineDays = "email_verification_deadline_days"
 )
 
 // fieldRule binds a raw value to its logical field name,
@@ -70,7 +68,6 @@ func (b *BaseMessage) ValidateData() error {
 func (b *BaseCodeMessage) ValidateData() error {
 	if err := validateRequiredFields(
 		fieldRule{b.VerificationCode, FieldVerificationCode},
-		fieldRule{b.CodeExpirationTime, FieldCodeExpirationTime},
 	); err != nil {
 		return err
 	}
@@ -84,12 +81,6 @@ func (a *EmailVerificationCode) ValidateData() error {
 	}
 
 	if err := a.BaseCodeMessage.ValidateData(); err != nil {
-		return err
-	}
-
-	if err := validateRequiredFields(
-		fieldRule{a.EmailVerificationDeadlineDays, FieldEmailVerificationDeadlineDays},
-	); err != nil {
 		return err
 	}
 

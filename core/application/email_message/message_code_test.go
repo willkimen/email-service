@@ -21,10 +21,6 @@ func TestEmailVerificationCode_IsCreatedCorrectly(t *testing.T) {
 		"expected Subject to match the provided value")
 	assert.Equal(t, verificationCode, actualEmailVerification.VerificationCode,
 		"expected VerificationCode to match the provided value")
-	assert.Equal(t, codeExpirationTime, actualEmailVerification.CodeExpirationTime,
-		"expected CodeExpirationTime to match the provided value")
-	assert.Equal(t, emailVerificationDeadlineDays, actualEmailVerification.EmailVerificationDeadlineDays,
-		"expected EmailVerificationDeadlineDays to match the provided value")
 	assert.Equal(t, emailmessage.EmailTypeEmailVerificationCode, actualEmailVerification.GetEmailType(),
 		"expected email type to be EmailVerificationCode")
 	assert.Nil(t, actualEmailVerification.ValidateData(),
@@ -55,18 +51,6 @@ func TestEmailVerificationCode_EmptyField_ReturnError(t *testing.T) {
 				p.VerificationCode = ""
 			},
 		},
-		{
-			name: "empty CodeExpirationTime",
-			setup: func(p *emailmessage.EmailVerificationCode) {
-				p.CodeExpirationTime = ""
-			},
-		},
-		{
-			name: "empty EmailVerificationDeadlineDays",
-			setup: func(p *emailmessage.EmailVerificationCode) {
-				p.EmailVerificationDeadlineDays = ""
-			},
-		},
 	}
 
 	for _, tt := range tests {
@@ -93,8 +77,6 @@ func TestChangeEmailCode_IsCreatedCorrectly(t *testing.T) {
 		"expected Subject to match the provided value")
 	assert.Equal(t, verificationCode, actualChange.VerificationCode,
 		"expected VerificationCode to match the provided value")
-	assert.Equal(t, codeExpirationTime, actualChange.CodeExpirationTime,
-		"expected CodeExpirationTime to match the provided value")
 	assert.Equal(t, emailmessage.EmailTypeChangeEmailCode, actualChange.GetEmailType(),
 		"expected email type to be ChangeEmailCode")
 	assert.Nil(t, actualChange.ValidateData(),
@@ -124,12 +106,6 @@ func TestChangeEmailCode_EmptyField_ReturnError(t *testing.T) {
 				p.VerificationCode = ""
 			},
 		},
-		{
-			name: "empty CodeExpirationTime",
-			setup: func(p *emailmessage.ChangeEmailCode) {
-				p.CodeExpirationTime = ""
-			},
-		},
 	}
 
 	for _, tt := range tests {
@@ -156,8 +132,6 @@ func TestChangePasswordCode_IsCreatedCorrectly(t *testing.T) {
 		"expected Subject to match the provided value")
 	assert.Equal(t, verificationCode, actualChange.VerificationCode,
 		"expected VerificationCode to match the provided value")
-	assert.Equal(t, codeExpirationTime, actualChange.CodeExpirationTime,
-		"expected CodeExpirationTime to match the provided value")
 	assert.Equal(t, emailmessage.EmailTypeChangePasswordCode, actualChange.GetEmailType(),
 		"expected email type to be ChangePasswordCode")
 	assert.Nil(t, actualChange.ValidateData(),
@@ -187,12 +161,6 @@ func TestChangePasswordCode_EmptyField_ReturnError(t *testing.T) {
 				p.VerificationCode = ""
 			},
 		},
-		{
-			name: "empty CodeExpirationTime",
-			setup: func(p *emailmessage.ChangePasswordCode) {
-				p.CodeExpirationTime = ""
-			},
-		},
 	}
 
 	for _, tt := range tests {
@@ -219,8 +187,6 @@ func TestDeletionCode_IsCreatedCorrectly(t *testing.T) {
 		"expected Subject to match the provided value")
 	assert.Equal(t, verificationCode, actualDeletion.VerificationCode,
 		"expected VerificationCode to match the provided value")
-	assert.Equal(t, codeExpirationTime, actualDeletion.CodeExpirationTime,
-		"expected CodeExpirationTime to match the provided value")
 	assert.Equal(t, emailmessage.EmailTypeDeletionCode, actualDeletion.GetEmailType(),
 		"expected email type to be DeletionCode")
 	assert.Nil(t, actualDeletion.ValidateData(),
@@ -250,12 +216,6 @@ func TestDeletionCode_EmptyField_ReturnError(t *testing.T) {
 				p.VerificationCode = ""
 			},
 		},
-		{
-			name: "empty CodeExpirationTime",
-			setup: func(p *emailmessage.DeletionCode) {
-				p.CodeExpirationTime = ""
-			},
-		},
 	}
 
 	for _, tt := range tests {
@@ -282,8 +242,6 @@ func TestResetPasswordCode_IsCreatedCorrectly(t *testing.T) {
 		"expected Subject to match the provided value")
 	assert.Equal(t, verificationCode, actualReset.VerificationCode,
 		"expected VerificationCode to match the provided value")
-	assert.Equal(t, codeExpirationTime, actualReset.CodeExpirationTime,
-		"expected CodeExpirationTime to match the provided value")
 	assert.Equal(t, emailmessage.EmailTypeResetPasswordCode, actualReset.GetEmailType(),
 		"expected email type to be ResetPasswordCode")
 	assert.Nil(t, actualReset.ValidateData(),
@@ -311,12 +269,6 @@ func TestResetPasswordCode_EmptyField_ReturnError(t *testing.T) {
 			name: "empty VerificationCode",
 			setup: func(p *emailmessage.ResetPasswordCode) {
 				p.VerificationCode = ""
-			},
-		},
-		{
-			name: "empty CodeExpirationTime",
-			setup: func(p *emailmessage.ResetPasswordCode) {
-				p.CodeExpirationTime = ""
 			},
 		},
 	}
