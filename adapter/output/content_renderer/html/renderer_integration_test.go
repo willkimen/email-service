@@ -1,184 +1,208 @@
-package renderer_test
+package htmlrenderer_test
 
 import (
-	"emailservice/core/application/email_message"
+	"emailservice/core/application/apperrors"
+	"emailservice/core/application/message"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
-func TestRender_WhenEmailTypeDoesNotExist_ShouldReturnError(t *testing.T) {
-	emailMessage := FakeEmailMessageWithEmailTypeNotExist{}
-	_, err := rendererAdapter.Render(emailMessage)
+func TestRender_TemplateNotFoundError(t *testing.T) {
+	message := message.Message{
+		Id:        "123456",
+		Type:      "incorrect",
+		To:        "email@email.com",
+		Variables: nil,
+	}
+	subject, html, err := rendererAdapter.Render(message)
 
-	require.Error(t, err,
-		"expected Render to return error when email type does not exist")
-	assert.ErrorContains(t, err,
-		"template not found", "expected error to mention missing template")
+	require.Equal(t, "", html)
+	require.Equal(t, "", subject)
+	require.Error(t, err)
+
+	var targetError *apperrors.InfrastructureError
+	if assert.ErrorAs(t, err, &targetError) {
+		assert.Contains(t, targetError.Message, "template not found")
+		assert.Nil(t, targetError.OriginalCause)
+	}
 }
 
-func TestRender_WhenTemplateDataIsInvalid_ShouldReturnError(t *testing.T) {
-	invalidMessage := FakeEmailMessageWithDataInvalid{FieldNotExist: "not_exist"}
-	_, err := rendererAdapter.Render(invalidMessage)
+func TestRender_RenderError(t *testing.T) {
+	message := message.Message{
+		Id:   "123456",
+		Type: message.MessageTypeAccountDeletionCode,
+		To:   "email@email.com",
+		Variables: map[string]any{
+			"key_not_exists": 10,
+		},
+	}
+	subject, html, err := rendererAdapter.Render(message)
 
-	require.Error(t, err,
-		"expected Render to return error when template data is invalid")
-	assert.ErrorContains(t, err,
-		"failed to execute email template", "expected error to mention template execution failure")
+	require.Error(t, err)
+	require.Equal(t, "", subject)
+	require.Equal(t, "", html)
+
+	var targetError *apperrors.InfrastructureError
+	if assert.ErrorAs(t, err, &targetError) {
+		assert.Contains(t, targetError.Message, "failed to render email template")
+		assert.Error(t, targetError.OriginalCause)
+	}
 }
 
-func TestRender_ShouldRender_EmailVerificationCodeTemplate_Correctly(t *testing.T) {
-	message := emailmessage.NewEmailVerificationCode(
+func TestRender_EmailVerificationCodeTemplate_Success(t *testing.T) {
+	message, _ := message.NewMessage(
+		"fake-id",
 		"user@test.com",
-		"subject-test",
-		"123456",
+		message.MessageTypeEmailVerificationCode,
+		variables,
 	)
 
-	html, err := rendererAdapter.Render(message)
+	subject, html, err := rendererAdapter.Render(*message)
 
-	require.NoError(t, err,
-		"expected Render to succeed for EmailVerificationCode template")
-	assert.NotEmpty(t, html,
-		"expected rendered HTML to be non-empty")
-	assert.Contains(t, html,
-		"123456", "expected HTML to contain email verification code")
+	require.NoError(t, err)
+	assert.NotEmpty(t, html)
+	assert.NotEmpty(t, subject)
+	assert.Contains(t, html, "123456")
 }
 
-func TestRender_ShouldRender_NotifyEmailVerificationTemplate_Correctly(t *testing.T) {
-	message := emailmessage.NewNotifyEmailVerification(
+func TestRender_NotifyEmailVerifiedTemplate_Success(t *testing.T) {
+	message, _ := message.NewMessage(
+		"fake-id",
 		"user@test.com",
-		"subject-test",
+		message.MessageTypeNotifyEmailVerified,
+		nil,
 	)
 
-	html, err := rendererAdapter.Render(message)
+	subject, html, err := rendererAdapter.Render(*message)
 
-	require.NoError(t, err,
-		"expected Render to succeed for NotifyEmailVerification template")
-	assert.NotEmpty(t, html,
-		"expected rendered HTML to be non-empty")
+	require.NoError(t, err)
+	assert.NotEmpty(t, subject)
+	assert.NotEmpty(t, html)
 }
 
-func TestRender_ShouldRender_ChangeEmailCodeTemplate_Correctly(t *testing.T) {
-	message := emailmessage.NewChangeEmailCode(
+func TestRender_ChangeEmailCodeTemplate_Success(t *testing.T) {
+	message, _ := message.NewMessage(
+		"fake-id",
 		"user@test.com",
-		"subject-test",
-		"123456",
+		message.MessageTypeChangeEmailCode,
+		variables,
 	)
 
-	html, err := rendererAdapter.Render(message)
+	subject, html, err := rendererAdapter.Render(*message)
 
-	require.NoError(t, err,
-		"expected Render to succeed for ChangeEmailCode template")
-	assert.NotEmpty(t, html,
-		"expected rendered HTML to be non-empty")
-	assert.Contains(t, html,
-		"123456", "expected HTML to contain change email code")
+	require.NoError(t, err)
+	assert.NotEmpty(t, subject)
+	assert.NotEmpty(t, html)
+	assert.Contains(t, html, "123456")
 }
 
-func TestRender_ShouldRender_NotifyChangeEmailTemplate_Correctly(t *testing.T) {
-	message := emailmessage.NewNotifyChangeEmail(
+func TestRender_NotifyEmailChangedTemplate_Success(t *testing.T) {
+	message, _ := message.NewMessage(
+		"fake-id",
 		"user@test.com",
-		"subject-test",
+		message.MessageTypeNotifyEmailChanged,
+		nil,
 	)
 
-	html, err := rendererAdapter.Render(message)
+	subject, html, err := rendererAdapter.Render(*message)
 
-	require.NoError(t, err,
-		"expected Render to succeed for NotifyChangeEmail template")
-	assert.NotEmpty(t, html,
-		"expected rendered HTML to be non-empty")
+	require.NoError(t, err)
+	assert.NotEmpty(t, subject)
+	assert.NotEmpty(t, html)
+
 }
 
-func TestRender_ShouldRender_ChangePasswordCodeTemplate_Correctly(t *testing.T) {
-	message := emailmessage.NewChangePasswordCode(
+func TestRender_ChangePasswordCodeTemplate_Success(t *testing.T) {
+	message, _ := message.NewMessage(
+		"fake-id",
 		"user@test.com",
-		"subject-test",
-		"123456",
+		message.MessageTypeResetPasswordCode,
+		variables,
 	)
 
-	html, err := rendererAdapter.Render(message)
+	subject, html, err := rendererAdapter.Render(*message)
 
-	require.NoError(t, err,
-		"expected Render to succeed for ChangePasswordCode template")
-	assert.NotEmpty(t, html,
-		"expected rendered HTML to be non-empty")
-	assert.Contains(t, html, "123456",
-		"expected HTML to contain change password code")
+	require.NoError(t, err)
+	assert.NotEmpty(t, subject)
+	assert.NotEmpty(t, html)
+	assert.Contains(t, html, "123456")
 }
 
-func TestRender_ShouldRender_NotifyChangePasswordTemplate_Correctly(t *testing.T) {
-	message := emailmessage.NewNotifyChangePassword(
+func TestRender_NotifyPasswordChangedTemplate_Success(t *testing.T) {
+	message, _ := message.NewMessage(
+		"fake-id",
 		"user@test.com",
-		"subject-test",
+		message.MessageTypeNotifyPasswordChanged,
+		nil,
 	)
 
-	html, err := rendererAdapter.Render(message)
+	subject, html, err := rendererAdapter.Render(*message)
 
-	require.NoError(t, err,
-		"expected Render to succeed for NotifyChangePassword template")
-	assert.NotEmpty(t, html,
-		"expected rendered HTML to be non-empty")
+	require.NoError(t, err)
+	assert.NotEmpty(t, subject)
+	assert.NotEmpty(t, html)
 }
 
-func TestRender_ShouldRender_ResetPasswordCodeTemplate_Correctly(t *testing.T) {
-	message := emailmessage.NewResetPasswordCode(
+func TestRender_ResetPasswordCodeTemplate_Success(t *testing.T) {
+	message, _ := message.NewMessage(
+		"fake-id",
 		"user@test.com",
-		"subject-test",
-		"123456",
+		message.MessageTypeResetPasswordCode,
+		variables,
 	)
 
-	html, err := rendererAdapter.Render(message)
+	subject, html, err := rendererAdapter.Render(*message)
 
-	require.NoError(t, err,
-		"expected Render to succeed for ResetPasswordCode template")
-	assert.NotEmpty(t, html,
-		"expected rendered HTML to be non-empty")
-	assert.Contains(t, html,
-		"123456", "expected HTML to contain reset password code")
+	require.NoError(t, err)
+	assert.NotEmpty(t, subject)
+	assert.NotEmpty(t, html)
+	assert.Contains(t, html, "123456")
 }
 
-func TestRender_ShouldRender_NotifyResetPasswordTemplate_Correctly(t *testing.T) {
-	message := emailmessage.NewNotifyResetPassword(
+func TestRender_NotifyPasswordResetTemplate_Success(t *testing.T) {
+	message, _ := message.NewMessage(
+		"fake-id",
 		"user@test.com",
-		"subject-test",
+		message.MessageTypeNotifyPasswordReset,
+		nil,
 	)
 
-	html, err := rendererAdapter.Render(message)
+	subject, html, err := rendererAdapter.Render(*message)
 
-	require.NoError(t, err,
-		"expected Render to succeed for NotifyResetPassword template")
-	assert.NotEmpty(t, html,
-		"expected rendered HTML to be non-empty")
+	require.NoError(t, err)
+	assert.NotEmpty(t, subject)
+	assert.NotEmpty(t, html)
 }
 
-func TestRender_ShouldRender_DeletionCodeTemplate_Correctly(t *testing.T) {
-	message := emailmessage.NewDeletionCode(
+func TestRender_AccountDeletionCodeTemplate_Success(t *testing.T) {
+	message, _ := message.NewMessage(
+		"fake-id",
 		"user@test.com",
-		"subject-test",
-		"123456",
+		message.MessageTypeAccountDeletionCode,
+		variables,
 	)
 
-	html, err := rendererAdapter.Render(message)
+	subject, html, err := rendererAdapter.Render(*message)
 
-	require.NoError(t, err,
-		"expected Render to succeed for DeletionCode template")
-	assert.NotEmpty(t, html,
-		"expected rendered HTML to be non-empty")
-	assert.Contains(t, html, "123456",
-		"expected HTML to contain deletion code")
+	require.NoError(t, err)
+	assert.NotEmpty(t, subject)
+	assert.NotEmpty(t, html)
+	assert.Contains(t, html, "123456")
 }
 
-func TestRender_ShouldRender_NotifyDeletionTemplate_Correctly(t *testing.T) {
-	message := emailmessage.NewNotifyDeletion(
+func TestRender_NotifyAccountDeletedTemplate_Success(t *testing.T) {
+	message, _ := message.NewMessage(
+		"fake-id",
 		"user@test.com",
-		"subject-test",
+		message.MessageTypeNotifyAccountDeleted,
+		nil,
 	)
 
-	html, err := rendererAdapter.Render(message)
+	subject, html, err := rendererAdapter.Render(*message)
 
-	require.NoError(t, err,
-		"expected Render to succeed for NotifyDeletion template")
-	assert.NotEmpty(t, html,
-		"expected rendered HTML to be non-empty")
+	require.NoError(t, err)
+	assert.NotEmpty(t, subject)
+	assert.NotEmpty(t, html)
 }

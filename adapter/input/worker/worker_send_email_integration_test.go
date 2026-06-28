@@ -4,11 +4,9 @@ package worker_test
 
 import (
 	"emailservice/adapter/input/worker"
-	"emailservice/core/application/email_errors"
-	"emailservice/core/application/email_message"
+	"emailservice/core/application/apperrors"
+	"emailservice/core/application/message"
 	"errors"
-	"log/slog"
-	"os"
 	"testing"
 	"time"
 
@@ -21,15 +19,14 @@ import (
 func TestProcessSendEmail_PermanentFailure_archiveTask(t *testing.T) {
 	handler := &worker.SendEmailTaskHandler{
 		UseCase: &mockUseCase{
-			executeFn: func(emailmessage.EmailMessage) error {
+			executeFn: func(message.Message) error {
 				return errors.New("permanent failure")
 			},
 		},
-		Logger: slog.New(slog.NewJSONHandler(os.Stdout, nil)),
+		Logger: LoggerDummy,
 	}
 
 	redis, addr := setupIntegration(t, *handler)
-
 	defer testcontainers.CleanupContainer(t, redis)
 
 	inspector := asynq.NewInspector(asynq.RedisClientOpt{
@@ -78,11 +75,11 @@ func TestProcessSendEmail_PermanentFailure_archiveTask(t *testing.T) {
 func TestProcessSendEmail_TemporaryFailure_retryTask(t *testing.T) {
 	handler := &worker.SendEmailTaskHandler{
 		UseCase: &mockUseCase{
-			executeFn: func(emailmessage.EmailMessage) error {
-				return emailerrors.ErrTemporaryFailure
+			executeFn: func(message.Message) error {
+				return apperrors.ErrTemporaryFailure
 			},
 		},
-		Logger: slog.New(slog.NewJSONHandler(os.Stdout, nil)),
+		Logger: LoggerDummy,
 	}
 
 	redis, addr := setupIntegration(t, *handler)
@@ -130,14 +127,14 @@ func TestProcessSendEmail_TemporaryFailure_retryTask(t *testing.T) {
 	)
 }
 
-func TestProcessSendEmail_Success_taskIsProcessed(t *testing.T) {
+func TestProcessSendEmail_Success_TaskIsProcessed(t *testing.T) {
 	handler := &worker.SendEmailTaskHandler{
 		UseCase: &mockUseCase{
-			executeFn: func(emailmessage.EmailMessage) error {
+			executeFn: func(message.Message) error {
 				return nil
 			},
 		},
-		Logger: slog.New(slog.NewJSONHandler(os.Stdout, nil)),
+		Logger: LoggerDummy,
 	}
 
 	redis, addr := setupIntegration(t, *handler)

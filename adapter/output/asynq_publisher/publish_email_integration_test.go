@@ -1,9 +1,10 @@
 //go:build slow
 
-package emailpublisher_test
+package asynqpublisher_test
 
 import (
 	"emailservice/adapter/output/asynq_publisher"
+	"emailservice/core/application/message"
 	"encoding/json"
 	"testing"
 
@@ -33,14 +34,13 @@ func TestPublish_Integration(t *testing.T) {
 	defer client.Close()
 
 	// Create the adapter under test, injecting the real Asynq client.
-	adapter := emailpublisher.AsynqEmailPublisherAdapter{
+	adapter := asynqpublisher.AsynqEmailPublisherAdapter{
 		Client: client,
-		Logger: logger,
 	}
 
 	// Execute the method under test.
 	// This should serialize the message and enqueue a task.
-	err := adapter.Publish(fakeMessage{})
+	err := adapter.Publish(*&fakeMessageCorrect)
 
 	// Ensure the Redis container is cleaned up after the test finishes.
 	defer testcontainers.CleanupContainer(t, redis)
@@ -90,10 +90,10 @@ func TestPublish_Integration(t *testing.T) {
 		"expected enqueued task payload to be non-empty",
 	)
 
-	// Deserialize the task payload back into the expected struct.
+	// Deserialize the task payload back into the expected Message.
 	// This verifies that the JSON serialization was correct.
-	var p emailpublisher.Payload
-	err = json.Unmarshal(tasks[0].Payload, &p)
+	var message message.Message
+	err = json.Unmarshal(tasks[0].Payload, &message)
 	require.NoError(
 		t,
 		err,
@@ -101,8 +101,8 @@ func TestPublish_Integration(t *testing.T) {
 	)
 
 	// Validate that all fields were correctly serialized and preserved.
-	assert.Equal(t, to, p.To, "expected payload To field to match input")
-	assert.Equal(t, subject, p.Subject, "expected payload Subject field to match input")
-	assert.Equal(t, emailType, p.EmailType, "expected payload EmailType field to match input")
-	assert.Equal(t, bodyData, p.BodyData, "expected payload BodyData to match input")
+	assert.Equal(t, message.Id, id)
+	assert.Equal(t, message.To, to)
+	assert.Equal(t, message.Type, typeMessage)
+	assert.Equal(t, message.Variables["verification_code"], verificationCode)
 }

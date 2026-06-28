@@ -1,7 +1,8 @@
 package rest_test
 
 import (
-	"emailservice/core/application/email_message"
+	"emailservice/core/application/apperrors"
+	"emailservice/core/application/message"
 	"encoding/json"
 	"log/slog"
 	"net/http"
@@ -13,15 +14,66 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-var logger = slog.New(slog.NewJSONHandler(os.Stdout, nil))
+var loggerDummy = slog.New(slog.NewJSONHandler(os.Stdout, nil))
 
-type RequestEmailUseCaseMock struct {
+type RequestSendEmailMock struct {
 	mock.Mock
 }
 
-func (m *RequestEmailUseCaseMock) Request(message emailmessage.EmailMessage) error {
+func (m *RequestSendEmailMock) Execute(message message.Message) error {
 	args := m.Called(message)
 	return args.Error(0)
+}
+
+var emptyFieldCases = []struct {
+	name               string
+	bodyWithEmptyField map[string]any
+	expectedError      error
+}{
+	{
+		name: "missing id",
+		bodyWithEmptyField: map[string]any{
+			"to":   "email@email.com",
+			"type": "email_verification_code",
+			"variables": map[string]string{
+				"verification_code": "123456",
+			},
+		},
+		expectedError: apperrors.NewEmptyFieldError("id"),
+	},
+	{
+		name: "missing to",
+		bodyWithEmptyField: map[string]any{
+			"id":   "fake-id",
+			"type": "email_verification_code",
+			"variables": map[string]string{
+				"verification_code": "123456",
+			},
+		},
+		expectedError: apperrors.NewEmptyFieldError("to"),
+	},
+	{
+		name: "missing type",
+		bodyWithEmptyField: map[string]any{
+			"id": "fake-id",
+			"to": "email@email.com",
+			"variables": map[string]string{
+				"verification_code": "123456",
+			},
+		},
+		expectedError: apperrors.NewEmptyFieldError("type"),
+	},
+}
+
+// ========================  auxiliary functions for assertions ==========================
+func assertInvalidFieldError(t *testing.T, response map[string]any, err error) {
+	t.Helper()
+
+	var invalidField *apperrors.InvalidFieldError
+	if assert.ErrorAs(t, err, &invalidField) {
+		assert.Equal(t, invalidField.Error(), response["error"])
+		assert.Equal(t, invalidField.FieldName, response["field"])
+	}
 }
 
 func decodeJSONResponse(t *testing.T, res *http.Response, target any) {
@@ -31,63 +83,4 @@ func decodeJSONResponse(t *testing.T, res *http.Response, target any) {
 
 	err := json.NewDecoder(res.Body).Decode(target)
 	require.NoError(t, err)
-}
-
-func assertBadRequest(t *testing.T, response *http.Response, usecaseMock *RequestEmailUseCaseMock) {
-	t.Helper()
-
-	assert.Equal(t,
-		http.StatusBadRequest,
-		response.StatusCode,
-		"expected status code to be 400 when request body contains invalid JSON",
-	)
-
-	usecaseMock.AssertNotCalled(t, "Request", mock.Anything)
-}
-
-func assertUnprocessableEntity(t *testing.T, response *http.Response, usecaseMock *RequestEmailUseCaseMock) {
-	t.Helper()
-
-	assert.Equal(t,
-		http.StatusUnprocessableEntity,
-		response.StatusCode,
-		"expected status code to be 422 when validation fails",
-	)
-
-	usecaseMock.AssertCalled(t, "Request", mock.Anything)
-}
-func assertAccepted(t *testing.T, response *http.Response, usecaseMock *RequestEmailUseCaseMock) {
-	t.Helper()
-
-	assert.Equal(t,
-		http.StatusAccepted,
-		response.StatusCode,
-		"expected status code to be 202 when request is valid",
-	)
-
-	usecaseMock.AssertCalled(t, "Request", mock.Anything)
-}
-
-func assertInternalServerError(t *testing.T, response *http.Response, usecaseMock *RequestEmailUseCaseMock) {
-	t.Helper()
-
-	assert.Equal(t,
-		http.StatusInternalServerError,
-		response.StatusCode,
-		"expected status code to be 500 when unexpected error occurs",
-	)
-
-	usecaseMock.AssertCalled(t, "Request", mock.Anything)
-}
-
-func assertFieldValidationError(
-	t *testing.T,
-	response map[string]string,
-	expectedError string,
-	expectedField string,
-) {
-	t.Helper()
-
-	assert.Equal(t, expectedError, response["error"])
-	assert.Equal(t, expectedField, response["field"])
 }

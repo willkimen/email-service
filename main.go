@@ -14,7 +14,6 @@ import (
 	"emailservice/adapter/input/worker"
 	"emailservice/adapter/output/asynq_publisher"
 	"emailservice/adapter/output/content_renderer/html"
-	"emailservice/adapter/output/logger"
 	"emailservice/adapter/output/resend"
 	"emailservice/core/application/usecase"
 
@@ -35,27 +34,22 @@ func rootComposition(baseLogger *slog.Logger) (
 	resendClient := resend.NewClient(os.Getenv("RESEND_API_KEY"))
 
 	// ===== OUTPUT ADAPTERS =====
-	publisherOutputAdapter := emailpublisher.NewAsynqEmailPublisherAdapter(
+	publisherOutputAdapter := asynqpublisher.NewAsynqEmailPublisherAdapter(
 		asynqClient,
-		baseLogger,
 	)
-	rendererOutputAdapter := renderer.NewHTMLEmailContentRendererAdapter(baseLogger)
-	senderOutputAdapter := emailsender.NewResendEmailSenderAdapter(
+	rendererOutputAdapter := htmlrenderer.NewHTMLEmailContentRendererAdapter()
+	senderOutputAdapter := emailresend.NewResendEmailSenderAdapter(
 		resendClient,
 		os.Getenv("FROM_EMAIL"),
-		baseLogger,
 	)
-	loggerOutputAdapter := sloglogger.NewSlogLogger(baseLogger)
 
 	// ===== USE CASES =====
 	requestUsecase := usecase.NewRequestSendEmailUseCase(
 		publisherOutputAdapter,
-		loggerOutputAdapter,
 	)
 	executeUsecase := usecase.NewExecuteSendEmailUseCase(
 		senderOutputAdapter,
 		rendererOutputAdapter,
-		loggerOutputAdapter,
 	)
 
 	// ===== INPUT ADAPTER: HTTP SERVER =====

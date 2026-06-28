@@ -1,72 +1,52 @@
-package emailpublisher_test
+package asynqpublisher_test
 
 import (
 	"emailservice/adapter/output/asynq_publisher"
-	"errors"
+	"emailservice/core/application/apperrors"
+	"encoding/json"
 	"testing"
 
-	"github.com/hibiken/asynq"
 	"github.com/stretchr/testify/require"
 )
 
 func TestPublish_Success(t *testing.T) {
-	fake := &fakeEnqueuer{
-		enqueueFunc: func(task *asynq.Task, opts ...asynq.Option) (*asynq.TaskInfo, error) {
-			return &asynq.TaskInfo{ID: "123"}, nil
-		},
+	adapter := &asynqpublisher.AsynqEmailPublisherAdapter{
+		Client: fakeClientSuccess,
 	}
 
-	adapter := &emailpublisher.AsynqEmailPublisherAdapter{
-		Client: fake,
-		Logger: logger,
-	}
+	err := adapter.Publish(fakeMessageCorrect)
 
-	msg := fakeMessage{}
-
-	err := adapter.Publish(msg)
-
-	require.NoError(
-		t,
-		err,
-		"expected Publish to return nil error when enqueue succeeds",
-	)
+	require.Nil(t, err)
 }
 
-func TestPublish_EnqueueError(t *testing.T) {
-	expectedErr := errors.New("enqueue failed")
-
-	fake := &fakeEnqueuer{
-		enqueueFunc: func(task *asynq.Task, opts ...asynq.Option) (*asynq.TaskInfo, error) {
-			return nil, expectedErr
-		},
+func TestPublish_Return_EnqueueError(t *testing.T) {
+	adapter := &asynqpublisher.AsynqEmailPublisherAdapter{
+		Client: fakeClientFail,
 	}
 
-	adapter := &emailpublisher.AsynqEmailPublisherAdapter{
-		Client: fake,
-		Logger: logger,
+	actualErr := adapter.Publish(fakeMessageCorrect)
+
+	require.Error(t, actualErr)
+
+	var targetErr *apperrors.InfrastructureError
+	require.ErrorAs(t, actualErr, &targetErr)
+	require.Contains(t, targetErr.Message, "failed to enqueue message")
+	require.ErrorIs(t, targetErr.Unwrap(), fakeErrorEnqueue)
+}
+
+func TestPublish_Return_MarshalError(t *testing.T) {
+	adapter := &asynqpublisher.AsynqEmailPublisherAdapter{
+		Client: fakeClientSuccess,
 	}
 
-	msg := fakeMessage{}
+	actualErr := adapter.Publish(fakeMessageToMarshalError)
 
-	err := adapter.Publish(msg)
+	require.Error(t, actualErr)
 
-	require.Error(
-		t,
-		err,
-		"expected Publish to return error when enqueue fails",
-	)
+	var targetErr *apperrors.InfrastructureError
+	require.ErrorAs(t, actualErr, &targetErr)
+	require.Contains(t, targetErr.Message, "failed to serialize message in JSON")
 
-	require.ErrorContains(
-		t,
-		err,
-		"enqueue email task",
-		"expected returned error to contain context message 'enqueue email task'",
-	)
-
-	require.ErrorIs(
-		t,
-		err,
-		expectedErr,
-		"expected returned error to wrap the original enqueue error",
-	)
+	var jsonErr *json.UnsupportedValueError
+	require.ErrorAs(t, targetErr.Unwrap(), &jsonErr)
 }

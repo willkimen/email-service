@@ -3,8 +3,10 @@ package worker_test
 import (
 	"context"
 	"emailservice/adapter/input/worker"
-	"emailservice/core/application/email_message"
+	"emailservice/core/application/message"
 	"encoding/json"
+	"log/slog"
+	"os"
 	"testing"
 
 	"github.com/hibiken/asynq"
@@ -15,33 +17,31 @@ import (
 
 const taskType = "email:send"
 
+var LoggerDummy = slog.New(slog.NewJSONHandler(os.Stdout, nil))
+
 type mockUseCase struct {
-	executeFn func(emailmessage.EmailMessage) error
+	executeFn func(message.Message) error
 }
 
-func (m *mockUseCase) ExecuteSend(message emailmessage.EmailMessage) error {
+func (m *mockUseCase) Execute(message message.Message) error {
 	return m.executeFn(message)
 }
 
 // validTask builds a well-formed Asynq task payload representing
-// a valid send email request.
+// a valid Message.
 //
 // This helper centralizes payload creation to ensure all integration
 // tests enqueue structurally correct tasks.
 func validTask(t *testing.T) *asynq.Task {
 	payload, err := json.Marshal(map[string]any{
-		"To":        "user@test.com",
-		"Subject":   "Email Verification",
-		"EmailType": emailmessage.EmailTypeEmailVerificationCode,
-		"BodyData": map[string]any{
-			"VerificationCode":       "123456",
+		"Id":   "fake-id",
+		"To":   "user@test.com",
+		"Type": message.MessageTypeEmailVerificationCode,
+		"Variables": map[string]any{
+			"verification_code": "123456",
 		},
 	})
-	require.NoError(
-		t,
-		err,
-		"failed to marshal asynq task payload for send email task",
-	)
+	require.NoError(t, err)
 
 	return asynq.NewTask(taskType, payload)
 }
@@ -56,15 +56,12 @@ func upClient(t *testing.T, addr string) {
 		Addr: addr,
 	})
 
-	task := validTask(t)
-
-	_, err := client.Enqueue(task)
+	_, err := client.Enqueue(validTask(t))
 	require.NoError(
 		t,
 		err,
 		"failed to enqueue send email task into asynq",
 	)
-
 }
 
 // upServer starts an Asynq server configured with the send email task
@@ -74,7 +71,6 @@ func upClient(t *testing.T, addr string) {
 // explicitly shut down, as the Redis container teardown implicitly
 // stops task processing.
 func upServer(t *testing.T, addr string, handler worker.SendEmailTaskHandler) *asynq.Server {
-
 	mux := asynq.NewServeMux()
 	mux.HandleFunc(taskType, handler.ProcessSendEmail)
 

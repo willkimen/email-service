@@ -1,9 +1,8 @@
 package usecase
 
 import (
-	"emailservice/core/application/email_message"
+	"emailservice/core/application/message"
 	"emailservice/core/application/ports/output"
-	"fmt"
 )
 
 // ExecuteSendEmailUsecase implements the use case responsible for executing
@@ -14,62 +13,31 @@ import (
 type ExecuteSendEmailUsecase struct {
 	// Sender is responsible for delivering the rendered email content
 	// through an external email service.
-	Sender outputport.SendEmailOutputPort
-	// Renderer is responsible for generating the email body based on
-	// the EmailMessage.
-	Renderer outputport.RenderEmailContentOutputPort
-	Logger   outputport.Logger
-}
+	Sender outputport.SendEmailPort
 
-func NewExecuteSendEmailUseCase(
-	sender outputport.SendEmailOutputPort,
-	renderer outputport.RenderEmailContentOutputPort,
-	logger outputport.Logger,
-) *ExecuteSendEmailUsecase {
-	return &ExecuteSendEmailUsecase{
-		Sender:   sender,
-		Renderer: renderer,
-		Logger:   logger,
-	}
-
+	// Renderer is responsible for generating the email body based on the Message.
+	Renderer outputport.RenderEmailContentPort
 }
 
 // Execute renders the email content and sends the email synchronously.
-func (e *ExecuteSendEmailUsecase) ExecuteSend(message emailmessage.EmailMessage) error {
-	e.Logger.Info(
-		"starting email send execution",
-		"to", message.GetTo(),
-		"subject", message.GetSubject(),
-	)
-
-	body, err := e.Renderer.Render(message)
+//
+// Errors:
+//   - Returns apperrors.InfrastructureError if no template is registered for the message type.
+//   - Returns apperrors.InfrastructureError if the template cannot be parsed.
+//   - Returns apperrors.InfrastructureError if failed to render email template.
+//   - Returns apperrors.InfrastructureError. Returns wrapped with apperrors.ErrTemporaryFailure
+//     on rate limit breaches, or wrapped with apperrors.ErrPermanentFailure
+//     on API or network failures.
+func (e *ExecuteSendEmailUsecase) Execute(message message.Message) error {
+	subject, body, err := e.Renderer.Render(message)
 	if err != nil {
-		e.Logger.Error(
-			"failed to render email content",
-			err,
-			"to", message.GetTo(),
-			"subject", message.GetSubject(),
-		)
-
-		return fmt.Errorf("send email failed during rendering: %w", err)
+		return err
 	}
 
-	err = e.Sender.SendEmail(message.GetTo(), message.GetSubject(), body)
+	err = e.Sender.SendEmail(message.To, subject, body)
 	if err != nil {
-		e.Logger.Error(
-			"failed to send email",
-			err,
-			"to", message.GetTo(),
-			"subject", message.GetSubject(),
-		)
-		return fmt.Errorf("send email failed during sending: %w", err)
+		return err
 	}
-
-	e.Logger.Info(
-		"email sent successfully",
-		"to", message.GetTo(),
-		"subject", message.GetSubject(),
-	)
 
 	return nil
 }

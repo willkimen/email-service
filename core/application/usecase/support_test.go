@@ -1,40 +1,39 @@
 package usecase_test
 
 import (
-	"emailservice/core/application/email_message"
+	"emailservice/core/application/message"
 	"errors"
 )
 
-type publishFailureFake struct{}
+// =================== Email message =============================
 
-func (publishFailureFake) Publish(message emailmessage.EmailMessage) error {
-	return errors.New("fake error")
-}
+var originalCause = errors.New("Internal error")
 
-type publisherSuccessFake struct{}
-
-func (publisherSuccessFake) Publish(message emailmessage.EmailMessage) error {
-	return nil
-
-}
-
-var invalidMessage *emailmessage.EmailVerificationCode = emailmessage.NewEmailVerificationCode(
-	"fake@fake.com", "", "fake",
+var messageDummy, _ = message.NewMessage(
+	"id", "email@email.com", message.MessageTypeNotifyAccountDeleted, nil,
 )
 
-var messageCorrect *emailmessage.EmailVerificationCode = emailmessage.NewEmailVerificationCode(
-	"fake@fake.com", "fake", "fake",
-)
+// ================== Fake publisher ==========================
+type fakePublisher struct {
+	Err error
+}
 
+func (p fakePublisher) Publish(message message.Message) error {
+	return p.Err
+}
+
+// =================== Fake renderer ==============================
 type fakeRenderer struct {
-	Body string
-	Err  error
+	Subject string
+	Body    string
+	Err     error
 }
 
-func (f fakeRenderer) Render(message emailmessage.EmailMessage) (string, error) {
-	return f.Body, f.Err
+func (f fakeRenderer) Render(message message.Message) (string, string, error) {
+	return f.Subject, f.Body, f.Err
 }
 
+// ==================== Fake sender ==========================
 type fakeSender struct {
 	Err error
 }
@@ -42,17 +41,3 @@ type fakeSender struct {
 func (f fakeSender) SendEmail(to, subject, body string) error {
 	return f.Err
 }
-
-type fakeLogger struct {
-}
-
-func (fakeLogger) Info(msg string, fields ...any)             {}
-func (fakeLogger) Error(msg string, err error, fields ...any) {}
-
-type fakeEmailMessage struct{}
-
-func (fakeEmailMessage) ValidateData() error  { return nil }
-func (fakeEmailMessage) GetEmailType() string { return "anytype" }
-func (fakeEmailMessage) GetTo() string        { return "to" }
-func (fakeEmailMessage) GetSubject() string   { return "subject" }
-func (fakeEmailMessage) GetBodyData() any     { return nil }

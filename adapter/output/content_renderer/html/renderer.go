@@ -1,99 +1,64 @@
-package renderer
+package htmlrenderer
 
 import (
 	"bytes"
-	"emailservice/core/application/email_message"
-	"embed"
-	"errors"
+	"emailservice/core/application/apperrors"
+	"emailservice/core/application/message"
 	"fmt"
 	"html/template"
-	"log/slog"
+	"io/fs"
 )
 
-//go:embed templates/*.html
-var templatesFS embed.FS
-
 // HTMLEmailContentRendererAdapter is responsible for rendering
-// the HTML body of an email message.
+// the HTML body of an email.
 //
-// It resolves the template based on the email type exposed by
-// the EmailMessage and executes it using the message data.
+// It resolves the template based on the message type exposed by
+// the Message and executes it using the message variables.
 type HTMLEmailContentRendererAdapter struct {
-	Logger *slog.Logger
-}
-
-func NewHTMLEmailContentRendererAdapter(
-	logger *slog.Logger,
-) *HTMLEmailContentRendererAdapter {
-	return &HTMLEmailContentRendererAdapter{
-		Logger: logger,
-	}
+	// FS represents the file system abstraction where the HTML template
+	// files reside. It allows injecting the production embedded file system
+	// or custom file systems for testing purposes.
+	FS fs.FS
 }
 
 // Render renders the HTML body for the given email message.
 //
-// The email type returned by GetEmailType is used to resolve
-// the corresponding HTML template. The message itself is passed
-// as the template data.
+// The message type is used to resolve the corresponding HTML template.
+// The message variables itself is passed as the template data.
 //
-// An error is returned if no template is registered for the email
-// type, if the template cannot be parsed, or if execution fails.
-func (r *HTMLEmailContentRendererAdapter) Render(
-	message emailmessage.EmailMessage,
-) (string, error) {
-	emailType := message.GetEmailType()
-	path, ok := pathTemplates[emailType]
+// Returns:
+//   - string: The rendered HTML body text, or an empty string ("") on error.
+//   - string: The subject text, or an empty string ("") on error.
+//   - error: An apperrors.InfrastructureError if any step of the process fails.
+//
+// Errors:
+//   - Returns apperrors.InfrastructureError if no template is registered for the message type.
+//   - Returns apperrors.InfrastructureError if the template cannot be parsed.
+//   - Returns apperrors.InfrastructureError if failed to render email template.
+func (r *HTMLEmailContentRendererAdapter) Render(message message.Message) (string, string, error) {
+	path, ok := pathTemplates[message.Type]
 	if !ok {
-		r.Logger.Error(
-			"email template not found",
-			"email_type", emailType,
-		)
-		return "", errors.New("template not found")
+		return "", "", apperrors.NewInfrastructureError("template not found", nil)
 	}
 
-	r.Logger.Info(
-		"rendering email template",
-		"email_type", emailType,
-		"template_path", path,
-	)
-
-	tmpl, err := template.ParseFS(templatesFS, path)
+	tmpl, err := template.ParseFS(r.FS, path)
 	if err != nil {
-		r.Logger.Error(
-			"failed to parse email template",
-			"error", err,
-			"email_type", emailType,
-			"template_path", path,
-		)
-
-		return "", fmt.Errorf(
-			"failed to parse email template %q: %w",
+		msgError := fmt.Sprintf(
+			"failed to parse email template %q",
 			path,
-			err,
 		)
+		return "", "", apperrors.NewInfrastructureError(msgError, err)
 	}
+	tmpl = tmpl.Option("missingkey=error")
 
 	var buf bytes.Buffer
-	if err := tmpl.Execute(&buf, message); err != nil {
-		r.Logger.Error(
-			"failed to execute email template",
-			"error", err,
-			"email_type", emailType,
-			"template_path", path,
-		)
-
-		return "", fmt.Errorf(
-			"failed to execute email template %q: %w",
+	if err := tmpl.Execute(&buf, message.Variables); err != nil {
+		msgError := fmt.Sprintf(
+			"failed to render email template %q",
 			path,
-			err,
 		)
+		return "", "", apperrors.NewInfrastructureError(msgError, err)
 	}
 
-	r.Logger.Info(
-		"email template rendered successfully",
-		"email_type", emailType,
-		"template_path", path,
-	)
-
-	return buf.String(), nil
+	return subjects[message.Type], buf.String(), nil
 }

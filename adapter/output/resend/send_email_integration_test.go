@@ -1,13 +1,12 @@
 //go:build email
 
-package emailsender_test
+package emailresend_test
 
 import (
 	"emailservice/adapter/output/resend"
 	"github.com/joho/godotenv"
 	"github.com/resend/resend-go/v3"
 	"github.com/stretchr/testify/require"
-	"log/slog"
 	"os"
 	"testing"
 )
@@ -39,10 +38,9 @@ func TestResendEmailSenderAdapter_SendEmail_Integration(t *testing.T) {
 	)
 
 	client := resend.NewClient(os.Getenv("RESEND_API_KEY"))
-	adapter := &emailsender.ResendEmailSenderAdapter{
+	adapter := &emailresend.ResendEmailSenderAdapter{
 		Emails: client.Emails,
 		From:   os.Getenv("FROM_EMAIL"),
-		Logger: slog.New(slog.NewJSONHandler(os.Stdout, nil)),
 	}
 
 	err = adapter.SendEmail(
