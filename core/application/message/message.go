@@ -1,30 +1,13 @@
 package message
 
-// NewMessage creates and validates a new Message.
+// Message represents an email message consumed by the email service.
 //
-// It is strongly recommended to use this factory function (or workflow-specific
-// factories) instead of instantiating the Message struct directly, as it centralizes
-// and encapsulates all business validation rules required for a Message entity.
+// It contains the information required to identify the message, determine
+// which email workflow to execute, identify the recipient, and populate
+// the corresponding email template.
 //
-// Any provided message type must strictly match one of the system's pre-existing
-// constants (e.g., MessageTypeEmailVerificationCode).
-//
-// Example:
-//
-//	variables := map[string]any{"code": "123456"}
-//	msg, err := message.NewMessage(
-//		"msg-123",
-//		"user@example.com",
-//		message.MessageTypeEmailVerificationCode,
-//		variables
-//	)
-//	if err != nil {
-//	    // handle validation error
-//	}
-//
-// Errors:
-//   - apperrors.InvalidFieldError: if any required argument is empty,
-//     the email format is invalid, or the type does not match any pre-existing system type.
+// Message is a transport-level representation of an email request received
+// from the messaging broker.
 type Message struct {
 	// Id is the unique identifier of the message. Useful for tracing,
 	// auditing, and ensuring idempotency during queue processing.
