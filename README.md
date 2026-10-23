@@ -1,31 +1,13 @@
 # Email Service
 
-## Table of Contents
+## Project Status 🚧
 
-- [Overview](#overview)
-- [Technologies](#technologies)
-- [Architecture and Flow](#architecture-and-flow)
-  - [Domain Layer](#domain-layer)
-  - [Message Object](#message-object)
-- [Endpoints](#endpoints)
-  - [Verification Code Emails](#verification-code-emails)
-  - [Notification Emails](#notification-emails)
-  - [Important Behavior](#important-behavior)
-- [Responses](#responses)
-  - [202 Accepted](#202-accepted)
-  - [400 Bad Request](#400-bad-request)
-  - [422 Unprocessable Entity](#422-unprocessable-entity)
-  - [500 Internal Server Error](#500-internal-server-error)
-- [Configuration and Running the Service](#configuration-and-running-the-service)
-  - [Environment Variables](#environment-variables)
-  - [Required Dependencies](#required-dependencies)
-  - [Running the Application](#running-the-application)
-  - [Send a Request](#send-a-request)
-  - [Logs](#logs)
-  - [Running Tests](#running-tests)
-- [Current Limitations](#current-limitations)
-  - [Delivery Status (Resend Webhooks)](#delivery-status-resend-webhooks)
-  - [Logging](#logging)
+**Work in Progress:** This project is currently under active development.
+
+A RabbitMQ consumer is being implemented as a new input adapter to consume
+email-related messages published by the [`auth-service`](https://github.com/willkimen/auth-service).
+The existing HTTP API will remain available, allowing the service to support
+both HTTP requests and asynchronous message consumption through RabbitMQ.
 
 ## Overview
 
